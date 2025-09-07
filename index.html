@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Name - Personal Portfolio</title>
+    <!-- Use Inter font for a professional look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            @apply bg-zinc-900 text-zinc-100;
+        }
+
+        /* Hero section gradient and animation */
+        .hero-gradient {
+            background: radial-gradient(circle at 50% 120%, rgba(132, 204, 22, 0.2), transparent 70%);
+            animation: pulse-glow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Project card effects */
+        .project-card {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            border: 1px solid transparent;
+        }
+        .project-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+        }
+        .project-card:hover .project-title {
+            color: #84cc16; /* Tailwind's lime-500 */
+        }
+
+        /* Smooth scroll for navigation */
+        html {
+            scroll-behavior: smooth;
+        }
+
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header class="sticky top-0 z-50 py-4 bg-zinc-900 bg-opacity-90 backdrop-blur-sm">
+        <nav class="container mx-auto flex justify-between items-center px-6">
+            <a href="#" class="text-xl font-bold tracking-tight text-lime-500">Your Name</a>
+            <div class="space-x-4 md:space-x-6">
+                <a href="#about" class="text-zinc-400 hover:text-lime-500 transition-colors duration-200">About</a>
+                <a href="#projects" class="text-zinc-400 hover:text-lime-500 transition-colors duration-200">Projects</a>
+                <a href="#contact" class="text-zinc-400 hover:text-lime-500 transition-colors duration-200">Contact</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12 md:py-24">
+
+        <!-- Hero Section -->
+        <section id="about" class="hero-gradient min-h-screen flex items-center justify-center text-center">
+            <div class="max-w-4xl space-y-6">
+                <p class="text-lg md:text-xl font-medium text-lime-500 uppercase tracking-widest">Hello, I'm</p>
+                <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-extrabold tracking-tighter leading-none text-zinc-50">
+                    Your Name
+                </h1>
+                <p class="text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto">
+                    A passionate web developer specializing in creating beautiful and functional digital experiences. I love to build things that live on the internet, from simple websites to complex web applications.
+                </p>
+                <a href="#projects" class="inline-block mt-8 py-3 px-8 rounded-full bg-lime-500 text-zinc-900 font-semibold text-lg hover:bg-lime-600 transition-colors duration-300 transform hover:scale-105 shadow-lg">
+                    View My Work
+                </a>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="py-20 md:py-32">
+            <h2 class="text-4xl md:text-5xl font-bold text-center mb-12 text-zinc-50">Projects</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Project Card 1 -->
+                <div class="project-card rounded-lg p-6 bg-zinc-800 border-zinc-700 hover:border-lime-500 transform duration-300">
+                    <h3 class="project-title text-2xl font-semibold mb-2 text-zinc-50 transition-colors duration-300">Project Alpha</h3>
+                    <p class="text-zinc-400 mb-4">A brief, compelling description of Project Alpha. Mention the technologies used and the key features. It was a fun project that taught me a lot about [Technology].</p>
+                    <a href="#" class="text-lime-400 hover:underline font-medium">View Project →</a>
+                </div>
+                <!-- Project Card 2 -->
+                <div class="project-card rounded-lg p-6 bg-zinc-800 border-zinc-700 hover:border-lime-500 transform duration-300">
+                    <h3 class="project-title text-2xl font-semibold mb-2 text-zinc-50 transition-colors duration-300">Project Beta</h3>
+                    <p class="text-zinc-400 mb-4">A description of Project Beta, which was a collaborative effort. Explain your role and the challenges you overcame to complete it successfully.</p>
+                    <a href="#" class="text-lime-400 hover:underline font-medium">View Project →</a>
+                </div>
+                <!-- Project Card 3 -->
+                <div class="project-card rounded-lg p-6 bg-zinc-800 border-zinc-700 hover:border-lime-500 transform duration-300">
+                    <h3 class="project-title text-2xl font-semibold mb-2 text-zinc-50 transition-colors duration-300">Project Gamma</h3>
+                    <p class="text-zinc-400 mb-4">This was a personal project focused on learning a new framework. Describe what the project does and what you learned from building it from scratch.</p>
+                    <a href="#" class="text-lime-400 hover:underline font-medium">View Project →</a>
+                </div>
+                <!-- Add more project cards here if needed -->
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-20 md:py-32 text-center">
+            <h2 class="text-4xl md:text-5xl font-bold mb-8 text-zinc-50">Get In Touch</h2>
+            <p class="text-lg text-zinc-400 max-w-2xl mx-auto mb-10">
+                I'm currently open to new opportunities. Whether you have a question or just want to say hi, feel free to reach out.
+            </p>
+            <div class="flex flex-col items-center space-y-4 sm:space-y-0 sm:flex-row sm:justify-center sm:space-x-6">
+                <!-- Email Button -->
+                <button id="copy-email-btn" class="py-3 px-8 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-100 font-semibold hover:bg-zinc-700 transition-colors duration-300 transform hover:scale-105 shadow-lg">
+                    Email Me
+                </button>
+                <!-- GitHub Link -->
+                <a href="https://github.com/your-username" target="_blank" class="py-3 px-8 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-100 font-semibold hover:bg-zinc-700 transition-colors duration-300 transform hover:scale-105 shadow-lg">
+                    GitHub Profile
+                </a>
+            </div>
+            <div id="email-copy-message" class="mt-4 text-lime-400 opacity-0 transition-opacity duration-300">Email copied to clipboard!</div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-8 text-center text-zinc-500 border-t border-zinc-800">
+        <p>&copy; 2024 Your Name. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript for smooth scrolling and copy-to-clipboard -->
+    <script>
+        window.onload = function() {
+            // Smooth scroll for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Copy-to-clipboard functionality for the email button
+            const copyEmailBtn = document.getElementById('copy-email-btn');
+            const copyMessage = document.getElementById('email-copy-message');
+
+            copyEmailBtn.addEventListener('click', function() {
+                const email = 'your-email@example.com';
+                // Using a temporary textarea to copy to clipboard
+                const tempInput = document.createElement('textarea');
+                tempInput.value = email;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+
+                // Show the "copied" message
+                copyMessage.style.opacity = '1';
+                setTimeout(() => {
+                    copyMessage.style.opacity = '0';
+                }, 2000);
+            });
+        };
+    </script>
+</body>
+</html>
