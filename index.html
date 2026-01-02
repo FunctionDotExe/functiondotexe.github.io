@@ -1,1031 +1,741 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ruben Maxwell — Portfolio</title>
-  <meta name="description" content="Ruben Maxwell — Computer Science student. Front-end developer, AI/ML practitioner, and quantum ML researcher." />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <style>
-    /*
-    =====================================================================
-    ✦ PARALLAX GLASSFOLIO — single-file site
-    - Smooth parallax hero using layered pixel-art mountains (assets supported)
-    - Glassmorphism cards + neon accents
-    - Tasteful effects: starfield, particle grid, scroll progress, magnetic btns,
-      custom cursor, reveal on scroll, tilt, ripple, theme switcher,
-      konami code easter egg, sound fx, and more.
-    - Designed for mobile-first and fully responsive
-    - Everything is here, no external dependencies (except for GSAP and fonts)
-    =====================================================================
-    */
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruben Maxwell | Creative Developer</title>
+    <meta name="description" content="Portfolio of Ruben Maxwell - Computer Science Student, AI/ML Practitioner, and Front-End Developer.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <!-- SplitText/ScrambleText simulation (custom js below) -->
 
-    /*
-    =====================================================================
-    GLOBAL & UTILITIES
-    =====================================================================
-    */
-    :root {
-      --bg-dark: #120b22;
-      --bg-light: #20133c;
-      --bg-lighter: #2f1d53;
-      --text-white: #f5f5ff;
-      --text-light: #cec4e0;
-      --accent: #7ee6ff;
-      --primary: #9471d8;
-      --ring-primary: rgba(148, 113, 216, 0.4);
-      --glass-bg: rgba(255, 255, 255, 0.08);
-      --glass-border: rgba(255, 255, 255, 0.2);
-    }
-    html { scroll-behavior: smooth; }
-    body {
-      background-color: var(--bg-dark);
-      color: var(--text-white);
-      font-family: 'Outfit', sans-serif;
-      margin: 0;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      overflow-x: hidden;
-      cursor: none;
-    }
-    a { color: var(--accent); text-decoration: none; transition: color .2s ease; }
-    a:hover { color: var(--primary); }
-    h1, h2, h3, h4, h5, h6 { margin: 0; font-weight: 700; }
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 16px;
-    }
-    .text-center { text-align: center; }
-    .cursor {
-      position: fixed;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background-color: var(--accent);
-      pointer-events: none;
-      transform: translate(-50%, -50%);
-      transition: width .2s, height .2s, opacity .2s;
-      z-index: 9999;
-      opacity: 0.7;
-      mix-blend-mode: exclusion;
-    }
-    .cursor-active {
-      width: 48px;
-      height: 48px;
-      opacity: 1;
-    }
-    .headline { font-weight: 900; line-height: 1.1; margin-bottom: 20px; }
-    .headline.is-large { font-size: clamp(3rem, 8vw, 6rem); }
-    .headline.is-medium { font-size: clamp(2.5rem, 6vw, 4rem); }
-    .title { font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 900; line-height: 1.2; margin-bottom: 12px; }
-    p { color: var(--text-light); line-height: 1.6; margin: 0 0 1em 0; }
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Syne', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        bg: '#030304',
+                        surface: '#0A0A0C',
+                        accent: '#6366f1', 
+                        accentDark: '#4338ca',
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
-    /*
-    =====================================================================
-    BUTTONS
-    =====================================================================
-    */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 14px 28px;
-      background: var(--primary);
-      color: #000;
-      border: none;
-      border-radius: 50px;
-      font-weight: 600;
-      font-size: 1rem;
-      transition: transform .2s ease, box-shadow .2s ease;
-      position: relative;
-      overflow: hidden;
-      z-index: 1;
-      cursor: pointer;
-    }
-    .btn:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 10px 20px rgba(148, 113, 216, 0.4);
-    }
-    .btn-glass {
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      color: var(--text-white);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    }
-    .btn-glass:hover {
-      box-shadow: 0 8px 40px 0 rgba(148, 113, 216, 0.25);
-    }
-    .btn-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      justify-content: center;
-      margin-top: 20px;
-    }
-    .btn-icon {
-      width: 46px;
-      height: 46px;
-      padding: 0;
-      border-radius: 50%;
-    }
-    .ripple {
-      position: absolute;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.3);
-      transform: scale(0);
-      animation: ripple .6s linear forwards;
-    }
-    @keyframes ripple {
-      to { transform: scale(4); opacity: 0; }
-    }
+    <style>
+        /* Base Reset & Smoothness */
+        body {
+            background-color: #030304;
+            color: #e5e5e5;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
 
-    /*
-    =====================================================================
-    HEADER & HERO
-    =====================================================================
-    */
-    .header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      z-index: 1000;
-      transition: background-color .3s ease;
-    }
-    .header.is-scrolled {
-      background: var(--bg-dark);
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-    .header-inner {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      height: 70px;
-    }
-    .logo {
-      font-weight: 900;
-      font-size: 1.5rem;
-      letter-spacing: -1px;
-    }
-    .hero {
-      position: relative;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
-    .hero-content {
-      position: relative;
-      z-index: 10;
-      text-shadow: 0 4px 12px rgba(0,0,0,0.4);
-    }
-    .hero-title {
-      font-size: clamp(4rem, 12vw, 8rem);
-      line-height: 1.1;
-      font-weight: 900;
-      text-shadow: 0 0 20px rgba(126,230,255,0.6);
-      -webkit-text-stroke: 1px var(--accent);
-      color: transparent;
-      margin-bottom: 1rem;
-    }
-    .hero-subtitle {
-      font-size: clamp(1rem, 4vw, 1.5rem);
-      color: var(--text-light);
-      margin-bottom: 2rem;
-    }
-    .hero-parallax {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-    }
-    .hero-parallax img, .hero-parallax .moon {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transform-origin: bottom center;
-      will-change: transform;
-    }
-    .hero-parallax .moon {
-      width: 120px;
-      height: 120px;
-      top: 10%;
-      left: 70%;
-      background: #fdfdfd;
-      border-radius: 50%;
-      box-shadow: 0 0 30px #fdfdfd;
-    }
-    .hero-container {
-      position: relative;
-      height: 200vh; /* This height allows for scrolling */
-    }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #030304; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
 
-    /*
-    =====================================================================
-    GLASS CARDS & CONTENT SECTIONS
-    =====================================================================
-    */
-    .section {
-      padding: 80px 0;
-      position: relative;
-      z-index: 20;
-    }
-    .card {
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-radius: 12px;
-      padding: 24px;
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-      margin-bottom: 24px;
-      transition: transform .3s ease;
-      will-change: transform;
-    }
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 24px;
-    }
-    .kpi {
-      text-align: center;
-    }
-    .kpi-number {
-      font-size: clamp(3rem, 8vw, 5rem);
-      font-weight: 900;
-      background: linear-gradient(135deg, var(--accent), var(--primary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .kpi-label {
-      font-size: 1.1rem;
-      color: var(--text-light);
-    }
-    .projects-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 32px;
-      margin-top: 40px;
-    }
-    .project {
-      display: flex;
-      flex-direction: column;
-      background: var(--bg-lighter);
-      border-radius: 12px;
-      overflow: hidden;
-      position: relative;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      transition: transform .3s ease, box-shadow .3s ease;
-    }
-    .project:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 16px 40px rgba(0,0,0,0.3);
-    }
-    .project-image {
-      width: 100%;
-      height: 200px;
-      background-color: var(--bg-dark);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .project-content {
-      padding: 24px;
-    }
-    .project-title {
-      font-size: 1.5rem;
-      margin-bottom: 8px;
-    }
-    .project-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 12px;
-    }
-    .tag {
-      padding: 4px 12px;
-      background: var(--bg-dark);
-      border-radius: 20px;
-      font-size: 0.8rem;
-      color: var(--accent);
-      font-weight: 500;
-    }
-    .contact-form {
-      display: grid;
-      gap: 16px;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-    .contact-form input, .contact-form textarea {
-      width: 100%;
-      padding: 14px;
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      border-radius: 8px;
-      color: var(--text-white);
-      font-size: 1rem;
-    }
-    .contact-form input:focus, .contact-form textarea:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(126,230,255,0.4);
-    }
-    .contact-form textarea {
-      resize: vertical;
-      min-height: 120px;
-    }
-    .form-status {
-      margin-top: 10px;
-      font-style: italic;
-      color: var(--accent);
-    }
-    .marquee-container {
-      overflow: hidden;
-      width: 100%;
-      white-space: nowrap;
-      padding: 20px 0;
-      background: var(--bg-light);
-      border-top: 1px solid var(--glass-border);
-      border-bottom: 1px solid var(--glass-border);
-      margin-top: 80px;
-    }
-    .marquee {
-      display: inline-block;
-      animation: marquee 25s linear infinite;
-      padding-left: 100%;
-    }
-    .marquee span {
-      font-size: 2.5rem;
-      font-weight: 900;
-      color: var(--primary);
-      text-transform: uppercase;
-      margin-right: 40px;
-    }
-    @keyframes marquee {
-      from { transform: translateX(0); }
-      to { transform: translateX(-100%); }
-    }
+        /* Parallax & Hero */
+        .parallax-wrapper {
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    /*
-    =====================================================================
-    CANVAS BACKGROUNDS
-    =====================================================================
-    */
-    .canvas-container {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 0;
-    }
-    #starfield {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100vh;
-    }
-    #gridnet {
-      width: 100%;
-      height: 420px;
-    }
+        .parallax-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover;
+            object-position: center bottom;
+            will-change: transform;
+        }
 
-    /*
-    =====================================================================
-    MISC. EFFECTS
-    =====================================================================
-    */
-    .show-focus :focus:not(.no-focus) {
-      outline: 2px solid var(--accent);
-      outline-offset: 4px;
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .card, .project, .hero-parallax img, .hero-parallax .moon {
-        transition: none !important;
-        animation: none !important;
-        transform: none !important;
-      }
-      .headline.is-large {
-        -webkit-text-stroke: 0;
-        color: var(--accent);
-      }
-      .marquee {
-        animation: none;
-      }
-    }
-  </style>
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(10, 10, 12, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        /* Spotlight Card Effect */
+        .spotlight-card {
+            position: relative;
+            background: #0A0A0C;
+            border: 1px solid rgba(255,255,255,0.05);
+            overflow: hidden;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s;
+        }
+        .spotlight-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(255, 255, 255, 0.06), transparent 40%);
+            z-index: 1; opacity: 0; transition: opacity 0.5s; pointer-events: none;
+        }
+        .spotlight-card:hover::before { opacity: 1; }
+        .spotlight-card:hover { transform: translateY(-5px); border-color: rgba(99, 102, 241, 0.3); }
+        .spotlight-content { position: relative; z-index: 2; }
+
+        /* Typography & Effects */
+        .text-gradient {
+            background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .cursor-blink {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background-color: #6366f1;
+            margin-left: 2px;
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* Loader */
+        .loader {
+            position: fixed; inset: 0; background: #030304; z-index: 9999;
+            display: flex; justify-content: center; align-items: center;
+            transition: opacity 0.6s ease-out;
+        }
+    </style>
 </head>
-<body>
-  <div class="cursor no-focus"></div>
+<body class="selection:bg-indigo-500 selection:text-white">
 
-  <header class="header">
-    <div class="container header-inner">
-      <a href="#" class="logo" data-magnetic>Ruben Maxwell</a>
-      <nav class="nav">
-        <a href="#about" class="btn btn-glass" data-magnetic>About</a>
-      </nav>
+    <!-- Loading Screen -->
+    <div class="loader" id="loader">
+        <div class="flex flex-col items-center gap-6">
+            <div class="relative">
+                <div class="w-16 h-16 border-2 border-indigo-500/30 rounded-full"></div>
+                <div class="absolute top-0 left-0 w-16 h-16 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+            <div class="font-mono text-xs font-bold tracking-[0.3em] text-gray-500 uppercase animate-pulse">Initializing</div>
+        </div>
     </div>
-  </header>
 
-  <main id="main">
-    <div class="hero-container">
-      <section class="hero">
-        <div class="canvas-container">
-          <canvas id="starfield"></canvas>
-        </div>
-        <div class="hero-parallax">
-          <!-- Parallax layers (from back to front) -->
-          <!-- Your specific images are now being used -->
-          <img src="sky.png" alt="Sky Layer" class="parallax-layer" data-speed="0.05" />
-          <img src="far-clouds.png" alt="Clouds Layer" class="parallax-layer" data-speed="0.1" />
-          <img src="far-mountains.png" alt="Far Mountains" class="parallax-layer" data-speed="0.2" />
-          <img src="mountains.png" alt="Near Mountains" class="parallax-layer" data-speed="0.4" />
-          <img src="trees.png" alt="Trees and Ground" class="parallax-layer" data-speed="0.6" />
-        </div>
-        <div class="hero-content">
-          <h1 class="hero-title">Hi — I'm Ruben Maxwell</h1>
-          <p class="hero-subtitle">Computer Science student at University of Toronto. I build front-end apps, AI/ML models, and quantum ML experiments.</p>
-          <div class="btn-group">
-            <a href="#contact" class="btn" data-magnetic>Contact</a>
-            <a class="btn btn-glass" href="resume.html" data-magnetic>Resume</a>
-            <button class="btn btn-glass" data-action="warp" data-magnetic>Warp</button>
-            <button class="btn btn-glass" id="soundToggle" data-magnetic>SFX</button>
-          </div>
-        </div>
-      </section>
-    </div>
-    <section id="about" class="section">
-      <div class="container">
-        <div class="text-center">
-          <h2 class="headline is-medium">Computer Science Student & Software Developer</h2>
-          <p class="lead" style="max-width: 600px; margin: 0 auto 40px;">I'm Ruben Maxwell — I build polished front-end experiences and prototype AI/ML systems. My work spans responsive sites, object-detection models, and quantum ML research, and I enjoy mentoring students in robotics and programming.</p>
-        </div>
-        <div class="card-grid">
-          <div class="card kpi">
-            <div class="kpi-number">7+</div>
-            <div class="kpi-label">Projects</div>
-          </div>
-          <div class="card kpi">
-            <div class="kpi-number">97%</div>
-            <div class="kpi-label">Model accuracy</div>
-          </div>
-          <div class="card kpi">
-            <div class="kpi-number">2025</div>
-            <div class="kpi-label">Available for internships</div>
-          </div>
-        </div>
-        <div class="mt-12 text-center">
-          <button class="btn btn-glass" data-action="grid-scan" data-magnetic>Scan Grid</button>
-          <button class="btn btn-glass" data-action="grid-noise" data-magnetic>Add Noise</button>
-          <button class="btn btn-glass" data-action="grid-clear" data-magnetic>Clear Grid</button>
-          <canvas id="gridnet" class="mt-8"></canvas>
-        </div>
-      </div>
-    </section>
-
-    <section id="work" class="section">
-      <div class="container">
-        <div class="text-center">
-          <h2 class="headline is-medium">Selected Projects</h2>
-          <p style="max-width: 600px; margin: 0 auto 40px;">Explore a collection of my recent projects, showcasing a blend of creative design and technical execution.</p>
-        </div>
-        <div class="projects-grid">
-          <div class="project" data-tilt>
-            <div class="project-image">
-              <canvas class="thumb-canvas" data-mode="rings"></canvas>
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 w-full z-50 px-6 py-6 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto flex justify-between items-center glass-panel rounded-full px-6 py-3 shadow-2xl">
+            <a href="#" class="font-display text-xl font-bold tracking-tight hover:text-indigo-400 transition-colors group">
+                RM<span class="text-indigo-500 group-hover:text-white transition-colors">.</span>
+            </a>
+            
+            <div class="hidden md:flex gap-8 text-sm font-medium text-gray-400">
+                <a href="#about" class="hover:text-white transition-colors">About</a>
+                <a href="#experience" class="hover:text-white transition-colors">Journey</a>
+                <a href="#projects" class="hover:text-white transition-colors">Work</a>
+                <a href="#contact" class="hover:text-white transition-colors">Contact</a>
             </div>
-            <div class="project-content">
-              <h3 class="project-title">AI Object Detection</h3>
-              <p>Team project using CNNs for real-time object detection with visualization and live data collection — achieved 97% accuracy.</p>
-              <div class="project-tags">
-                <span class="tag">Python</span>
-                <span class="tag">CNN</span>
-                <span class="tag">TensorFlow</span>
-              </div>
-            </div>
-          </div>
 
-          <div class="project" data-tilt>
-            <div class="project-image">
-              <canvas class="thumb-canvas" data-mode="grid"></canvas>
-            </div>
-            <div class="project-content">
-              <h3 class="project-title">Personal Chat Messenger</h3>
-              <p>A secure chat application built with React and Firebase providing private messaging and authentication flows.</p>
-              <div class="project-tags">
-                <span class="tag">React</span>
-                <span class="tag">Firebase</span>
-                <span class="tag">Realtime</span>
-              </div>
-            </div>
-          </div>
+            <a href="mailto:rubenbmaxwell@gmail.com" class="magnetic-btn hidden md:flex items-center gap-2 bg-white text-black px-5 py-2.5 rounded-full font-bold text-xs uppercase tracking-wide hover:bg-indigo-50 transition-colors">
+                <span>Let's Talk</span>
+                <i data-lucide="arrow-up-right" class="w-3 h-3"></i>
+            </a>
 
-          <div class="project" data-tilt>
-            <div class="project-image">
-              <canvas class="thumb-canvas" data-mode="wave"></canvas>
-            </div>
-            <div class="project-content">
-              <h3 class="project-title">Churn Modeling</h3>
-              <p>Data science pipeline using Pandas, scikit-learn and a Keras ANN to predict customer churn with ~90% accuracy.</p>
-              <div class="project-tags">
-                <span class="tag">Python</span>
-                <span class="tag">Keras</span>
-                <span class="tag">scikit-learn</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="project" data-tilt>
-            <div class="project-image">
-              <canvas class="thumb-canvas" data-mode="orbs"></canvas>
-            </div>
-            <div class="project-content">
-              <h3 class="project-title">Quantum ML Research</h3>
-              <p>Explored VQEs, QNNs and quantum kernels using Qiskit, PennyLane, and Cirq; built and simulated prototype circuits.</p>
-              <div class="project-tags">
-                <span class="tag">Qiskit</span>
-                <span class="tag">PennyLane</span>
-                <span class="tag">Cirq</span>
-              </div>
-            </div>
-          </div>
+            <!-- Mobile Menu -->
+            <button class="md:hidden text-white" onclick="alert('Please view on desktop for the full interactive experience.')">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
         </div>
-      </div>
-    </section>
+    </nav>
 
-    <section id="contact" class="section">
-      <div class="container">
-        <div class="text-center">
-          <h2 class="headline is-medium">Get In Touch</h2>
-          <p style="max-width: 600px; margin: 0 auto 40px;">Have a project in mind or just want to say hello? I'd love to hear from you. Fill out the form below and I'll get back to you soon.</p>
+    <!-- Parallax Hero -->
+    <header class="relative h-screen w-full overflow-hidden">
+        <div class="parallax-wrapper">
+            <!-- Layers -->
+            <img src="sky.png" class="parallax-layer scale-[1.1]" data-speed="0.02" alt="Sky">
+            <img src="far-clouds.png" class="parallax-layer scale-[1.1]" data-speed="0.1" alt="Clouds">
+            <img src="far-mountains.png" class="parallax-layer scale-[1.1]" data-speed="0.2" alt="Far Mountains">
+            <img src="mountains.png" class="parallax-layer scale-[1.1]" data-speed="0.35" alt="Mountains">
+            
+            <!-- Hero Content Container -->
+            <div class="relative z-10 w-full max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center h-full pt-20">
+                
+                <!-- Left: Text -->
+                <div class="text-left" data-speed="0.5">
+                    <div class="inline-flex items-center gap-2 mb-8 px-4 py-2 border border-green-500/20 rounded-full bg-green-500/5 backdrop-blur-md animate-fade-in-up">
+                        <span class="relative flex h-2 w-2">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                        </span>
+                        <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-green-400">Open for Work 2026</span>
+                    </div>
+                    
+                    <h1 class="font-display text-6xl md:text-8xl font-extrabold tracking-tight mb-6 leading-[0.9]">
+                        <span class="block text-white" id="name-scramble">Ruben</span>
+                        <span class="block text-gray-500">Maxwell</span>
+                    </h1>
+                    
+                    <div class="font-mono text-lg md:text-xl text-indigo-400 mb-8 h-8 flex items-center">
+                        <span class="text-gray-400 mr-2">>_</span>
+                        <span id="typewriter-text"></span><span class="cursor-blink"></span>
+                    </div>
+                    
+                    <p class="font-light max-w-md text-gray-400 mb-10 leading-relaxed">
+                        I engineer digital experiences at the intersection of <span class="text-white font-medium">AI Research</span>, <span class="text-white font-medium">Quantum Physics</span>, and <span class="text-white font-medium">Creative Design</span>.
+                    </p>
+                    
+                    <div class="flex gap-4">
+                        <a href="#projects" class="magnetic-btn bg-white text-black px-8 py-4 rounded-full font-bold transition-all hover:bg-gray-200">
+                            View Projects
+                        </a>
+                        <a href="resume.html" class="magnetic-btn glass-panel px-8 py-4 rounded-full font-bold text-white hover:bg-white/10 transition-colors">
+                            Resume
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right: Floating Photo/Visual Placeholder -->
+                <div class="hidden md:flex justify-end relative perspective-1000" data-speed="0.2">
+                    <div class="relative w-80 h-[28rem] glass-panel rounded-2xl p-2 animate-float transform rotate-y-12 hover:rotate-y-0 transition-transform duration-700 ease-out border-white/10">
+                        <!-- Placeholder Image Area -->
+                        <div class="w-full h-full rounded-xl bg-gradient-to-br from-gray-800 to-black overflow-hidden relative group">
+                            <img src="https://placehold.co/600x800/1a1a1a/FFF?text=Visual+Placeholder" alt="Ruben Maxwell" class="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700">
+                            
+                            <div class="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black to-transparent">
+                                <div class="text-white font-display font-bold text-xl">System Architect</div>
+                                <div class="text-gray-400 text-xs uppercase tracking-widest mt-1">Toronto, ON</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Floating Decorative Elements -->
+                        <div class="absolute -top-6 -right-6 glass-panel p-4 rounded-xl animate-pulse-slow">
+                            <i data-lucide="code-2" class="text-indigo-400 w-6 h-6"></i>
+                        </div>
+                        <div class="absolute -bottom-6 -left-6 glass-panel p-4 rounded-xl animate-pulse-slow animation-delay-1000">
+                            <i data-lucide="cpu" class="text-indigo-400 w-6 h-6"></i>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Gradient overlay -->
+            <div class="absolute bottom-0 left-0 w-full h-48 bg-gradient-to-t from-[#030304] via-[#030304]/80 to-transparent z-20"></div>
         </div>
-        <form class="contact-form" onsubmit="event.preventDefault(); fakeSubmit(this);">
-          <input type="text" name="name" placeholder="Your Name" required />
-          <input type="email" name="email" placeholder="Your Email" required />
-          <textarea name="message" placeholder="Your Message" required></textarea>
-          <div class="btn-group">
-            <button type="submit" class="btn" data-magnetic>Send Message</button>
-            <div class="form-status" id="formStatus"></div>
-          </div>
-        </form>
-        <div class="text-center mt-6">
-          <p class="text-sm">Or email me directly: <a href="mailto:rubenbmaxwell@gmail.com">rubenbmaxwell@gmail.com</a> • +1 416 432 5079</p>
-          <p class="text-sm mt-2">LinkedIn: <a href="https://linkedin.com/in/ruben-maxwell">linkedin.com/in/ruben-maxwell</a></p>
-        </div>
-      </div>
-    </section>
-  </main>
+    </header>
 
-  <footer>
-    <div class="marquee-container">
-      <div class="marquee">
-        <span>Connect</span>
-        <span>Collaborate</span>
-        <span>Create</span>
-        <span>Design</span>
-        <span>Innovate</span>
-        <span>Code</span>
-      </div>
-      <div class="marquee">
-        <span>Connect</span>
-        <span>Collaborate</span>
-        <span>Create</span>
-        <span>Design</span>
-        <span>Innovate</span>
-        <span>Code</span>
-      </div>
-    </div>
-  </footer>
+    <main class="relative z-30 bg-[#030304]">
+        
+        <!-- Constellation Canvas Background -->
+        <canvas id="constellation" class="absolute top-0 left-0 w-full h-full pointer-events-none opacity-20 mix-blend-screen"></canvas>
 
-  <script>
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        <!-- About Section -->
+        <section id="about" class="py-32 relative">
+            <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-20 items-center">
+                <div class="reveal-text relative z-10">
+                    <h2 class="font-display text-4xl md:text-5xl font-bold mb-8 leading-[1.1]">
+                        Bridging <span class="text-indigo-400">Logic</span> & <span class="text-white">Imagination</span>.
+                    </h2>
+                    <p class="text-gray-400 text-lg mb-6 leading-relaxed">
+                        I'm a Computer Science student at the <strong>University of Toronto</strong>. My work isn't just about code; it's about solving complex problems with elegance.
+                    </p>
+                    <p class="text-gray-400 text-lg mb-8 leading-relaxed">
+                        From training CNNs to 97% accuracy to simulating quantum states, I build systems that perform.
+                    </p>
+                    
+                    <div class="flex flex-wrap gap-2 mt-8">
+                        <span class="px-4 py-2 rounded-full border border-white/10 text-xs font-bold text-gray-300 uppercase tracking-wider bg-white/5 hover:bg-white/10 transition-colors cursor-default">Python</span>
+                        <span class="px-4 py-2 rounded-full border border-white/10 text-xs font-bold text-gray-300 uppercase tracking-wider bg-white/5 hover:bg-white/10 transition-colors cursor-default">React</span>
+                        <span class="px-4 py-2 rounded-full border border-white/10 text-xs font-bold text-gray-300 uppercase tracking-wider bg-white/5 hover:bg-white/10 transition-colors cursor-default">TensorFlow</span>
+                        <span class="px-4 py-2 rounded-full border border-white/10 text-xs font-bold text-gray-300 uppercase tracking-wider bg-white/5 hover:bg-white/10 transition-colors cursor-default">Qiskit</span>
+                    </div>
+                </div>
+                
+                <div class="relative reveal-image">
+                    <!-- Abstract decorative elements -->
+                    <div class="absolute -top-20 -right-20 w-64 h-64 bg-indigo-600/10 rounded-full blur-[80px]"></div>
+                    
+                    <div class="glass-panel p-10 rounded-3xl relative overflow-hidden backdrop-blur-2xl border-white/5">
+                        <div class="grid grid-cols-2 gap-8 text-center md:text-left">
+                            <div>
+                                <div class="font-display text-5xl font-bold text-white mb-2">97%</div>
+                                <div class="text-xs text-gray-500 font-bold uppercase tracking-widest">Model Accuracy</div>
+                            </div>
+                            <div>
+                                <div class="font-display text-5xl font-bold text-white mb-2">2029</div>
+                                <div class="text-xs text-gray-500 font-bold uppercase tracking-widest">UofT Class Of</div>
+                            </div>
+                            <div class="col-span-2 pt-8 border-t border-white/5">
+                                <p class="text-sm text-gray-400 font-mono">"Combining rigorous backend logic with fluid frontend interactivity."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-    // =====================================================================
-    // CUSTOM CURSOR
-    // =====================================================================
-    const cursor = document.querySelector('.cursor');
-    const links = document.querySelectorAll('a, button, [data-magnetic]');
-    document.addEventListener('mousemove', e => {
-      cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
-    });
-    links.forEach(link => {
-      link.addEventListener('mouseenter', () => cursor.classList.add('cursor-active'));
-      link.addEventListener('mouseleave', () => cursor.classList.remove('cursor-active'));
-    });
+        <!-- Projects Bento Grid -->
+        <section id="projects" class="py-32 relative z-10">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-20 reveal-text border-b border-white/10 pb-8">
+                    <div>
+                        <h2 class="font-display text-5xl md:text-6xl font-bold mb-4">Selected Work</h2>
+                        <p class="text-gray-400 max-w-md">Research, experiments, and production-grade applications.</p>
+                    </div>
+                    <div class="hidden md:block text-right">
+                        <div class="text-sm font-bold uppercase tracking-widest text-indigo-400 mb-1">Portfolio 2026</div>
+                        <div class="text-xs text-gray-500 font-mono">Exploring New Tech</div>
+                    </div>
+                </div>
 
-    // =====================================================================
-    // MAGNETIC BUTTONS
-    // =====================================================================
-    document.querySelectorAll('[data-magnetic]').forEach(btn => {
-      btn.addEventListener('mousemove', (e) => {
-        const r = btn.getBoundingClientRect();
-        const mx = e.clientX - r.left - r.width / 2;
-        const my = e.clientY - r.top - r.height / 2;
-        btn.style.transform = `translate(${mx * 0.2}px, ${my * 0.2}px)`;
-      });
-      btn.addEventListener('mouseleave', () => {
-        btn.style.transform = `translate(0, 0)`;
-      });
-    });
+                <!-- Grid Layout -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[minmax(320px,auto)]">
+                    
+                    <!-- 1. Large Card: Object Detection -->
+                    <div class="md:col-span-2 spotlight-card rounded-3xl p-10 group cursor-pointer flex flex-col justify-between" onclick="window.location.href='#'">
+                        <div class="spotlight-content w-full">
+                            <div class="flex justify-between items-start mb-10">
+                                <div class="p-3 bg-indigo-500/10 rounded-full text-indigo-400 border border-indigo-500/20">
+                                    <i data-lucide="scan-face" class="w-6 h-6"></i>
+                                </div>
+                                <div class="px-3 py-1 rounded-full bg-white/5 text-xs font-mono text-gray-400 border border-white/5">FEATURED</div>
+                            </div>
+                            
+                            <h3 class="font-display text-3xl md:text-4xl font-bold text-white mb-4 group-hover:text-indigo-300 transition-colors">AI Object Detection</h3>
+                            <p class="text-gray-400 max-w-lg leading-relaxed mb-8">
+                                A high-performance computer vision system. Utilizes custom-trained CNNs for real-time detection with a live dashboard visualization.
+                            </p>
+                            
+                            <div class="flex gap-4 items-center mt-auto">
+                                <div class="h-1 flex-1 bg-gray-800 rounded-full overflow-hidden">
+                                    <div class="h-full bg-indigo-500 w-[97%]"></div>
+                                </div>
+                                <div class="text-xs font-bold text-white">97% ACCURACY</div>
+                            </div>
+                        </div>
+                    </div>
 
-    // =====================================================================
-    // HERO PARALLAX (REWRITTEN FOR SCROLL)
-    // =====================================================================
-    if (window.gsap && !prefersReduced) {
-      gsap.registerPlugin(ScrollTrigger);
+                    <!-- 2. Tech Stack Visualizer (Replaces Messenger) -->
+                    <div class="spotlight-card rounded-3xl p-8 group relative overflow-hidden flex flex-col">
+                        <div class="spotlight-content h-full">
+                            <div class="mb-6">
+                                <div class="p-3 bg-emerald-500/10 rounded-full text-emerald-400 w-fit border border-emerald-500/20">
+                                    <i data-lucide="layers" class="w-6 h-6"></i>
+                                </div>
+                            </div>
+                            <h3 class="font-display text-2xl font-bold text-white mb-2">Tech Stack</h3>
+                            <p class="text-gray-400 text-sm mb-8">My toolkit for building the future.</p>
+                            
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="p-3 rounded-xl bg-white/5 border border-white/5 hover:border-indigo-500/50 transition-colors">
+                                    <div class="text-xs text-gray-500 uppercase font-bold mb-1">Frontend</div>
+                                    <div class="text-white font-medium">React</div>
+                                </div>
+                                <div class="p-3 rounded-xl bg-white/5 border border-white/5 hover:border-indigo-500/50 transition-colors">
+                                    <div class="text-xs text-gray-500 uppercase font-bold mb-1">AI/ML</div>
+                                    <div class="text-white font-medium">TensorFlow</div>
+                                </div>
+                                <div class="p-3 rounded-xl bg-white/5 border border-white/5 hover:border-indigo-500/50 transition-colors">
+                                    <div class="text-xs text-gray-500 uppercase font-bold mb-1">Lang</div>
+                                    <div class="text-white font-medium">Python</div>
+                                </div>
+                                <div class="p-3 rounded-xl bg-white/5 border border-white/5 hover:border-indigo-500/50 transition-colors">
+                                    <div class="text-xs text-gray-500 uppercase font-bold mb-1">Quantum</div>
+                                    <div class="text-white font-medium">Qiskit</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-      // Get all parallax layers and apply an animation to each
-      const parallaxLayers = gsap.utils.toArray('.parallax-layer');
-      parallaxLayers.forEach(layer => {
-        const speed = parseFloat(layer.dataset.speed);
-        gsap.to(layer, {
-          y: () => `-${(window.innerHeight * 2) * speed}px`, // Adjust based on scroll distance
-          ease: "none",
-          scrollTrigger: {
-            trigger: ".hero-container",
-            start: "top top",
-            end: "bottom top",
-            scrub: true,
-          }
+                    <!-- 3. Churn Modeling -->
+                    <div class="spotlight-card rounded-3xl p-10 group cursor-pointer">
+                        <div class="spotlight-content">
+                            <div class="flex justify-between items-start mb-8">
+                                <div class="p-3 bg-orange-500/10 rounded-full text-orange-400 border border-orange-500/20">
+                                    <i data-lucide="brain-circuit" class="w-6 h-6"></i>
+                                </div>
+                            </div>
+                            <h3 class="font-display text-2xl font-bold text-white mb-2">Churn Modeling</h3>
+                            <p class="text-gray-400 text-sm mb-6">
+                                Deep learning model to predict customer attrition using Keras & Pandas with scikit-learn preprocessing.
+                            </p>
+                            <span class="text-xs font-mono text-orange-400 border border-orange-500/30 px-2 py-1 rounded">DATA SCIENCE</span>
+                        </div>
+                    </div>
+
+                    <!-- 4. Quantum ML (Tall-ish) -->
+                    <div class="md:col-span-2 spotlight-card rounded-3xl p-10 group cursor-pointer relative overflow-hidden">
+                        <!-- Decorative background -->
+                        <div class="absolute right-0 top-0 w-1/2 h-full bg-gradient-to-l from-cyan-900/10 to-transparent pointer-events-none"></div>
+                        
+                        <div class="spotlight-content flex flex-col md:flex-row items-start md:items-center gap-8 h-full">
+                            <div class="flex-1">
+                                <div class="p-3 bg-cyan-500/10 rounded-full text-cyan-400 w-fit border border-cyan-500/20 mb-6">
+                                    <i data-lucide="atom" class="w-6 h-6"></i>
+                                </div>
+                                <h3 class="font-display text-3xl font-bold text-white mb-4">Quantum ML Research</h3>
+                                <p class="text-gray-400 max-w-sm leading-relaxed mb-6">
+                                    Experimental research into Variational Quantum Eigensolvers (VQE) and Quantum Neural Networks using IBM Qiskit.
+                                </p>
+                                <span class="text-xs font-mono text-cyan-400 border border-cyan-500/30 px-2 py-1 rounded">RESEARCH</span>
+                            </div>
+                            
+                            <!-- Visual Graphic for Quantum -->
+                            <div class="hidden md:flex w-1/3 h-32 items-center justify-center relative">
+                                <div class="absolute w-24 h-24 border border-cyan-500/30 rounded-full animate-ping opacity-20"></div>
+                                <div class="absolute w-16 h-16 border border-cyan-500/50 rounded-full animate-pulse"></div>
+                                <div class="w-4 h-4 bg-cyan-400 rounded-full shadow-[0_0_20px_rgba(34,211,238,0.8)]"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Timeline -->
+        <section id="experience" class="py-32 relative z-10">
+            <div class="max-w-4xl mx-auto px-6">
+                <div class="mb-16 reveal-text">
+                    <h2 class="font-display text-4xl font-bold mb-4">Professional History</h2>
+                    <div class="h-1 w-20 bg-indigo-500"></div>
+                </div>
+
+                <div class="space-y-12">
+                    <!-- Job Item -->
+                    <div class="group flex gap-6 md:gap-10 experience-item">
+                        <div class="w-24 md:w-32 flex-shrink-0 text-sm text-gray-500 font-mono py-1">2025</div>
+                        <div class="relative pb-12 border-l border-white/10 pl-8 md:pl-12">
+                            <span class="absolute -left-[5px] top-2 w-2.5 h-2.5 rounded-full bg-indigo-500 ring-4 ring-[#030304] group-hover:scale-125 transition-transform"></span>
+                            <h3 class="text-xl font-bold text-white">Front-End Developer</h3>
+                            <div class="text-indigo-400 text-sm mb-4">My Code Club</div>
+                            <p class="text-gray-400 text-sm leading-relaxed max-w-lg">
+                                Developed responsive web architecture using pure JS and Tailwind. Integrated Firestore for backend management and reduced page load times by 30%.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="group flex gap-6 md:gap-10 experience-item">
+                        <div class="w-24 md:w-32 flex-shrink-0 text-sm text-gray-500 font-mono py-1">2025</div>
+                        <div class="relative pb-12 border-l border-white/10 pl-8 md:pl-12">
+                            <span class="absolute -left-[5px] top-2 w-2.5 h-2.5 rounded-full bg-gray-600 ring-4 ring-[#030304] group-hover:bg-white transition-colors"></span>
+                            <h3 class="text-xl font-bold text-white">Software Developer & PM</h3>
+                            <div class="text-indigo-400 text-sm mb-4">Qmorphix LLC</div>
+                            <p class="text-gray-400 text-sm leading-relaxed max-w-lg">
+                                Led a small team in quantum simulation research. Built prototypes for quantum neural networks using PennyLane and Cirq.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="group flex gap-6 md:gap-10 experience-item">
+                        <div class="w-24 md:w-32 flex-shrink-0 text-sm text-gray-500 font-mono py-1">2023-25</div>
+                        <div class="relative border-l border-white/10 pl-8 md:pl-12">
+                            <span class="absolute -left-[5px] top-2 w-2.5 h-2.5 rounded-full bg-gray-600 ring-4 ring-[#030304] group-hover:bg-white transition-colors"></span>
+                            <h3 class="text-xl font-bold text-white">AI Ambassador</h3>
+                            <div class="text-indigo-400 text-sm mb-4">Inspirit AI</div>
+                            <p class="text-gray-400 text-sm leading-relaxed max-w-lg">
+                                Mentored students and led technical projects in computer vision. Achieved top-tier accuracy metrics on deliverables.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <section id="contact" class="py-40 relative overflow-hidden">
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-[#030304] to-[#030304]"></div>
+            
+            <div class="max-w-4xl mx-auto px-6 text-center relative z-10 reveal-text">
+                <h2 class="font-display text-5xl md:text-8xl font-black mb-8 tracking-tighter text-white">
+                    OPEN FOR <br> WORK <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">'26</span>
+                </h2>
+                <p class="text-gray-400 text-lg mb-12 max-w-xl mx-auto">
+                    Looking for internships and collaborative opportunities where I can ship code that matters.
+                </p>
+                
+                <a href="mailto:rubenbmaxwell@gmail.com" class="magnetic-btn group relative inline-flex items-center gap-3 px-8 py-4 bg-white text-black rounded-full font-bold text-lg hover:bg-gray-200 transition-colors">
+                    <span>rubenbmaxwell@gmail.com</span>
+                    <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+                </a>
+            </div>
+        </section>
+
+        <footer class="py-8 border-t border-white/5 text-center text-gray-600 text-xs uppercase tracking-widest">
+            <p>&copy; 2026 Ruben Maxwell</p>
+        </footer>
+
+    </main>
+
+    <!-- Interactive Scripts -->
+    <script>
+        // Icons
+        lucide.createIcons();
+
+        // Loading
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+                initApp();
+            }, 600);
         });
-      });
-    }
 
-    // Tilt effect for cards
-    document.querySelectorAll('[data-tilt]').forEach(card => {
-      let px=0, py=0; const damp = 9;
-      card.addEventListener('mousemove', (e) => {
-        const r = card.getBoundingClientRect();
-        const x = (e.clientX - r.left) / r.width; // 0..1
-        const y = (e.clientY - r.top) / r.height;
-        px = (x - .5) * 14; py = (y - .5) * -14;
-        card.style.transform = `perspective(800px) rotateX(${py}deg) rotateY(${px}deg)`;
-      });
-      card.addEventListener('mouseleave', () => {
-        card.style.transform = 'perspective(800px) rotateX(0) rotateY(0)';
-      });
-    });
-
-    // Reveal on scroll using IntersectionObserver (no GSAP needed here)
-    const revealables = document.querySelectorAll('.card, .kpi, .headline, .title, .marquee');
-    const io = new IntersectionObserver((entries)=>{
-      entries.forEach(en => {
-        if (en.isIntersecting) {
-          en.target.animate([
-            { opacity: 0, transform: 'translateY(20px)' },
-            { opacity: 1, transform: 'translateY(0)' }
-          ], { duration: 550, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'forwards' });
-          io.unobserve(en.target);
+        function initApp() {
+            initAnimations();
+            initCanvas();
+            initTypewriter();
+            initScramble();
         }
-      })
-    }, { threshold: .16 });
-    revealables.forEach(el => io.observe(el));
 
-    // =====================================================================
-    // CANVAS: STARFIELD (reacts to scroll + controls)
-    // =====================================================================
-    const starCanvas = document.getElementById('starfield');
-    const sCtx = starCanvas.getContext('2d');
-    let stars = [], starActive = true, warp = 0;
-    function resizeStar(){ starCanvas.width = starCanvas.clientWidth; starCanvas.height = starCanvas.clientHeight; }
-    addEventListener('resize', resizeStar); resizeStar();
+        // 1. Spotlight Effect
+        document.querySelectorAll('.spotlight-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
 
-    function makeStars(){
-      const count = Math.floor((starCanvas.width * starCanvas.height) / 9000);
-      stars = new Array(count).fill(0).map(()=>({
-        x: Math.random()*starCanvas.width,
-        y: Math.random()*starCanvas.height,
-        z: Math.random()*1 + .3,
-        r: Math.random()*1.3 + .2
-      }));
-    }
-    makeStars();
+        // 2. Magnetic Buttons
+        document.querySelectorAll('.magnetic-btn').forEach(btn => {
+            btn.addEventListener('mousemove', e => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                btn.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+            });
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transform = 'translate(0, 0)';
+            });
+        });
 
-    function drawStars(){
-      sCtx.clearRect(0,0,starCanvas.width, starCanvas.height);
-      for (const s of stars){
-        const twinkle = (Math.sin((performance.now()/300 + s.x)*0.3)+1)/2 * .4 + .6;
-        sCtx.beginPath();
-        sCtx.arc(s.x, s.y, s.r * (twinkle + warp*0.8), 0, Math.PI*2);
-        sCtx.fillStyle = `rgba(255,255,255,${(0.7 * s.z + 0.3)})`;
-        sCtx.fill();
-      }
-    }
+        // 3. Typewriter Effect
+        function initTypewriter() {
+            const phrases = ["Computer Science Student", "AI/ML Practitioner", "Frontend Developer", "Quantum Enthusiast"];
+            const el = document.getElementById('typewriter-text');
+            let phraseIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+            let typeSpeed = 100;
 
-    function animateStars(){
-      if (starActive){
-        stars.forEach(s=>{ s.y += (0.07 + warp*0.8) * s.z + (scrollY/50000); if (s.y > starCanvas.height) s.y = 0; });
-        drawStars();
-      }
-      requestAnimationFrame(animateStars);
-    } animateStars();
+            function type() {
+                const current = phrases[phraseIndex];
+                
+                if (isDeleting) {
+                    el.textContent = current.substring(0, charIndex - 1);
+                    charIndex--;
+                    typeSpeed = 50;
+                } else {
+                    el.textContent = current.substring(0, charIndex + 1);
+                    charIndex++;
+                    typeSpeed = 100;
+                }
 
-    // =====================================================================
-    // CANVAS: GRID NETWORK (interactive particles)
-    // =====================================================================
-    const gridCanvas = document.getElementById('gridnet');
-    const gCtx = gridCanvas.getContext('2d');
-    function resizeGrid(){ gridCanvas.width = gridCanvas.clientWidth; gridCanvas.height = 420; } // fixed height for aesthetics
-    addEventListener('resize', resizeGrid); resizeGrid();
+                if (!isDeleting && charIndex === current.length) {
+                    isDeleting = true;
+                    typeSpeed = 2000; // Pause at end
+                } else if (isDeleting && charIndex === 0) {
+                    isDeleting = false;
+                    phraseIndex = (phraseIndex + 1) % phrases.length;
+                    typeSpeed = 500; // Pause before new word
+                }
 
-    const nodes = [];
-    function initGrid(){
-      nodes.length = 0;
-      const cols = Math.floor(gridCanvas.width / 28);
-      const rows = Math.floor(gridCanvas.height / 28);
-      for (let y=0;y<rows;y++) for (let x=0;x<cols;x++) {
-        nodes.push({ x: (x+.5)*gridCanvas.width/cols, y: (y+.5)*gridCanvas.height/rows, o: Math.random()*0.6+0.2 });
-      }
-    }
-    initGrid();
-
-    let mouse = { x: -9999, y: -9999 };
-    gridCanvas.addEventListener('mousemove', (e)=>{
-      const r = gridCanvas.getBoundingClientRect();
-      mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
-    });
-    gridCanvas.addEventListener('mouseleave', ()=>{ mouse.x = mouse.y = -9999; });
-
-    function drawGrid(){
-      gCtx.clearRect(0,0,gridCanvas.width, gridCanvas.height);
-      for (const p of nodes){
-        const d = Math.hypot(mouse.x-p.x, mouse.y-p.y);
-        const s = Math.max(0, 1 - d/160);
-        const r = 2 + s*3;
-        gCtx.beginPath(); gCtx.arc(p.x, p.y, r, 0, Math.PI*2);
-        gCtx.fillStyle = `rgba(126,230,255,${(p.o*0.6 + s*0.8)})`;
-        gCtx.fill();
-      }
-      // connections
-      gCtx.lineWidth = 1;
-      for (let i=0;i<nodes.length;i++){
-        for (let j=i+1;j<i+12 && j<nodes.length;j++){
-          const a = nodes[i], b = nodes[j];
-          const d = Math.hypot(a.x-b.x, a.y-b.y);
-          if (d < 120){
-            const o = 1 - d/120;
-            gCtx.strokeStyle = `rgba(126,230,255,${o*0.35})`;
-            gCtx.beginPath(); gCtx.moveTo(a.x, a.y); gCtx.lineTo(b.x, b.y); gCtx.stroke();
-          }
+                setTimeout(type, typeSpeed);
+            }
+            type();
         }
-      }
-    }
-    function loopGrid(){ drawGrid(); requestAnimationFrame(loopGrid); } loopGrid();
 
-    document.querySelector('[data-action="grid-scan"]').onclick = () => {
-      let t = 0; const id = setInterval(()=>{ t+=8; gridCanvas.style.setProperty('filter', `hue-rotate(${t}deg)`); if (t>360) { clearInterval(id); gridCanvas.style.filter=''; } }, 30);
-    };
-    document.querySelector('[data-action="grid-noise"]').onclick = () => {
-      nodes.forEach(p=> p.o = Math.random()*0.9+0.1);
-    };
-    document.querySelector('[data-action="grid-clear"]').onclick = () => {
-      nodes.forEach(p=> p.o = 0.2);
-    };
-
-    // =====================================================================
-    // THUMBNAIL CANVASES (projects)
-    // =====================================================================
-    const thumbs = document.querySelectorAll('.thumb-canvas');
-    thumbs.forEach(canvas => {
-      const ctx = canvas.getContext('2d');
-      canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight;
-      const mode = canvas.dataset.mode;
-      if (mode === 'rings') drawRings();
-      if (mode === 'grid') drawTinyGrid();
-      if (mode === 'wave') drawWaves();
-      if (mode === 'orbs') drawOrbs();
-
-      function drawRings(){
-        for (let i=16;i>0;i--){
-          ctx.beginPath(); ctx.arc(canvas.width/2, canvas.height/2, i*8, 0, Math.PI*2);
-          ctx.strokeStyle = `rgba(126,230,255,${0.08 + i*0.02})`; ctx.lineWidth = 2; ctx.stroke();
+        // 4. Scramble Effect (Hacker Text)
+        function initScramble() {
+            const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const el = document.getElementById("name-scramble");
+            const originalText = el.innerText;
+            
+            el.onmouseover = event => {
+                let iteration = 0;
+                clearInterval(el.interval);
+                
+                el.interval = setInterval(() => {
+                    event.target.innerText = event.target.innerText
+                        .split("")
+                        .map((letter, index) => {
+                            if(index < iteration) {
+                                return originalText[index];
+                            }
+                            return letters[Math.floor(Math.random() * 26)];
+                        })
+                        .join("");
+                    
+                    if(iteration >= originalText.length){ 
+                        clearInterval(el.interval);
+                    }
+                    
+                    iteration += 1 / 3;
+                }, 30);
+            }
         }
-      }
-      function drawTinyGrid(){
-        ctx.fillStyle = 'rgba(255,255,255,.08)'; ctx.fillRect(0,0,canvas.width,canvas.height);
-        for (let y=0;y<canvas.height;y+=12){ for (let x=0;x<canvas.width;x+=12){
-          ctx.fillStyle = `rgba(126,230,255,${Math.random()*0.6})`; ctx.fillRect(x+2,y+2,2,2);
-        }}
-      }
-      function drawWaves(){
-        ctx.fillStyle = 'rgba(255,255,255,.06)'; ctx.fillRect(0,0,canvas.width,canvas.height);
-        for (let y=0;y<8;y++){
-          ctx.beginPath(); ctx.moveTo(0, canvas.height/2);
-          for (let x=0;x<canvas.width;x++) ctx.lineTo(x, canvas.height/2 + Math.sin((x+y*10)/16)*10);
-          ctx.strokeStyle = `rgba(255,111,216,${0.08 + y*0.06})`; ctx.stroke();
+
+        // 5. GSAP Animations
+        function initAnimations() {
+            gsap.registerPlugin(ScrollTrigger);
+
+            // Parallax Hero
+            const layers = document.querySelectorAll('.parallax-layer');
+            layers.forEach(layer => {
+                const speed = layer.getAttribute('data-speed');
+                gsap.to(layer, {
+                    y: (i, target) => ScrollTrigger.maxScroll(window) * speed * 0.4,
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: "header",
+                        start: "top top",
+                        end: "bottom top",
+                        scrub: 0
+                    }
+                });
+            });
+
+            // Hero Text Fade
+            gsap.to("header .text-left", {
+                y: 100,
+                opacity: 0,
+                scrollTrigger: {
+                    trigger: "header",
+                    start: "top top",
+                    end: "60% top",
+                    scrub: true
+                }
+            });
+
+            // Text Reveals
+            document.querySelectorAll('.reveal-text').forEach(el => {
+                gsap.fromTo(el, 
+                    { y: 50, opacity: 0 },
+                    {
+                        y: 0,
+                        opacity: 1,
+                        duration: 1.2,
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: el,
+                            start: "top 85%",
+                        }
+                    }
+                );
+            });
+            
+            // Card Stagger
+            gsap.from(".spotlight-card", {
+                y: 50,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.1,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: "#projects",
+                    start: "top 75%"
+                }
+            });
         }
-      }
-      function drawOrbs(){
-        for (let i=0;i<18;i++){
-          const x = Math.random()*canvas.width, y = Math.random()*canvas.height, r = 10+Math.random()*18;
-          const g = ctx.createRadialGradient(x,y,0,x,y,r);
-          g.addColorStop(0,'rgba(126,230,255,.6)'); g.addColorStop(1,'rgba(126,230,255,0)');
-          ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+
+        // 6. Constellation Canvas
+        function initCanvas() {
+            const canvas = document.getElementById('constellation');
+            const ctx = canvas.getContext('2d');
+            let width, height, particles;
+
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = document.getElementById('projects').offsetTop + document.getElementById('projects').offsetHeight; 
+                createParticles();
+            }
+
+            function createParticles() {
+                particles = [];
+                const cnt = Math.floor(width * height / 15000); 
+                for(let i=0; i<cnt; i++) {
+                    particles.push({
+                        x: Math.random() * width,
+                        y: Math.random() * height,
+                        vx: (Math.random() - 0.5) * 0.5,
+                        vy: (Math.random() - 0.5) * 0.5,
+                        size: Math.random() * 2
+                    });
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.strokeStyle = 'rgba(99, 102, 241, 0.15)'; // Indigo
+
+                particles.forEach((p, i) => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    if (p.x < 0 || p.x > width) p.vx *= -1;
+                    if (p.y < 0 || p.y > height) p.vy *= -1;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Connect
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const p2 = particles[j];
+                        const dx = p.x - p2.x;
+                        const dy = p.y - p2.y;
+                        const dist = Math.sqrt(dx*dx + dy*dy);
+
+                        if (dist < 100) {
+                            ctx.lineWidth = 1 - dist/100;
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, p.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.stroke();
+                        }
+                    }
+                });
+                requestAnimationFrame(animate);
+            }
+
+            window.addEventListener('resize', resize);
+            resize();
+            animate();
         }
-      }
-    });
-
-    // =====================================================================
-    // SOUND FX (optional tiny blip)
-    // =====================================================================
-    let audioCtx, blip; const soundToggle = document.getElementById('soundToggle');
-    soundToggle.addEventListener('click', () => {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        blip = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-        blip.type = 'sine'; blip.frequency.value = 880; gain.gain.value = 0.0001; blip.connect(gain); gain.connect(audioCtx.destination); blip.start();
-        soundToggle.textContent = 'SFX: on';
-      } else {
-        audioCtx.close(); audioCtx = null; soundToggle.textContent = 'SFX';
-      }
-    });
-
-    function ping(){ if (!audioCtx) return; const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-      o.type='triangle'; o.frequency.value = 600 + Math.random()*400; g.gain.value=.0001; o.connect(g); g.connect(audioCtx.destination); o.start(); g.gain.exponentialRampToValueAtTime(.0000001, audioCtx.currentTime+.25); o.stop(audioCtx.currentTime+.26) }
-
-    // Fake form submit (no backend)
-    function fakeSubmit(form){
-      document.getElementById('formStatus').textContent = 'Sending…';
-      setTimeout(()=>{ document.getElementById('formStatus').textContent = 'Thanks! I will reply soon.'; ping(); form.reset(); }, 800);
-    }
-
-    // =====================================================================
-    // GSAP Scroll artistry (optional)
-    // =====================================================================
-    if (window.gsap && !prefersReduced){
-      gsap.registerPlugin(ScrollTrigger);
-      gsap.to('.moon', { y: 40, scale: 1.05, scrollTrigger: { scrub: 0.5, start: 'top top', end: '+=600' }});
-      gsap.utils.toArray('.kpi').forEach((el, i)=>{
-        gsap.from(el, { y: 30, opacity: 0, duration: .6, delay: i*0.08, scrollTrigger: { trigger: el, start: 'top 80%' } });
-      });
-      gsap.utils.toArray('.project').forEach((el, i)=>{
-        gsap.from(el, { x: i%2? 20 : -20, opacity: 0, duration: .6, scrollTrigger: { trigger: el, start: 'top 85%' } });
-      });
-    }
-
-    // =====================================================================
-    // ACCESSIBILITY ENHANCEMENTS
-    // =====================================================================
-    // Focus ring visibility for keyboard users only
-    function handleFocusStyles() {
-      function addFocusOutline() {
-        document.body.classList.add("show-focus");
-      }
-      function removeFocusOutline() {
-        document.body.classList.remove("show-focus");
-      }
-      window.addEventListener("keydown", e => {
-        if (e.key === "Tab" || e.keyCode === 9) addFocusOutline();
-      });
-      window.addEventListener("mousedown", removeFocusOutline);
-    }
-    handleFocusStyles();
-
-    // Skip-to-content for better keyboard nav
-    const skipLink = document.createElement("a");
-    skipLink.href = "#main";
-    skipLink.textContent = "Skip to content";
-    skipLink.style.cssText = `
-      position: absolute;
-      top: -40px;
-      left: 10px;
-      padding: 8px 14px;
-      background: var(--primary);
-      color: #000;
-      border-radius: 6px;
-      font-weight: bold;
-      z-index: 9999;
-      transition: top 0.3s ease;
-    `;
-    skipLink.addEventListener("focus", () => skipLink.style.top = "10px");
-    skipLink.addEventListener("blur", () => skipLink.style.top = "-40px");
-    document.body.prepend(skipLink);
-
-    // =====================================================================
-    // SCROLL TO TOP BUTTON
-    // =====================================================================
-    const scrollBtn = document.createElement("button");
-    scrollBtn.innerHTML = "⬆";
-    scrollBtn.setAttribute("aria-label", "Scroll back to top");
-    scrollBtn.style.cssText = `
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: var(--primary);
-      color: #000;
-      border: none;
-      border-radius: 50%;
-      width: 46px;
-      height: 46px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-      cursor: pointer;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-      z-index: 999;
-    `;
-    document.body.appendChild(scrollBtn);
-
-    window.addEventListener("scroll", () => {
-      if (window.scrollY > 400) {
-        scrollBtn.style.opacity = "1";
-        scrollBtn.style.pointerEvents = "auto";
-      } else {
-        scrollBtn.style.opacity = "0";
-        scrollBtn.style.pointerEvents = "none";
-      }
-    });
-
-    scrollBtn.addEventListener("click", () => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
-
-    // =====================================================================
-    // RANDOM COLOR MODE (FUN)
-    // =====================================================================
-    const randomColorBtn = document.createElement("button");
-    randomColorBtn.textContent = "🌈";
-    randomColorBtn.setAttribute("aria-label", "Randomize accent colors");
-    randomColorBtn.style.cssText = `
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      width: 46px;
-      height: 46px;
-      border-radius: 50%;
-      background: var(--accent);
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 20px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.3);
-      z-index: 999;
-    `;
-    document.body.appendChild(randomColorBtn);
-
-    randomColorBtn.addEventListener("click", () => {
-      const randomAccent = `hsl(${Math.floor(Math.random() * 360)}, 80%, 65%)`;
-      document.documentElement.style.setProperty("--accent", randomAccent);
-      ripple(randomColorBtn);
-    });
-
-    // =====================================================================
-    // SMOOTH SCROLLING FOR INTERNAL LINKS
-    // =====================================================================
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener("click", function (e) {
-        const id = this.getAttribute("href").substring(1);
-        const target = document.getElementById(id);
-        if (target) {
-          e.preventDefault();
-          window.scrollTo({
-            top: target.offsetTop - 20,
-            behavior: "smooth",
-          });
-        }
-      }); 
-    });
-
-    // =====================================================================
-    // EASTER EGG MODE 🐇✨
-    // =====================================================================
-    let secretCode = "";
-    const konami = "ArrowUpArrowUpArrowDownArrowDownArrowLeftArrowRightArrowLeftArrowRightba";
-    document.addEventListener("keydown", (e) => {
-      secretCode += e.key;
-      if (secretCode.includes(konami)) {
-        document.body.style.transition = "all 1s ease";
-        document.body.style.filter = "hue-rotate(270deg)";
-        setTimeout(() => {
-          document.body.style.filter = "";
-        }, 2500);
-        ping();
-        secretCode = "";
-      }
-    });
-
-    console.log("%c✨ Ruben Maxwell — portfolio loaded ✨", "background:#7ee6ff;color:#000;font-size:16px;padding:4px 8px;border-radius:6px");
-
-  </script>
+    </script>
 </body>
 </html>
