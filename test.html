@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Superior Parallax Portfolio</title>
+  <meta name="description" content="A hyper-polished parallax portfolio with glassmorphism, GSAP scroll effects, particles, and tasteful neon vibes—all in one HTML file.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <style>
+    /*
+    =====================================================================
+    ✦ CUSTOM STYLES
+    =====================================================================
+    */
+
+    /* Starfield effect */
+    .star-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      overflow: hidden;
+      z-index: 0;
+      opacity: 0.8;
+      background-color: #0c0a09;
+    }
+
+    .stars {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      box-shadow: 
+        100px 100px white,
+        200px 200px white,
+        300px 300px white,
+        400px 400px white,
+        500px 500px white,
+        600px 600px white,
+        700px 700px white,
+        800px 800px white,
+        900px 900px white,
+        1000px 1000px white;
+      animation: starfall 50s linear infinite;
+    }
+
+    .stars-2 {
+      width: 2px;
+      height: 2px;
+      box-shadow: 
+        100px 1000px white,
+        200px 900px white,
+        300px 800px white,
+        400px 700px white,
+        500px 600px white,
+        600px 500px white,
+        700px 400px white,
+        800px 300px white,
+        900px 200px white,
+        1000px 100px white;
+      animation-delay: -10s;
+      animation: starfall 50s linear infinite;
+    }
+
+    .stars-3 {
+      width: 1px;
+      height: 1px;
+      box-shadow: 
+        1000px 1000px white,
+        900px 900px white,
+        800px 800px white,
+        700px 700px white,
+        600px 600px white,
+        500px 500px white,
+        400px 400px white,
+        300px 300px white,
+        200px 200px white,
+        100px 100px white;
+      animation-delay: -20s;
+      animation: starfall 50s linear infinite;
+    }
+
+    @keyframes starfall {
+      0% {
+        transform: translateY(-100vh);
+      }
+      100% {
+        transform: translateY(100vh);
+      }
+    }
+
+    /* Parallax effect for image layers */
+    .parallax-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      object-fit: cover;
+      will-change: transform;
+      pointer-events: none;
+    }
+
+    .parallax-hero {
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Custom Glassmorphism Card */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</head>
+
+<body class="bg-stone-900 text-slate-100 font-sans antialiased leading-relaxed overflow-x-hidden">
+
+  <!-- Starfield background -->
+  <div class="star-background">
+    <div class="stars"></div>
+    <div class="stars stars-2"></div>
+    <div class="stars stars-3"></div>
+  </div>
+
+  <!-- Parallax Hero Section -->
+  <div id="parallax-container" class="parallax-hero relative z-10 flex flex-col justify-center items-center text-center">
+    <!-- Parallax layers. The 'data-speed' attribute controls the scroll speed. -->
+    <img src="https://placehold.co/1920x1080/0d0a0a/FFFFFF?text=Mountains" alt="Mountain layer" data-speed="0.8" class="parallax-layer object-cover">
+    <img src="https://placehold.co/1920x1080/0d0a0a/FFFFFF?text=Hills" alt="Hill layer" data-speed="0.6" class="parallax-layer object-cover">
+    <img src="https://placehold.co/1920x1080/0d0a0a/FFFFFF?text=Trees" alt="Tree layer" data-speed="0.4" class="parallax-layer object-cover">
+
+    <!-- Hero content -->
+    <div class="relative z-20 text-center px-4">
+      <h1 class="text-6xl md:text-8xl font-black mb-4 tracking-tight" style="text-shadow: 0 0 10px #fff, 0 0 20px #85D7FF;">Parallax Portfolio</h1>
+      <p class="text-xl md:text-2xl font-light max-w-2xl mx-auto mb-8">A modern, hyper-polished portfolio with a dynamic starfield and smooth parallax scroll effects.
+      </p>
+      <a href="#projects" class="inline-block px-8 py-4 bg-transparent border-2 border-slate-300 rounded-full font-semibold text-lg hover:bg-slate-300 hover:text-stone-900 transition-colors duration-300">Explore Projects</a>
+    </div>
+  </div>
+
+  <!-- Main Content Section -->
+  <main class="relative z-20 bg-stone-900 py-24 px-4 md:px-8">
+    <section id="projects" class="max-w-7xl mx-auto">
+      <h2 class="text-4xl md:text-5xl font-bold mb-12 text-center" style="text-shadow: 0 0 10px #fff, 0 0 20px #85D7FF;">My Work</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Project Card 1 -->
+        <div class="glass-card p-6 rounded-3xl transition-transform transform hover:scale-105 shadow-xl">
+          <h3 class="text-2xl font-bold mb-2">Project Glass</h3>
+          <p class="text-slate-300 mb-4">A sleek, modern web application built with a focus on clean design and performance.</p>
+          <a href="#" class="inline-block text-cyan-400 font-semibold hover:underline">Learn More</a>
+        </div>
+        <!-- Project Card 2 -->
+        <div class="glass-card p-6 rounded-3xl transition-transform transform hover:scale-105 shadow-xl">
+          <h3 class="text-2xl font-bold mb-2">Neon AI</h3>
+          <p class="text-slate-300 mb-4">An artificial intelligence-powered tool with a vibrant and user-friendly interface.</p>
+          <a href="#" class="inline-block text-cyan-400 font-semibold hover:underline">Learn More</a>
+        </div>
+        <!-- Project Card 3 -->
+        <div class="glass-card p-6 rounded-3xl transition-transform transform hover:scale-105 shadow-xl">
+          <h3 class="text-2xl font-bold mb-2">Cyberpunk City</h3>
+          <p class="text-slate-300 mb-4">A 3D interactive experience exploring a futuristic cityscape built with Three.js.</p>
+          <a href="#" class="inline-block text-cyan-400 font-semibold hover:underline">Learn More</a>
+        </div>
+        <!-- Project Card 4 -->
+        <div class="glass-card p-6 rounded-3xl transition-transform transform hover:scale-105 shadow-xl">
+          <h3 class="text-2xl font-bold mb-2">Infinite Scroll</h3>
+          <p class="text-slate-300 mb-4">A simple, yet powerful utility that makes lazy loading and infinite scrolling a breeze.</p>
+          <a href="#" class="inline-block text-cyan-400 font-semibold hover:underline">Learn More</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer Section -->
+  <footer class="relative z-20 bg-stone-900 text-center py-12 px-4">
+    <p class="text-slate-400 text-sm">© 2024 Parallax Portfolio. All rights reserved.</p>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Register GSAP plugins
+      gsap.registerPlugin(ScrollTrigger);
+
+      // =====================================================================
+      // ✦ STARFIELD ANIMATION
+      // =====================================================================
+      // Create a function to make a star with random properties
+      function createStar(size, speed) {
+        const star = document.createElement('div');
+        star.classList.add('star');
+        star.style.width = star.style.height = `${size}px`;
+        star.style.left = `${Math.random() * 100}%`;
+        star.style.top = `${Math.random() * 100}vh`;
+        star.style.animationDuration = `${10 + Math.random() * speed}s`;
+        return star;
+      }
+
+      // Add stars to the body for the dynamic effect
+      const starBackground = document.querySelector('.star-background');
+      if (starBackground) {
+        for (let i = 0; i < 50; i++) starBackground.appendChild(createStar(1, 15));
+        for (let i = 0; i < 30; i++) starBackground.appendChild(createStar(2, 25));
+        for (let i = 0; i < 10; i++) starBackground.appendChild(createStar(3, 40));
+      }
+
+      // =====================================================================
+      // ✦ PARALLAX SCROLL EFFECT
+      // =====================================================================
+      const parallaxLayers = document.querySelectorAll('.parallax-layer');
+      const parallaxContainer = document.getElementById('parallax-container');
+
+      gsap.to(parallaxLayers, {
+        y: (i, target) => -1 * (target.dataset.speed || 0.5) * window.innerHeight * 0.5,
+        ease: "none",
+        scrollTrigger: {
+          trigger: parallaxContainer,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        }
+      });
+
+      // =====================================================================
+      // ✦ SMOOTH SCROLLING FOR INTERNAL LINKS
+      // =====================================================================
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function(e) {
+          const href = this.getAttribute("href");
+          const id = href.substring(1);
+          const target = document.getElementById(id);
+
+          if (target) {
+            e.preventDefault();
+            const topOffset = target.offsetTop - 20; // Adjust for padding
+            window.scrollTo({
+              top: topOffset,
+              behavior: "smooth",
+            });
+          }
+        });
+      });
+    });
+
+    console.log("%c✨ Superior Parallax Portfolio loaded successfully! ✨", "background:#7ee6ff;color:#000;font-size:16px;padding:5px;border-radius:5px;");
+  </script>
+</body>
+
+</html>
