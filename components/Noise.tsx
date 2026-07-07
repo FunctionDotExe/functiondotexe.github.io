@@ -36,7 +36,7 @@ export function Noise() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 z-[9999] h-full w-full opacity-[0.28] mix-blend-multiply"
+      className="pointer-events-none fixed inset-0 z-[9999] h-full w-full opacity-40 mix-blend-soft-light"
       style={{
         backgroundImage: `url(${texture})`,
         backgroundRepeat: "repeat",

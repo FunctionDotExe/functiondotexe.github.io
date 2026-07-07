@@ -21,12 +21,10 @@ const config: Config = {
         "gold-light": "rgb(217 193 132 / <alpha-value>)",
         oxblood: "rgb(139 42 34 / <alpha-value>)",
         teal: "rgb(112 168 162 / <alpha-value>)",
-        seal: "rgb(23 21 17 / <alpha-value>)",
       },
       fontFamily: {
         display: ["Cormorant Garamond", "EB Garamond", "Georgia", "serif"],
         serif: ["EB Garamond", "Georgia", "serif"],
-        script: ["Great Vibes", "cursive"],
         body: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
       },
       spacing: {
@@ -51,35 +49,33 @@ const config: Config = {
         "ease-in-out": "cubic-bezier(0.87, 0, 0.13, 1)",
         "ease-subtle": "cubic-bezier(0.4, 0, 0.2, 1)",
       },
-      animation: {
-        "ink-spread": "ink-spread 1.2s ease-luxury forwards",
-        "paper-unroll": "paper-unroll 2s ease-luxury forwards",
-        "archival-reveal": "archival-reveal 1.8s ease-luxury forwards",
-        "grain-drift": "grain-drift 8s linear infinite",
-        "vignette-pulse": "vignette-pulse 6s ease-in-out infinite",
-        "ink-bleed": "ink-bleed 2s ease-luxury infinite",
-        "handwritten-underline": "handwritten-underline 1.5s ease-luxury forwards",
-        "float-pages": "float-pages 4s ease-in-out infinite",
-        "seal-glow": "seal-glow 3s ease-in-out infinite",
-        "scroll-depth": "scroll-depth 0.8s ease-luxury forwards",
+      keyframes: {
+        "aurora-a": {
+          "0%, 100%": { transform: "translate3d(-6%, -4%, 0) scale(1)" },
+          "50%": { transform: "translate3d(7%, 6%, 0) scale(1.12)" },
+        },
+        "aurora-b": {
+          "0%, 100%": { transform: "translate3d(5%, 3%, 0) scale(1.08)" },
+          "50%": { transform: "translate3d(-6%, -5%, 0) scale(1)" },
+        },
+        "border-spin": {
+          from: { transform: "translate(-50%, -50%) rotate(0deg)" },
+          to: { transform: "translate(-50%, -50%) rotate(360deg)" },
+        },
+        marquee: {
+          to: { transform: "translateX(-50%)" },
+        },
       },
-      boxShadow: {
-        hairline: "inset 0 0 0 1px rgba(21, 20, 18, 0.1)",
-        paper: "0 2rem 5rem rgba(55, 42, 25, 0.18)",
-        "paper-deep": "0 3rem 7rem rgba(55, 42, 25, 0.24)",
-        "paper-light": "0 1rem 2rem rgba(55, 42, 25, 0.12)",
-        "ink-soft": "0 0.5rem 1rem rgba(81, 73, 61, 0.16)",
-        seal: "0 0.8rem 1.6rem rgba(54, 19, 10, 0.25), inset 0 0 0 0.28rem rgba(93, 5, 8, 0.2)",
+      animation: {
+        "aurora-a": "aurora-a 16s ease-in-out infinite",
+        "aurora-b": "aurora-b 19s ease-in-out infinite",
+        "border-spin": "border-spin 9s linear infinite",
+        marquee: "marquee 32s linear infinite",
       },
       backdropBlur: {
         subtle: "2px",
         soft: "4px",
         warm: "6px",
-      },
-      backgroundImage: {
-        "grain-subtle": "url('data:image/svg+xml,%3Csvg viewBox=%270 0 220 220%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cfilter id=%27paper%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%27.62%27 numOctaves=%274%27 stitchTiles=%27stitch%27/%3E%3CfeColorMatrix type=%27saturate%27 values=%270%27/%3E%3C/filter%3E%3Crect width=%27220%27 height=%27220%27 filter=%27url(%23paper)%27 opacity=%27.28%27/%3E%3C/svg%3E')",
-        "paper-texture": "url('data:image/svg+xml,%3Csvg viewBox=%270 0 300 300%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cfilter id=%27linen%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%27.8%27 numOctaves=%273%27 result=%27noise%27/%3E%3C/filter%3E%3Crect width=%27300%27 height=%27300%27 fill=%27%23f5f0e6%27 filter=%27url(%23linen)%27/%3E%3C/svg%3E')",
-        "vignette-radial": "radial-gradient(ellipse at center, transparent 52%, rgba(64, 45, 25, 0.2) 100%)",
       },
     },
   },
