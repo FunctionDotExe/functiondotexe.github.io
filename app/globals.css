@@ -130,8 +130,7 @@ p {
   margin: 0;
 }
 
-.ren-shell,
-.estate-shell {
+.ren-shell {
   width: min(100%, 92rem);
   margin-inline: auto;
   padding-inline: var(--gutter, clamp(1.15rem, 4.2vw, 5.5rem));
@@ -503,8 +502,7 @@ p {
 }
 
 @media (max-width: 760px) {
-  .ren-shell,
-  .estate-shell {
+  .ren-shell {
     padding-inline: 1rem;
   }
 
