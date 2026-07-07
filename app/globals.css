@@ -247,6 +247,15 @@ p {
   transform-origin: left;
 }
 
+.ren-nav-link.is-active {
+  color: var(--gold-light);
+}
+
+.ren-nav-link.is-active::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
 /* CTA: dark glass with a gold sweep. */
 .ren-cta {
   position: relative;
