@@ -1,30 +1,26 @@
 "use client";
 
-import { Nav } from "@/components/Nav";
-import { Hero } from "@/components/Hero";
-import { About } from "@/components/About";
-import { Principles } from "@/components/Principles";
-import { Expertise } from "@/components/Expertise";
-import { Experience } from "@/components/Experience";
-import { Projects } from "@/components/Projects";
-import { Proof } from "@/components/Proof";
-import { Stats } from "@/components/Stats";
-import { Contact } from "@/components/Contact";
+import { SiteNav } from "@/components/ren/SiteNav";
+import { OpeningSystem } from "@/components/ren/OpeningSystem";
+import { Manifesto } from "@/components/ren/Manifesto";
+import { SignalGrid } from "@/components/ren/SignalGrid";
+import { ProjectSpotlights } from "@/components/ren/ProjectSpotlights";
+import { ExperienceLedger } from "@/components/ren/ExperienceLedger";
+import { ProofCabinet } from "@/components/ren/ProofCabinet";
+import { ContactFinale } from "@/components/ren/ContactFinale";
 import { Footer } from "@/components/Footer";
 
 export default function Home() {
   return (
-    <main className="bg-[#0E0D0B]">
-      <Nav />
-      <Hero />
-      <About />
-      <Principles />
-      <Expertise />
-      <Experience />
-      <Projects />
-      <Proof />
-      <Stats />
-      <Contact />
+    <main>
+      <SiteNav />
+      <OpeningSystem />
+      <Manifesto />
+      <SignalGrid />
+      <ProjectSpotlights />
+      <ExperienceLedger />
+      <ProofCabinet />
+      <ContactFinale />
       <Footer />
     </main>
   );

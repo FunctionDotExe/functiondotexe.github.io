@@ -1,157 +1,124 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import { PROJECTS } from "@/lib/constants";
-import { ANIMATION_VARIANTS } from "@/lib/animations";
 import { ArrowUpRight } from "lucide-react";
+import { PROJECTS, type Project } from "@/lib/constants";
+import { ANIMATION_VARIANTS } from "@/lib/animations";
+
+function ProjectCard({ project, index }: { project: Project; index: number }) {
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const imageY = useTransform(scrollYProgress, [0, 1], [28, -32]);
+  const stampY = useTransform(scrollYProgress, [0, 1], [-18, 24]);
+  const media = project.image ?? "/media/lab-texture.jpg";
+
+  return (
+    <motion.article
+      ref={ref}
+      variants={ANIMATION_VARIANTS.staggerItem}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-120px" }}
+      className="grid gap-6 border-t-2 border-[var(--ink)] py-10 lg:grid-cols-[0.72fr_1fr] lg:items-center"
+    >
+      <div className={`${index % 2 === 1 ? "lg:order-2" : ""}`}>
+        <motion.p className="stamp mb-7" style={{ y: stampY }}>
+          Example {String(index + 1).padStart(2, "0")}
+        </motion.p>
+        <h3 className="poster-type max-w-[10ch] text-[clamp(3.25rem,7.5vw,8rem)]">
+          {project.title}
+        </h3>
+        <p className="mt-6 max-w-xl text-lg leading-8 text-[var(--ink-soft)]">{project.description}</p>
+
+        {project.metric && (
+          <p className="mt-7 max-w-lg border-l-4 border-[var(--ink)] pl-5 font-sans text-base font-black uppercase leading-7 tracking-[0.08em] text-[var(--oxblood)]">
+            {project.metric}
+          </p>
+        )}
+
+        <div className="mt-7 flex max-w-xl flex-wrap gap-2">
+          {project.stack.map((tech) => (
+            <span key={tech} className="border border-[var(--ink)] bg-[var(--paper-warm)] px-3 py-2 font-sans text-[0.62rem] font-black uppercase tracking-[0.16em]">
+              {tech}
+            </span>
+          ))}
+        </div>
+
+        {project.link && (
+          <a href={project.link} target="_blank" rel="noopener noreferrer" className="ribbon-link mt-8">
+            View project <ArrowUpRight size={16} />
+          </a>
+        )}
+      </div>
+
+      <motion.div className={`${index % 2 === 1 ? "lg:order-1" : ""} relative`} style={{ y: imageY }}>
+        <figure className="browser-window text-[var(--ink)]">
+          <img
+            src={media}
+            alt={`${project.title} archival preview`}
+            className={`aspect-[16/10] w-full grayscale-[0.15] contrast-[1.08] ${project.mediaFit === "contain" ? "object-contain bg-[var(--charcoal)] p-6" : "object-cover"}`}
+          />
+        </figure>
+
+        {project.gallery && (
+          <div className="mt-4 grid grid-cols-3 gap-3 md:absolute md:-bottom-8 md:right-4 md:mt-0 md:w-[54%]">
+            {project.gallery.map((image, imageIndex) => (
+              <figure
+                key={image}
+                className="border-2 border-[var(--ink)] bg-[var(--paper)] p-1 shadow-[0.45rem_0.45rem_0_rgba(23,23,23,0.14)]"
+                style={{ rotate: `${imageIndex % 2 === 0 ? -2 : 2}deg` }}
+              >
+                <img
+                  src={image}
+                  alt={`${project.title} evidence ${imageIndex + 1}`}
+                  className={`aspect-[4/3] w-full ${project.mediaFit === "contain" ? "object-contain bg-[var(--charcoal)] p-1" : "object-cover"}`}
+                />
+              </figure>
+            ))}
+          </div>
+        )}
+      </motion.div>
+    </motion.article>
+  );
+}
 
 export function Projects() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="projects" ref={ref} className="py-32 px-4 bg-[#161410]">
-      <div className="max-w-7xl mx-auto">
+    <section id="projects" ref={ref} className="estate-section">
+      <div className="estate-shell">
         <motion.div
-          initial={{ opacity: 0 }}
+          className="ticker-rule mb-12"
+          initial="hidden"
           animate={isInView ? "visible" : "hidden"}
           variants={ANIMATION_VARIANTS.fadeInUp}
         >
-          <p className="text-xs tracking-[0.3em] text-[#C9A84C] uppercase mb-8">Projects</p>
-          <h2 className="font-display text-5xl md:text-6xl text-[#F2EBD9] mb-20 leading-tight max-w-none">
-            Selected Work
-          </h2>
+          <span>Examples</span>
+          <span>Selected works uncovered from the archive.</span>
         </motion.div>
 
-        {/* Projects Grid */}
         <motion.div
-          className="grid md:grid-cols-2 gap-12"
-          variants={ANIMATION_VARIANTS.staggerContainer}
+          className="mb-4 grid gap-8 lg:grid-cols-[1.1fr_0.7fr]"
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
+          variants={ANIMATION_VARIANTS.staggerContainer}
         >
-          {PROJECTS.map((project, i) => (
-            <motion.div
-              key={i}
-              variants={ANIMATION_VARIANTS.staggerItem}
-              className="group relative bg-[#0E0D0B] border border-[#2A2520] p-8 hover:border-[#C9A84C] transition-all duration-500 overflow-hidden"
-            >
-              {/* Background gradient on hover */}
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-br from-[#C9A84C]/5 to-transparent"
-                initial={{ opacity: 0 }}
-                whileHover={{ opacity: 1 }}
-              />
-
-              <div className="relative z-10">
-                {(project.image || project.video) && (
-                  <div className="mb-7 overflow-hidden border border-[#2A2520] bg-[#161410] aspect-[16/10]">
-                    {project.video ? (
-                      <video
-                        src={project.video}
-                        className="h-full w-full object-cover opacity-85 transition duration-700 group-hover:opacity-100"
-                        muted
-                        playsInline
-                        controls
-                      />
-                    ) : (
-                      <img
-                        src={project.image}
-                        alt={`${project.title} preview`}
-                        className={`h-full w-full opacity-85 transition duration-700 group-hover:scale-[1.03] group-hover:opacity-100 ${
-                          project.mediaFit === "contain" ? "object-contain p-3" : "object-cover"
-                        }`}
-                      />
-                    )}
-                  </div>
-                )}
-
-                {project.gallery && (
-                  <div className="mb-7 grid grid-cols-3 gap-2">
-                    {project.gallery.map((image, imageIndex) => (
-                      <div
-                        key={image}
-                        className="aspect-[4/3] overflow-hidden border border-[#2A2520] bg-[#161410]"
-                      >
-                        <img
-                          src={image}
-                          alt={`${project.title} screenshot ${imageIndex + 1}`}
-                          className={`h-full w-full opacity-75 transition duration-700 group-hover:opacity-100 ${
-                            project.mediaFit === "contain" ? "object-contain p-2" : "object-cover"
-                          }`}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Header */}
-                <div className="flex items-start justify-between mb-6">
-                  <div>
-                    <p className="text-xs text-[#7A7060] tracking-widest uppercase mb-3">
-                      {project.visual === "voronoi"
-                        ? "Generative"
-                        : project.visual === "wireframe"
-                          ? "3D Visualization"
-                          : "Interactive"}
-                    </p>
-                    <h3 className="font-display text-3xl text-[#F2EBD9] group-hover:text-[#C9A84C] transition-colors">
-                      {project.title}
-                    </h3>
-                  </div>
-                  {project.link && (
-                    <motion.a
-                      href={project.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      whileHover={{ scale: 1.1, rotate: 45 }}
-                      className="text-[#C9A84C]"
-                    >
-                      <ArrowUpRight size={24} />
-                    </motion.a>
-                  )}
-                </div>
-
-                {/* Description */}
-                <p className="text-base text-[#F2EBD9] mb-6 opacity-90 leading-relaxed">
-                  {project.description}
-                </p>
-
-                {project.metric && (
-                  <p className="mb-6 border-l border-[#C9A84C] pl-4 text-sm font-semibold text-[#C9A84C]">
-                    {project.metric}
-                  </p>
-                )}
-
-                {/* Tech stack */}
-                <div className="flex flex-wrap gap-2">
-                  {project.stack.map((tech, j) => (
-                    <span
-                      key={j}
-                      className="text-xs px-3 py-1 bg-[#2A2520] text-[#C9A84C] rounded-full border border-[#8A6E2F]/30"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-
-                {/* View Project Button */}
-                {project.link && (
-                  <motion.a
-                    href={project.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-6 inline-block text-sm text-[#C9A84C] underline hover:no-underline"
-                    whileHover={{ x: 4 }}
-                  >
-                    View project
-                  </motion.a>
-                )}
-              </div>
-            </motion.div>
-          ))}
+          <motion.h2 variants={ANIMATION_VARIANTS.fadeInUp} className="poster-type text-[clamp(4.5rem,12vw,13rem)]">
+            Selected works uncovered from the archive.
+          </motion.h2>
+          <motion.p variants={ANIMATION_VARIANTS.fadeInUp} className="self-end text-xl leading-9 text-[var(--ink-soft)]">
+            Each project is framed like a document laid onto a long table: annotated, slightly imperfect, and meant to be inspected rather than skimmed.
+          </motion.p>
         </motion.div>
+
+        <div>
+          {PROJECTS.map((project, index) => (
+            <ProjectCard key={project.title} project={project} index={index} />
+          ))}
+        </div>
       </div>
     </section>
   );

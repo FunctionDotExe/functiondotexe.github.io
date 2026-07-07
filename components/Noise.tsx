@@ -1,54 +1,47 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 
 export function Noise() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [texture, setTexture] = useState<string>("");
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
+    const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Set canvas size
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    const width = 180;
+    const height = 180;
 
-    const handleResize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
+    canvas.width = width;
+    canvas.height = height;
 
-    window.addEventListener("resize", handleResize);
+    const imageData = ctx.createImageData(width, height);
+    const data = imageData.data;
 
-    // Generate and animate noise
-    const animate = () => {
-      const imageData = ctx.createImageData(canvas.width, canvas.height);
-      const data = imageData.data;
+    for (let i = 0; i < data.length; i += 4) {
+      const noise = 145 + Math.random() * 65;
+      data[i] = noise;
+      data[i + 1] = noise;
+      data[i + 2] = noise;
+      data[i + 3] = 16;
+    }
 
-      for (let i = 0; i < data.length; i += 4) {
-        const noise = Math.random() * 255;
-        data[i] = noise; // R
-        data[i + 1] = noise; // G
-        data[i + 2] = noise; // B
-        data[i + 3] = 10; // A (4% opacity = 10/255)
-      }
-
-      ctx.putImageData(imageData, 0, 0);
-      setTimeout(() => requestAnimationFrame(animate), 100);
-    };
-
-    animate();
-
-    return () => window.removeEventListener("resize", handleResize);
+    ctx.putImageData(imageData, 0, 0);
+    setTexture(canvas.toDataURL("image/png"));
   }, []);
 
+  if (!texture) return null;
+
   return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-[9999]"
+    <div
+      aria-hidden="true"
+      className="pointer-events-none fixed inset-0 z-[9999] h-full w-full opacity-[0.28] mix-blend-multiply"
+      style={{
+        backgroundImage: `url(${texture})`,
+        backgroundRepeat: "repeat",
+        backgroundSize: "180px 180px",
+      }}
     />
   );
 }

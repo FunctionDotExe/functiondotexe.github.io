@@ -11,6 +11,12 @@ export const PERSONAL = {
   bio: "I like turning rough ideas into useful, polished systems.",
   bioShort:
     "I'm a University of Toronto Computer Science student focused on web development, AI systems, and quantum computing. My work moves between hands-on prototypes, production-minded interfaces, and research-driven experiments.",
+  heroTagline: "A portfolio operating system for useful software, applied intelligence, and crafted interfaces.",
+  heroStatement:
+    "I build digital systems that turn rough ideas into working instruments: interfaces with hierarchy, AI experiments with evidence, and prototypes that feel closer to finished products than sketches.",
+  manifesto:
+    "My work sits between engineering and composition. I care about systems that explain themselves, interfaces that carry intent, and experiments that make emerging technology feel practical enough to use.",
+  availabilityLine: "Currently building production software at Fourth Dimension (4D) while studying Computer Science at the University of Toronto.",
 };
 
 export const PRINCIPLES = [
@@ -141,13 +147,20 @@ export type ProjectVisual = "wireframe" | "voronoi" | "gradient";
 
 export type Project = {
   title: string;
+  shortTitle?: string;
+  kicker?: string;
   description: string;
+  narrative?: string;
   stack: string[];
   image?: string;
   video?: string;
   gallery?: string[];
   mediaFit?: "cover" | "contain";
   metric?: string;
+  impact?: string;
+  artifactLabel?: string;
+  layout?: "left" | "right";
+  accent?: "gold" | "red" | "teal" | "ivory";
   link: string;
   visual: ProjectVisual;
 };
@@ -155,8 +168,12 @@ export type Project = {
 export const PROJECTS: Project[] = [
   {
     title: "Decyp3r: Microgame App",
+    shortTitle: "Decyp3r",
+    kicker: "Daily game system",
     description:
       "React Native microgame with Firebase auth, score submissions, daily limits, streaks, and live rankings.",
+    narrative:
+      "A mobile-first game loop built around return visits: authentication, daily limits, streak pressure, score submission, and rankings that make small sessions feel consequential.",
     stack: ["React Native", "Expo", "TypeScript", "Firebase"],
     image: "/media/work/decyphergamehomepage.png",
     gallery: [
@@ -166,13 +183,21 @@ export const PROJECTS: Project[] = [
     ],
     mediaFit: "contain",
     metric: "Live rankings + daily attempts",
+    impact: "Designed for repeat play, fair submissions, and a compact competitive loop.",
+    artifactLabel: "Mobile interface evidence",
+    layout: "right",
+    accent: "teal",
     link: "",
     visual: "gradient",
   },
   {
     title: "ForgeFountain",
+    shortTitle: "ForgeFountain",
+    kicker: "Market intelligence instrument",
     description:
       "Market intelligence app that ranks live game-economy opportunities by return, liquidity, and execution time.",
+    narrative:
+      "A decision engine for messy live-market signals, turning raw opportunity data into ranked actions using return, liquidity, execution time, and caching strategy.",
     stack: ["React", "APIs", "Data Modeling", "Caching"],
     image: "/media/work/marketopportunityanalyzer.png",
     gallery: [
@@ -181,28 +206,54 @@ export const PROJECTS: Project[] = [
     ],
     mediaFit: "contain",
     metric: "70% faster decisions, up to 60% better margins",
+    impact: "Built to compress analysis time and expose higher-margin opportunities faster.",
+    artifactLabel: "Dashboard intelligence layer",
+    layout: "left",
+    accent: "gold",
     link: "",
     visual: "wireframe",
   },
   {
     title: "AI Object Detection",
+    shortTitle: "Object Detection",
+    kicker: "Applied vision experiment",
     description:
       "CNN-based computer vision project with real-time detection, data collection, and visualization.",
     stack: ["Python", "TensorFlow", "Computer Vision", "CNNs"],
     metric: "97% model accuracy",
+    impact: "Turned model training and live testing into an observable computer-vision workflow.",
+    narrative:
+      "A practical AI build focused on the full loop: collecting data, training a CNN, evaluating accuracy, and visualizing real-time detection behavior.",
+    artifactLabel: "Model signal / research plate",
+    layout: "right",
+    accent: "red",
     link: "",
     visual: "voronoi",
   },
   {
     title: "Arduino Dancing Robot",
+    shortTitle: "Dancing Robot",
+    kicker: "Physical computing study",
     description:
       "3D-printed motor-controlled robot designed in Fusion 360 and programmed with Arduino.",
     stack: ["Arduino", "Fusion 360", "Robotics", "Prototyping"],
     image: "/media/work/arduinorrobot.jpg",
+    narrative:
+      "A hardware prototype that brings design, fabrication, motor control, and embedded programming into one physical feedback loop.",
+    impact: "Built as a hands-on bridge between code, mechanism, and motion.",
+    artifactLabel: "Physical prototype artifact",
+    layout: "left",
+    accent: "ivory",
     link: "",
     visual: "voronoi",
   },
 ];
+
+export const SITE_ASSETS = {
+  hero: "/media/generated/renaissance-os-hero.png",
+  texture: "/media/generated/codex-system-texture.png",
+  proofBackdrop: "/media/generated/proof-cabinet-backdrop.png",
+};
 
 export const RESUME = {
   pdf: "/media/RUBEN_RESUME_V.3.0.docx.pdf",

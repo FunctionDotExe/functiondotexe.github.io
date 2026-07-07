@@ -1,120 +1,112 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { ArrowDown, Camera, Monitor, Phone } from "lucide-react";
+import { useRef } from "react";
 import { PERSONAL } from "@/lib/constants";
-import { ANIMATION_VARIANTS, EASING } from "@/lib/animations";
-import dynamic from "next/dynamic";
-
-const ParticleBackground = dynamic(() => import("./ParticleBackground"), {
-  ssr: false,
-  loading: () => <div className="absolute inset-0 bg-gradient-to-b from-[#161410] to-[#0E0D0B]" />,
-});
 
 export function Hero() {
-  const nameLetters = PERSONAL.firstName.split("");
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"],
+  });
+
+  const collageY = useTransform(scrollYProgress, [0, 1], [0, -120]);
+  const titleY = useTransform(scrollYProgress, [0, 1], [0, 72]);
+  const phoneY = useTransform(scrollYProgress, [0, 1], [0, 96]);
+  const portraitRotate = useTransform(scrollYProgress, [0, 1], [-3, 2]);
+  const imageScale = useTransform(scrollYProgress, [0, 1], [1, 1.08]);
 
   return (
-    <section className="relative h-screen w-full overflow-hidden flex items-center justify-center">
-      <ParticleBackground />
-      <div className="absolute inset-0 bg-radial-gradient pointer-events-none" />
-
-      <motion.div
-        className="relative z-10 text-center max-w-4xl px-4"
-        initial="hidden"
-        animate="visible"
-        variants={ANIMATION_VARIANTS.staggerContainer}
-      >
-        <motion.p
-          className="text-sm tracking-[0.3em] text-[#C9A84C] uppercase mb-12"
-          variants={ANIMATION_VARIANTS.fadeInUp}
-        >
-          Est. {PERSONAL.year} / {PERSONAL.city}
-        </motion.p>
-
-        <div className="mb-6 overflow-hidden">
-          <motion.h1
-            className="font-display text-[5rem] md:text-[7rem] lg:text-[8rem] leading-tight text-[#F2EBD9] tracking-tight"
-            variants={ANIMATION_VARIANTS.staggerContainer}
-            initial="hidden"
-            animate="visible"
-          >
-            {nameLetters.map((letter, i) => (
-              <motion.span
-                key={i}
-                variants={ANIMATION_VARIANTS.letterAnimation}
-                custom={i}
-                transition={{
-                  delay: i * 0.08,
-                  duration: 0.6,
-                  ease: EASING.outExpo,
-                }}
-                className="inline-block"
-              >
-                {letter}
-              </motion.span>
-            ))}
-          </motion.h1>
-          <motion.h1
-            className="font-display text-[5rem] md:text-[7rem] lg:text-[8rem] leading-tight text-[#C9A84C] tracking-tight"
-            variants={ANIMATION_VARIANTS.staggerContainer}
-            initial="hidden"
-            animate="visible"
-            transition={{ delayChildren: PERSONAL.firstName.length * 0.08 }}
-          >
-            {PERSONAL.lastName.split("").map((letter, i) => (
-              <motion.span
-                key={i}
-                variants={ANIMATION_VARIANTS.letterAnimation}
-                transition={{
-                  delay: (PERSONAL.firstName.length + i) * 0.08,
-                  duration: 0.6,
-                  ease: EASING.outExpo,
-                }}
-                className="inline-block"
-              >
-                {letter}
-              </motion.span>
-            ))}
-          </motion.h1>
+    <section ref={ref} className="relative min-h-[132vh] overflow-hidden px-[var(--gutter)] pb-20 pt-8 text-[var(--ink)]">
+      <div className="estate-shell">
+        <div className="ticker-rule">
+          <span>Retro websites</span>
+          <span>Portfolio examples</span>
         </div>
 
-        <motion.blockquote
-          className="mb-12"
-          variants={ANIMATION_VARIANTS.fadeInUp}
-          transition={{ delay: (PERSONAL.firstName.length + PERSONAL.lastName.length) * 0.08 + 0.2 }}
-        >
-          <p className="text-lg md:text-xl text-[#F2EBD9]">{PERSONAL.role}</p>
-          <footer className="mt-3 text-xs tracking-[0.24em] uppercase text-[#7A7060]">
-            {PERSONAL.roleAttribution}
-          </footer>
-        </motion.blockquote>
-
-        <motion.div
-          className="flex flex-col items-center gap-3"
-          variants={ANIMATION_VARIANTS.fadeInUp}
-          transition={{ delay: (PERSONAL.firstName.length + PERSONAL.lastName.length) * 0.08 + 0.4 }}
-        >
-          <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="text-[#C9A84C]"
-          >
-            &darr;
+        <div className="relative min-h-[92vh] py-12 md:py-16">
+          <motion.div className="relative z-20 max-w-5xl" style={{ y: titleY }}>
+            <motion.p
+              className="stamp mb-8"
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: [0.19, 1, 0.22, 1] }}
+            >
+              {PERSONAL.firstName} {PERSONAL.lastName}
+            </motion.p>
+            <motion.h1
+              className="poster-type max-w-[9ch] text-[clamp(5rem,15.5vw,15.8rem)]"
+              initial={{ opacity: 0, y: 48 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.95, ease: [0.19, 1, 0.22, 1], delay: 0.08 }}
+            >
+              Digital things.
+            </motion.h1>
+            <motion.p
+              className="mt-6 max-w-xl font-serif text-[clamp(1.25rem,2vw,1.8rem)] italic leading-9 text-[var(--ink-soft)]"
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, ease: [0.19, 1, 0.22, 1], delay: 0.18 }}
+            >
+              A cabinet of software objects, research notes, and crafted interfaces.
+            </motion.p>
+            <motion.a
+              href="#projects"
+              className="ribbon-link mt-9"
+              initial={{ opacity: 0, x: -18 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.28 }}
+            >
+              Examples <ArrowDown size={17} />
+            </motion.a>
           </motion.div>
-          <p className="text-sm text-[#7A7060]">Scroll to explore</p>
-        </motion.div>
-      </motion.div>
 
-      <style jsx>{`
-        .bg-radial-gradient {
-          background: radial-gradient(
-            ellipse at center,
-            rgba(14, 13, 11, 0) 0%,
-            rgba(14, 13, 11, 0.4) 70%,
-            rgba(14, 13, 11, 0.8) 100%
-          );
-        }
-      `}</style>
+          <motion.div
+            aria-hidden="true"
+            className="absolute right-[-2rem] top-[5rem] z-10 hidden w-[52vw] max-w-[46rem] md:block"
+            style={{ y: collageY }}
+          >
+            <div className="browser-window rotate-[-1.5deg] text-[var(--ink)]">
+              <motion.img
+                src="/media/work/decyphergamehomepage.png"
+                alt=""
+                className="aspect-[16/10] w-full bg-[var(--charcoal)] object-contain p-7"
+                style={{ scale: imageScale }}
+              />
+            </div>
+            <motion.figure
+              className="cutout absolute -right-4 -top-10 w-[38%] rotate-[8deg] border-2 border-[var(--ink)] bg-[var(--paper-warm)] p-2"
+              style={{ rotate: portraitRotate }}
+            >
+              <img
+                src="/media/portrait.jpg"
+                alt=""
+                className="aspect-[4/5] w-full object-cover object-[center_34%] grayscale contrast-[1.12]"
+              />
+            </motion.figure>
+            <motion.div
+              className="absolute -bottom-12 left-[10%] grid h-32 w-32 place-items-center border-2 border-[var(--ink)] bg-[var(--paper)] text-[var(--ink)] shadow-[0.7rem_0.7rem_0_rgba(23,23,23,0.16)]"
+              style={{ y: phoneY }}
+            >
+              <Phone size={54} strokeWidth={1.5} />
+            </motion.div>
+            <div className="absolute -right-12 bottom-12 grid h-36 w-36 place-items-center rounded-full border-2 border-[var(--ink)] bg-[var(--ink)] text-[var(--paper)]">
+              <Camera size={64} strokeWidth={1.4} />
+            </div>
+          </motion.div>
+
+          <div className="relative z-20 mt-12 grid gap-4 border-y-2 border-[var(--ink)] py-5 font-sans text-[0.72rem] font-black uppercase tracking-[0.22em] md:absolute md:bottom-16 md:left-0 md:right-0 md:grid-cols-[1fr_auto_1fr] md:items-center">
+            <p>{PERSONAL.city}</p>
+            <p className="hidden text-center md:block">
+              <Monitor className="mx-auto mb-2" size={18} />
+              {PERSONAL.role}
+            </p>
+            <p className="md:text-right">{PERSONAL.roleAttribution}</p>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }

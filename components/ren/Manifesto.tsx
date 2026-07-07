@@ -1,0 +1,53 @@
+"use client";
+
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { PERSONAL, SITE_ASSETS } from "@/lib/constants";
+import { ChapterIntro, OsPanel, fadeUp, stagger } from "./Primitives";
+
+export function Manifesto() {
+  return (
+    <section id="manifesto" className="ren-section bg-paper text-ink">
+      <div className="pointer-events-none absolute inset-0 opacity-[0.18]">
+        <Image src={SITE_ASSETS.texture} alt="" fill sizes="100vw" className="object-cover mix-blend-multiply" />
+      </div>
+      <div className="ren-shell relative z-10">
+        <ChapterIntro
+          eyebrow="Chapter 01 / Manifesto"
+          title="The work is a system before it is a screen."
+          body={PERSONAL.manifesto}
+        />
+
+        <motion.div
+          className="mt-14 grid gap-4 lg:grid-cols-[1fr_0.72fr_0.72fr]"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-120px" }}
+          variants={stagger}
+        >
+          <OsPanel className="min-h-[24rem] p-7">
+            <p className="ren-eyebrow text-oxblood">Operating belief</p>
+            <p className="mt-8 font-display text-[clamp(2.6rem,5vw,5.4rem)] leading-[0.92]">
+              Tools should feel composed, not merely assembled.
+            </p>
+          </OsPanel>
+
+          <OsPanel className="p-7">
+            <p className="ren-eyebrow text-oxblood">Current state</p>
+            <p className="mt-8 text-lg leading-8 text-ink-soft">{PERSONAL.availabilityLine}</p>
+          </OsPanel>
+
+          <motion.figure variants={fadeUp} className="ren-panel overflow-hidden border-ink/14 bg-charcoal text-paper">
+            <Image
+              src="/media/portrait.jpg"
+              alt={`${PERSONAL.firstName} ${PERSONAL.lastName} portrait`}
+              width={720}
+              height={900}
+              className="aspect-[4/5] h-full w-full object-cover object-[center_32%] grayscale contrast-[1.08]"
+            />
+          </motion.figure>
+        </motion.div>
+      </div>
+    </section>
+  );
+}

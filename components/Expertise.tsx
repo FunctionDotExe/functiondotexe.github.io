@@ -10,66 +10,46 @@ export function Expertise() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="py-32 px-4 bg-[#161410] relative">
-      <div className="max-w-7xl mx-auto">
-        <motion.p
-          className="text-xs tracking-[0.3em] text-[#C9A84C] uppercase mb-16"
-          initial={{ opacity: 0 }}
+    <section ref={ref} className="estate-section">
+      <div className="estate-shell">
+        <motion.div
+          className="mb-12 grid gap-8 lg:grid-cols-[0.8fr_1fr]"
+          initial="hidden"
           animate={isInView ? "visible" : "hidden"}
-          variants={ANIMATION_VARIANTS.fadeInUp}
+          variants={ANIMATION_VARIANTS.staggerContainer}
         >
-          Expertise
-        </motion.p>
-
-        <motion.h2
-          className="font-display text-5xl md:text-6xl text-[#F2EBD9] mb-20 leading-tight max-w-none"
-          initial={{ opacity: 0 }}
-          animate={isInView ? "visible" : "hidden"}
-          variants={ANIMATION_VARIANTS.fadeInUp}
-        >
-          Core Skills
-        </motion.h2>
+          <motion.div variants={ANIMATION_VARIANTS.fadeInUp}>
+            <p className="stamp mb-7">Chapter II / Disciplines</p>
+            <h2 className="poster-type text-[clamp(4rem,10vw,10rem)]">Cabinet of instruments.</h2>
+          </motion.div>
+          <motion.p variants={ANIMATION_VARIANTS.fadeInUp} className="self-end border-l-4 border-[var(--ink)] pl-6 text-xl leading-9 text-[var(--ink-soft)]">
+            The craft moves across interface engineering, data systems, applied AI, robotics, and quantum experiments. Each discipline is treated like a tool with a history: useful, precise, and worth maintaining.
+          </motion.p>
+        </motion.div>
 
         <motion.div
-          className="grid md:grid-cols-3 gap-12"
+          className="grid gap-px border-2 border-[var(--ink)] bg-[var(--ink)] md:grid-cols-2 xl:grid-cols-3"
           variants={ANIMATION_VARIANTS.staggerContainer}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
         >
-          {SKILLS.map((skill, i) => (
-            <motion.div
-              key={i}
-              variants={ANIMATION_VARIANTS.staggerItem}
-              className="group p-8 border border-[#2A2520] bg-[#0E0D0B] hover:bg-[#1A1814] transition-all duration-300 relative overflow-hidden"
-            >
-              {/* Hover border effect */}
-              <motion.div
-                className="absolute top-0 left-0 right-0 h-1 bg-[#C9A84C]"
-                initial={{ scaleX: 0 }}
-                whileHover={{ scaleX: 1 }}
-                transition={{ duration: 0.3 }}
-                style={{ originX: 0 }}
-              />
-
-              <h3 className="font-display text-2xl text-[#C9A84C] mb-4">
+          {SKILLS.map((skill, index) => (
+            <motion.article key={skill.category} variants={ANIMATION_VARIANTS.staggerItem} className="min-h-[20rem] bg-[var(--paper)] p-6">
+              <p className="font-sans text-[0.62rem] font-black uppercase tracking-[0.22em] text-[var(--oxblood)]">
+                Instrument {String(index + 1).padStart(2, "0")}
+              </p>
+              <h3 className="mt-5 font-sans text-3xl font-black uppercase leading-8 tracking-[-0.03em] text-[var(--ink)]">
                 {skill.category}
               </h3>
-
-              <p className="text-sm text-[#7A7060] mb-6 leading-relaxed">
-                {skill.description}
-              </p>
-
-              <div className="flex flex-wrap gap-2">
-                {skill.tools.map((tool, j) => (
-                  <span
-                    key={j}
-                    className="text-xs px-3 py-1 bg-[#2A2520] text-[#F2EBD9] rounded-full"
-                  >
+              <p className="mt-5 text-base leading-8 text-[var(--ink-soft)]">{skill.description}</p>
+              <div className="mt-7 flex flex-wrap gap-2">
+                {skill.tools.map((tool) => (
+                  <span key={tool} className="bg-[var(--ink)] px-2.5 py-1.5 font-sans text-[0.58rem] font-black uppercase tracking-[0.14em] text-[var(--paper)]">
                     {tool}
                   </span>
                 ))}
               </div>
-            </motion.div>
+            </motion.article>
           ))}
         </motion.div>
       </div>

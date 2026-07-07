@@ -10,101 +10,65 @@ export function Experience() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="experience" ref={ref} className="py-32 px-4 bg-[#0E0D0B]">
-      <div className="max-w-6xl mx-auto">
-        <motion.p
-          className="text-xs tracking-[0.3em] text-[#C9A84C] uppercase mb-8"
-          initial={{ opacity: 0 }}
+    <section id="experience" ref={ref} className="estate-section estate-dark">
+      <div className="estate-shell">
+        <motion.div
+          className="mb-12 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]"
+          initial="hidden"
           animate={isInView ? "visible" : "hidden"}
-          variants={ANIMATION_VARIANTS.fadeInUp}
+          variants={ANIMATION_VARIANTS.staggerContainer}
         >
-          Experience
-        </motion.p>
+          <motion.div variants={ANIMATION_VARIANTS.fadeInUp}>
+            <p className="stamp mb-7 text-[var(--paper)]">Chapter III / Journal</p>
+            <h2 className="poster-type text-[clamp(4rem,10vw,10rem)] text-[var(--paper)]">Appointments and field notes.</h2>
+          </motion.div>
+          <motion.p variants={ANIMATION_VARIANTS.fadeInUp} className="self-end border-l-4 border-[var(--gold-light)] pl-6 text-xl leading-9 text-[rgba(244,236,217,0.76)]">
+            A timeline written like an estate journal: dated, annotated, and concerned with useful work rather than spectacle.
+          </motion.p>
+        </motion.div>
 
-        <motion.h2
-          className="font-display text-5xl md:text-6xl text-[#F2EBD9] mb-16 leading-tight max-w-none"
-          initial={{ opacity: 0 }}
+        <motion.div
+          className="grid gap-4"
+          variants={ANIMATION_VARIANTS.staggerContainer}
+          initial="hidden"
           animate={isInView ? "visible" : "hidden"}
-          variants={ANIMATION_VARIANTS.fadeInUp}
         >
-          Recent Experience
-        </motion.h2>
+          {EXPERIENCE.map((exp, index) => (
+            <motion.article
+              key={`${exp.company}-${exp.dates}`}
+              variants={ANIMATION_VARIANTS.staggerItem}
+              className="grid gap-5 border-2 border-[rgba(244,236,217,0.72)] bg-[rgba(244,236,217,0.045)] p-5 md:grid-cols-[7rem_0.72fr_1fr] md:p-6"
+            >
+              <div>
+                <p className="poster-type text-6xl text-[var(--gold-light)]">{String(index + 1).padStart(2, "0")}</p>
+                <p className="mt-3 font-sans text-[0.62rem] font-black uppercase tracking-[0.18em] text-[rgba(244,236,217,0.62)]">
+                  {exp.dates}
+                </p>
+              </div>
 
-        {/* Timeline */}
-        <div className="relative border-l border-[#2A2520] pl-6 md:pl-10">
-          {/* Vertical line */}
-          <motion.div
-            className="absolute left-0 top-0 w-px bg-gradient-to-b from-[#C9A84C] to-[#8A6E2F]"
-            initial={{ scaleY: 0 }}
-            animate={isInView ? { scaleY: 1 } : { scaleY: 0 }}
-            transition={{ duration: 1.2, ease: "easeOut" }}
-            style={{
-              top: 0,
-              bottom: 0,
-              height: "100%",
-              originY: 0,
-            }}
-          />
+              <div>
+                <p className="font-sans text-[0.62rem] font-black uppercase tracking-[0.22em] text-[var(--gold-light)]">
+                  {exp.type}
+                </p>
+                <h3 className="mt-4 font-sans text-3xl font-black uppercase leading-8 tracking-[-0.03em] text-[var(--paper)]">
+                  {exp.company}
+                </h3>
+                <p className="mt-3 text-lg italic text-[var(--gold-light)]">{exp.role}</p>
+                <p className="mt-2 font-sans text-[0.62rem] font-black uppercase tracking-[0.18em] text-[rgba(244,236,217,0.5)]">
+                  {exp.location}
+                </p>
+              </div>
 
-          {/* Entries */}
-          <div className="space-y-12">
-            {EXPERIENCE.map((exp, i) => (
-              <motion.div
-                key={i}
-                className="relative grid md:grid-cols-[12rem_1fr] gap-4 md:gap-10"
-                initial={{ opacity: 0 }}
-                animate={isInView ? "visible" : "hidden"}
-                variants={ANIMATION_VARIANTS.staggerItem}
-              >
-                {/* Dot */}
-                <motion.div
-                  className="absolute -left-[2.05rem] md:-left-[2.55rem] top-1"
-                  initial={{ scale: 0 }}
-                  animate={isInView ? { scale: 1 } : { scale: 0 }}
-                  transition={{ duration: 0.4, delay: 0.1 }}
-                >
-                  <div className="w-4 h-4 bg-[#C9A84C] rounded-full border-2 border-[#0E0D0B]" />
-                </motion.div>
-
-                {/* Meta */}
-                <div>
-                  <motion.div
-                    initial={{ opacity: 0, x: -16 }}
-                    animate={isInView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ duration: 0.6, delay: 0.2 }}
-                  >
-                    <p className="text-sm text-[#7A7060] mb-2">{exp.dates}</p>
-                    <p className="text-xs tracking-widest text-[#C9A84C] uppercase mb-4">
-                      {exp.type}
-                    </p>
-                  </motion.div>
-                </div>
-
-                {/* Content */}
-                <div>
-                  <motion.div
-                    initial={{ opacity: 0, x: 16 }}
-                    animate={isInView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ duration: 0.6, delay: 0.2 }}
-                  >
-                    <h3 className="font-display text-2xl text-[#F2EBD9] mb-1">
-                      {exp.company}
-                    </h3>
-                    <p className="text-lg text-[#C9A84C] mb-2">{exp.role}</p>
-                    <p className="text-sm text-[#7A7060] mb-4">{exp.location}</p>
-                    <ul className="space-y-2 list-disc pl-5">
-                      {exp.bullets.map((bullet, j) => (
-                        <li key={j} className="text-sm text-[#F2EBD9] opacity-80 leading-relaxed">
-                          {bullet}
-                        </li>
-                      ))}
-                    </ul>
-                  </motion.div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
+              <ul className="grid gap-3">
+                {exp.bullets.map((bullet) => (
+                  <li key={bullet} className="border-l-2 border-[rgba(214,189,131,0.48)] pl-4 text-base leading-8 text-[rgba(244,236,217,0.76)]">
+                    {bullet}
+                  </li>
+                ))}
+              </ul>
+            </motion.article>
+          ))}
+        </motion.div>
       </div>
     </section>
   );

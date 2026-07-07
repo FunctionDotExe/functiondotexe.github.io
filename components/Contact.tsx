@@ -2,104 +2,62 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import { Github, Linkedin, Mail } from "lucide-react";
 import { PERSONAL } from "@/lib/constants";
 import { ANIMATION_VARIANTS } from "@/lib/animations";
-import { Mail, Linkedin, Github } from "lucide-react";
 
 export function Contact() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   const contactLinks = [
-    {
-      label: "Email",
-      href: `mailto:${PERSONAL.email}`,
-      icon: Mail,
-    },
-    {
-      label: "LinkedIn",
-      href: PERSONAL.linkedin,
-      icon: Linkedin,
-    },
-    {
-      label: "GitHub",
-      href: PERSONAL.github,
-      icon: Github,
-    },
+    { label: "Email", href: `mailto:${PERSONAL.email}`, icon: Mail },
+    { label: "LinkedIn", href: PERSONAL.linkedin, icon: Linkedin },
+    { label: "GitHub", href: PERSONAL.github, icon: Github },
   ];
 
   return (
-    <section
-      id="contact"
-      ref={ref}
-      className="py-32 px-4 bg-[#161410] relative overflow-hidden"
-    >
-      {/* Decorative elements */}
-      <div className="absolute top-10 right-10 w-64 h-64 border border-[#2A2520] rounded-full opacity-10" />
-      <div className="absolute bottom-20 left-5 w-80 h-80 border border-[#2A2520] rounded-full opacity-5" />
-
-      <div className="max-w-4xl mx-auto text-center relative z-10">
-        {/* Headline */}
+    <section id="contact" ref={ref} className="estate-section relative overflow-hidden">
+      <div className="estate-shell">
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={isInView ? "visible" : "hidden"}
-          variants={ANIMATION_VARIANTS.fadeInUp}
-          className="mb-16"
-        >
-          <p className="text-xs tracking-[0.3em] text-[#C9A84C] uppercase mb-8">
-            Contact
-          </p>
-          <h2 className="font-display text-5xl md:text-7xl text-[#F2EBD9] leading-tight max-w-none">
-            Let's build <br className="hidden md:block" />
-            <motion.span
-              className="text-[#C9A84C]"
-              initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: 1 } : {}}
-              transition={{ delay: 0.3 }}
-            >
-              something useful.
-            </motion.span>
-          </h2>
-        </motion.div>
-
-        {/* Contact Links */}
-        <motion.div
-          className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 mb-16"
-          variants={ANIMATION_VARIANTS.staggerContainer}
+          className="retro-frame bg-[var(--paper-warm)] p-6 md:p-10"
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
+          variants={ANIMATION_VARIANTS.staggerContainer}
         >
-          {contactLinks.map((link, i) => {
-            const Icon = link.icon;
-            return (
-              <motion.a
-                key={i}
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                variants={ANIMATION_VARIANTS.staggerItem}
-                className="group flex items-center gap-3 text-[#F2EBD9] hover:text-[#C9A84C] transition-colors"
-                whileHover={{ x: 4 }}
-              >
-                <Icon size={20} className="group-hover:rotate-12 transition-transform" />
-                <span className="text-lg md:text-xl">{link.label}</span>
-              </motion.a>
-            );
-          })}
-        </motion.div>
+          <motion.p variants={ANIMATION_VARIANTS.fadeInUp} className="stamp mb-8">
+            Correspondence
+          </motion.p>
+          <motion.h2 variants={ANIMATION_VARIANTS.fadeInUp} className="poster-type max-w-[11ch] text-[clamp(4rem,11vw,12rem)]">
+            Send a note. Begin the next chapter.
+          </motion.h2>
+          <motion.p variants={ANIMATION_VARIANTS.fadeInUp} className="mt-8 max-w-2xl border-y-2 border-[var(--ink)] py-6 text-xl leading-9 text-[var(--ink-soft)]">
+            Reach out for software work, prototypes, AI experiments, or a problem that deserves slower thinking and cleaner execution.
+          </motion.p>
 
-        {/* Email highlight */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={isInView ? "visible" : "hidden"}
-          transition={{ delay: 0.5 }}
-          className="pt-8 border-t border-[#2A2520]"
-        >
-          <p className="text-sm text-[#7A7060] mb-4">Email me directly at</p>
+          <motion.div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap" variants={ANIMATION_VARIANTS.staggerContainer}>
+            {contactLinks.map((link) => {
+              const Icon = link.icon;
+              return (
+                <motion.a
+                  key={link.label}
+                  href={link.href}
+                  target={link.label === "Email" ? undefined : "_blank"}
+                  rel={link.label === "Email" ? undefined : "noopener noreferrer"}
+                  variants={ANIMATION_VARIANTS.staggerItem}
+                  className="ribbon-link"
+                >
+                  {link.label}
+                  <Icon size={17} />
+                </motion.a>
+              );
+            })}
+          </motion.div>
+
           <motion.a
             href={`mailto:${PERSONAL.email}`}
-            className="font-display text-3xl md:text-4xl text-[#C9A84C] hover:underline"
-            whileHover={{ scale: 1.05 }}
+            variants={ANIMATION_VARIANTS.fadeInUp}
+            className="mt-12 block break-words font-sans text-[clamp(2.2rem,7.2vw,7.2rem)] font-black uppercase leading-none tracking-[-0.05em] text-[var(--oxblood)]"
           >
             {PERSONAL.email}
           </motion.a>

@@ -8,75 +8,49 @@ import { ANIMATION_VARIANTS } from "@/lib/animations";
 export function About() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+
   const details = [
-    { label: "Now", value: "Software Engineer at Fourth Dimension (4D)" },
-    { label: "Base", value: PERSONAL.city },
-    { label: "Education", value: "University of Toronto, Computer Science" },
-    { label: "Focus", value: "Web, AI, and quantum systems" },
+    { label: "Residence", value: PERSONAL.city },
+    { label: "Appointment", value: "Software Engineer, Fourth Dimension (4D)" },
+    { label: "Studies", value: "University of Toronto, Computer Science" },
+    { label: "Pursuits", value: "Interfaces, AI systems, quantum research" },
   ];
 
   return (
-    <section id="about" ref={ref} className="py-28 md:py-32 px-4 bg-[#0E0D0B] relative">
-      {/* Background decoration */}
-      <div className="absolute top-0 left-0 w-32 h-32 border border-[#2A2520] rounded-full opacity-20" />
+    <section id="about" ref={ref} className="estate-section">
+      <div className="estate-shell">
+        <motion.div
+          className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]"
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          variants={ANIMATION_VARIANTS.staggerContainer}
+        >
+          <motion.div variants={ANIMATION_VARIANTS.fadeInUp} className="retro-frame bg-[var(--paper-warm)] p-6 md:p-8">
+            <p className="stamp mb-8">Chapter I / The maker</p>
+            <h2 className="poster-type text-[clamp(3.5rem,8vw,8rem)]">
+              A quiet practice of turning rough ideas into lasting systems.
+            </h2>
+          </motion.div>
 
-      <div className="max-w-6xl mx-auto">
-        <div className="grid md:grid-cols-5 gap-12 md:gap-16 items-start">
-          {/* Left content */}
-          <motion.div
-            ref={ref}
-            className="md:col-span-3"
-            initial={{ opacity: 0 }}
-            animate={isInView ? "visible" : "hidden"}
-            variants={ANIMATION_VARIANTS.fadeInUp}
-          >
-            <motion.p
-              className="text-xs tracking-[0.3em] text-[#C9A84C] uppercase mb-8"
-              variants={ANIMATION_VARIANTS.fadeInUp}
-            >
-              About
-            </motion.p>
+          <motion.div variants={ANIMATION_VARIANTS.staggerItem} className="grid gap-6">
+            <p className="border-y-2 border-[var(--ink)] py-6 text-2xl leading-10 text-[var(--ink-soft)]">
+              {PERSONAL.bioShort} The work is practical, but the standard is editorial: clear hierarchy, careful interaction, and the kind of polish that makes tools feel settled in the hand.
+            </p>
 
-            <motion.h2
-              className="font-display text-4xl md:text-6xl text-[#F2EBD9] leading-tight mb-8 max-w-3xl"
-              variants={ANIMATION_VARIANTS.staggerContainer}
-            >
-              {PERSONAL.bio.split(" ").map((word, i) => (
-                <motion.span
-                  key={i}
-                  variants={ANIMATION_VARIANTS.fadeInUp}
-                  className="inline-block mr-2"
-                >
-                  {word}
-                </motion.span>
+            <div className="grid gap-px border-2 border-[var(--ink)] bg-[var(--ink)] sm:grid-cols-2">
+              {details.map((item) => (
+                <div key={item.label} className="bg-[var(--paper)] p-5">
+                  <p className="font-sans text-[0.62rem] font-black uppercase tracking-[0.22em] text-[var(--oxblood)]">
+                    {item.label}
+                  </p>
+                  <p className="mt-3 font-sans text-xl font-black uppercase leading-6 tracking-[-0.02em] text-[var(--ink)]">
+                    {item.value}
+                  </p>
+                </div>
               ))}
-            </motion.h2>
-
-            <motion.p
-              className="text-base md:text-lg text-[#F2EBD9] leading-relaxed opacity-85 max-w-2xl"
-              variants={ANIMATION_VARIANTS.fadeInUp}
-            >
-              {PERSONAL.bioShort}
-            </motion.p>
+            </div>
           </motion.div>
-
-          {/* Right stats */}
-          <motion.div
-            className="md:col-span-2 grid grid-cols-2 md:grid-cols-1 gap-x-6 gap-y-8 border-t md:border-t-0 md:border-l border-[#2A2520] pt-8 md:pt-0 md:pl-8"
-            variants={ANIMATION_VARIANTS.staggerContainer}
-            initial={{ opacity: 0 }}
-            animate={isInView ? "visible" : "hidden"}
-          >
-            {details.map((item, i) => (
-              <motion.div key={i} variants={ANIMATION_VARIANTS.staggerItem}>
-                <p className="text-xs tracking-widest text-[#7A7060] uppercase mb-2">
-                  {item.label}
-                </p>
-                <p className="text-sm md:text-base text-[#F2EBD9] leading-snug">{item.value}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

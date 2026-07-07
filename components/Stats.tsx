@@ -10,16 +10,8 @@ function Counter({ target }: { target: number }) {
   const isInView = useInView(ref, { once: true });
 
   return (
-    <motion.span
-      ref={ref}
-      initial={{ opacity: 0 }}
-      animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-    >
-      {isInView && (
-        <motion.span initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
-          {target}
-        </motion.span>
-      )}
+    <motion.span ref={ref} initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : { opacity: 0 }}>
+      {isInView && <motion.span initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>{target}</motion.span>}
     </motion.span>
   );
 }
@@ -29,25 +21,23 @@ export function Stats() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="py-32 px-4 bg-[#0E0D0B]">
-      <div className="max-w-7xl mx-auto">
+    <section ref={ref} className="estate-section estate-dark py-16">
+      <div className="estate-shell">
         <motion.div
-          className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center"
+          className="grid gap-px border-2 border-[var(--paper)] bg-[var(--paper)] sm:grid-cols-2 lg:grid-cols-4"
           variants={ANIMATION_VARIANTS.staggerContainer}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
         >
-          {STATS.map((stat, i) => (
-            <motion.div key={i} variants={ANIMATION_VARIANTS.staggerItem}>
-              <motion.p
-                className="font-display text-4xl md:text-5xl text-[#C9A84C] mb-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.8, delay: i * 0.1 }}
-              >
+          {STATS.map((stat, index) => (
+            <motion.div key={stat.label} variants={ANIMATION_VARIANTS.staggerItem} className="min-h-48 bg-[#080a0b] p-6">
+              <p className="font-sans text-[0.62rem] font-black uppercase tracking-[0.22em] text-[var(--gold-light)]">
+                Ledger {String(index + 1).padStart(2, "0")}
+              </p>
+              <p className="poster-type mt-8 text-8xl text-[var(--paper)]">
                 <Counter target={stat.value} />+
-              </motion.p>
-              <p className="text-sm md:text-base text-[#F2EBD9] uppercase tracking-wider">
+              </p>
+              <p className="mt-4 font-sans text-[0.7rem] font-black uppercase tracking-[0.22em] text-[rgba(244,236,217,0.68)]">
                 {stat.label}
               </p>
             </motion.div>

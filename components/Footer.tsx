@@ -7,21 +7,21 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="py-8 px-4 bg-[#0E0D0B] border-t border-[#2A2520]">
-      <div className="max-w-7xl mx-auto">
+    <footer className="border-t border-[var(--rule)] px-[var(--gutter)] py-10">
+      <div className="estate-shell">
+        <div className="ticker-rule mb-8">
+          <span>finis</span>
+          <span>signed and sealed</span>
+        </div>
         <motion.div
-          className="flex flex-col md:flex-row items-center justify-between text-sm text-[#7A7060]"
+          className="flex flex-col gap-5 font-sans text-[0.68rem] font-black uppercase tracking-[0.22em] text-[var(--ink-soft)] md:flex-row md:items-center md:justify-between"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 1 }}
           viewport={{ once: true }}
         >
-          <p>
-            © {currentYear} {PERSONAL.firstName} {PERSONAL.lastName}. All rights reserved.
-          </p>
-          <p className="mt-4 md:mt-0">
-            Designed & built with intention.
-          </p>
+          <p>Copyright {currentYear} {PERSONAL.firstName} {PERSONAL.lastName}</p>
+          <p className="text-[var(--oxblood)]">private folio</p>
         </motion.div>
       </div>
     </footer>

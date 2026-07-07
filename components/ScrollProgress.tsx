@@ -10,7 +10,7 @@ export function ScrollProgress() {
   return (
     <motion.div
       ref={ref}
-      className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#C9A84C] via-[#C9A84C] to-transparent origin-left z-[100]"
+      className="fixed left-0 right-0 top-0 z-[100] h-px origin-left bg-gradient-to-r from-transparent via-[var(--gold)] to-transparent"
       style={{ scaleX: scrollYProgress }}
     />
   );

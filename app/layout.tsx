@@ -5,13 +5,13 @@ import { Noise } from "@/components/Noise";
 import { ScrollProgress } from "@/components/ScrollProgress";
 
 export const metadata: Metadata = {
-  title: "Ruben Maxwell | Software Engineer & Builder",
+  title: "Ruben Maxwell | RenAIssance OS Portfolio",
   description:
-    "Portfolio of Ruben Maxwell, a software engineer and builder exploring web development, AI systems, and quantum computing. University of Toronto Computer Science.",
+    "A cinematic portfolio for Ruben Maxwell, a software engineer exploring crafted interfaces, AI systems, quantum computing, robotics, and production software.",
   openGraph: {
-    title: "Ruben Maxwell | Software Engineer & Builder",
+    title: "Ruben Maxwell | RenAIssance OS Portfolio",
     description:
-      "Interactive portfolio showcasing projects in web development, AI, and quantum computing.",
+      "Interactive portfolio showcasing projects in web development, AI systems, robotics, and quantum computing.",
     type: "website",
   },
 };
