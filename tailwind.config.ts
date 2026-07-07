@@ -58,10 +58,6 @@ const config: Config = {
           "0%, 100%": { transform: "translate3d(5%, 3%, 0) scale(1.08)" },
           "50%": { transform: "translate3d(-6%, -5%, 0) scale(1)" },
         },
-        "border-spin": {
-          from: { transform: "translate(-50%, -50%) rotate(0deg)" },
-          to: { transform: "translate(-50%, -50%) rotate(360deg)" },
-        },
         marquee: {
           to: { transform: "translateX(-50%)" },
         },
@@ -69,7 +65,6 @@ const config: Config = {
       animation: {
         "aurora-a": "aurora-a 16s ease-in-out infinite",
         "aurora-b": "aurora-b 19s ease-in-out infinite",
-        "border-spin": "border-spin 9s linear infinite",
         marquee: "marquee 32s linear infinite",
       },
       backdropBlur: {

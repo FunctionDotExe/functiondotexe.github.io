@@ -315,6 +315,51 @@ p {
   animation: shine 5s linear infinite;
 }
 
+/* Shine border: a gold beam tracing the panel's hairline frame. The mask
+   keeps the conic gradient on the 1px border ring only. */
+@property --shine-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes shine-rotate {
+  to {
+    --shine-angle: 360deg;
+  }
+}
+
+.ren-shine {
+  position: relative;
+  border: 1px solid rgba(238, 229, 209, 0.12);
+}
+
+.ren-shine::before {
+  position: absolute;
+  inset: -1px;
+  pointer-events: none;
+  content: "";
+  border: 1px solid transparent;
+  background: conic-gradient(
+      from var(--shine-angle),
+      transparent 0deg,
+      transparent 295deg,
+      rgba(217, 193, 132, 0.85) 330deg,
+      transparent 360deg
+    )
+    border-box;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  filter: drop-shadow(0 0 6px rgba(217, 193, 132, 0.45));
+  animation: shine-rotate 9s linear infinite;
+}
+
 /* Underline that draws in from the left (giant contact email). */
 .ren-underline-link {
   position: relative;
