@@ -5,6 +5,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "dusk": "node mockups/dusk/build.js && start \"\" dusk-mockup.html",
+    "dusk:verify": "node mockups/dusk/build.js && node mockups/dusk/cdp-shots.js",
     "deps:install": "pnpm install --ignore-scripts",
     "deps:audit": "pnpm audit --prod",
     "deps:approve-builds": "pnpm approve-builds"
