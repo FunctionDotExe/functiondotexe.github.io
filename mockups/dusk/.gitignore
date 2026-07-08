@@ -1,0 +1,4 @@
+# build artifacts + verification output — rebuild with: node build.js && node cdp-shots.js
+dusk-mockup.html
+*.png
+chrome-profile-*/
