@@ -241,38 +241,50 @@ h3 {
 
 .starfield-layer--far {
   background-image:
-    radial-gradient(1px 1px at 17px 43px, rgba(242, 235, 217, 0.5), transparent 1.5px),
-    radial-gradient(1px 1px at 71px 109px, rgba(242, 235, 217, 0.35), transparent 1.5px),
-    radial-gradient(1px 1px at 133px 23px, rgba(242, 235, 217, 0.45), transparent 1.5px),
-    radial-gradient(1px 1px at 47px 151px, rgba(201, 168, 76, 0.4), transparent 1.5px),
-    radial-gradient(1px 1px at 109px 67px, rgba(242, 235, 217, 0.3), transparent 1.5px),
-    radial-gradient(1px 1px at 159px 127px, rgba(242, 235, 217, 0.4), transparent 1.5px);
+    radial-gradient(1px 1px at 17px 43px, rgba(242, 235, 217, 0.9), transparent 1.5px),
+    radial-gradient(1px 1px at 71px 109px, rgba(242, 235, 217, 0.7), transparent 1.5px),
+    radial-gradient(1px 1px at 133px 23px, rgba(242, 235, 217, 0.8), transparent 1.5px),
+    radial-gradient(1px 1px at 47px 151px, rgba(201, 168, 76, 0.8), transparent 1.5px),
+    radial-gradient(1px 1px at 109px 67px, rgba(242, 235, 217, 0.6), transparent 1.5px),
+    radial-gradient(1px 1px at 89px 13px, rgba(242, 235, 217, 0.75), transparent 1.5px),
+    radial-gradient(1px 1px at 151px 91px, rgba(242, 235, 217, 0.55), transparent 1.5px),
+    radial-gradient(1px 1px at 23px 113px, rgba(201, 168, 76, 0.6), transparent 1.5px),
+    radial-gradient(1px 1px at 129px 163px, rgba(242, 235, 217, 0.7), transparent 1.5px),
+    radial-gradient(1px 1px at 159px 127px, rgba(242, 235, 217, 0.8), transparent 1.5px);
   background-size: 180px 180px;
   animation: star-drift 240s linear infinite;
 }
 
 .starfield-layer--mid {
   background-image:
-    radial-gradient(1.5px 1.5px at 29px 83px, rgba(242, 235, 217, 0.55), transparent 2px),
-    radial-gradient(1.5px 1.5px at 131px 29px, rgba(201, 168, 76, 0.5), transparent 2px),
-    radial-gradient(1.5px 1.5px at 83px 179px, rgba(242, 235, 217, 0.45), transparent 2px),
-    radial-gradient(1.5px 1.5px at 191px 113px, rgba(242, 235, 217, 0.5), transparent 2px);
+    radial-gradient(1.5px 1.5px at 29px 83px, rgba(242, 235, 217, 0.95), transparent 2px),
+    radial-gradient(1.5px 1.5px at 131px 29px, rgba(201, 168, 76, 0.85), transparent 2px),
+    radial-gradient(1.5px 1.5px at 83px 179px, rgba(242, 235, 217, 0.8), transparent 2px),
+    radial-gradient(1.5px 1.5px at 173px 199px, rgba(242, 235, 217, 0.7), transparent 2px),
+    radial-gradient(1.5px 1.5px at 53px 19px, rgba(242, 235, 217, 0.75), transparent 2px),
+    radial-gradient(1.5px 1.5px at 191px 113px, rgba(242, 235, 217, 0.85), transparent 2px);
   background-size: 220px 220px;
   animation: star-drift 150s linear infinite;
 }
 
 .starfield-layer--near {
   background-image:
-    radial-gradient(2px 2px at 53px 37px, rgba(242, 235, 217, 0.6), transparent 2.5px),
-    radial-gradient(2px 2px at 167px 143px, rgba(201, 168, 76, 0.55), transparent 2.5px),
-    radial-gradient(2px 2px at 101px 233px, rgba(242, 235, 217, 0.5), transparent 2.5px);
+    radial-gradient(2px 2px at 53px 37px, rgba(242, 235, 217, 1), transparent 3px),
+    radial-gradient(2.5px 2.5px at 167px 143px, rgba(201, 168, 76, 0.9), transparent 3.5px),
+    radial-gradient(2px 2px at 101px 233px, rgba(242, 235, 217, 0.9), transparent 3px),
+    radial-gradient(2.5px 2.5px at 227px 61px, rgba(242, 235, 217, 0.85), transparent 3.5px);
   background-size: 260px 260px;
-  animation: star-drift 90s linear infinite;
+  animation: star-drift 90s linear infinite, star-twinkle 7s ease-in-out infinite;
 }
 
 @keyframes star-drift {
   from { transform: translateY(0); }
   to { transform: translateY(50%); }
+}
+
+@keyframes star-twinkle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
 }
 
 /* ---------------------------------------------------------------------------
