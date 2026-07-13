@@ -18,8 +18,8 @@ const config: Config = {
         rule: "#2A2520",
       },
       fontFamily: {
-        display: ["Cormorant Garamond", "Georgia", "serif"],
-        body: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["var(--font-cormorant)", "Cormorant Garamond", "Georgia", "serif"],
+        body: ["var(--font-inter)", "Inter", "ui-sans-serif", "system-ui", "sans-serif"],
       },
       spacing: {
         gutter: "clamp(1.25rem, 4vw, 4.5rem)",

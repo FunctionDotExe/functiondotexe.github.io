@@ -1,48 +1,31 @@
-"use client";
-
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
 import { PROJECTS } from "@/lib/constants";
-import { ANIMATION_VARIANTS } from "@/lib/animations";
 import { ArrowUpRight } from "lucide-react";
 
 export function Projects() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-
   return (
-    <section id="projects" ref={ref} className="py-32 px-4 bg-[#161410]">
+    <section id="projects" className="py-32 px-4 bg-[#161410]">
       <div className="max-w-7xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={isInView ? "visible" : "hidden"}
-          variants={ANIMATION_VARIANTS.fadeInUp}
+        <p className="text-xs tracking-[0.3em] text-[#C9A84C] uppercase mb-8" data-reveal>
+          Projects
+        </p>
+        <h2
+          className="font-display text-5xl md:text-6xl text-[#F2EBD9] mb-20 leading-tight max-w-none"
+          data-reveal
         >
-          <p className="text-xs tracking-[0.3em] text-[#C9A84C] uppercase mb-8">Projects</p>
-          <h2 className="font-display text-5xl md:text-6xl text-[#F2EBD9] mb-20 leading-tight max-w-none">
-            Selected Work
-          </h2>
-        </motion.div>
+          Selected Work
+        </h2>
 
         {/* Projects Grid */}
-        <motion.div
-          className="grid md:grid-cols-2 gap-12"
-          variants={ANIMATION_VARIANTS.staggerContainer}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-        >
+        <div className="grid md:grid-cols-2 gap-12">
           {PROJECTS.map((project, i) => (
-            <motion.div
+            <div
               key={i}
-              variants={ANIMATION_VARIANTS.staggerItem}
               className="group relative bg-[#0E0D0B] border border-[#2A2520] p-8 hover:border-[#C9A84C] transition-all duration-500 overflow-hidden"
+              data-reveal
+              style={{ "--reveal-delay": i % 2 } as React.CSSProperties}
             >
               {/* Background gradient on hover */}
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-br from-[#C9A84C]/5 to-transparent"
-                initial={{ opacity: 0 }}
-                whileHover={{ opacity: 1 }}
-              />
+              <div className="absolute inset-0 bg-gradient-to-br from-[#C9A84C]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
               <div className="relative z-10">
                 {(project.image || project.video) && (
@@ -54,15 +37,22 @@ export function Projects() {
                         muted
                         playsInline
                         controls
+                        preload="none"
                       />
                     ) : (
-                      <img
-                        src={project.image}
-                        alt={`${project.title} preview`}
-                        className={`h-full w-full opacity-85 transition duration-700 group-hover:scale-[1.03] group-hover:opacity-100 ${
-                          project.mediaFit === "contain" ? "object-contain p-3" : "object-cover"
-                        }`}
-                      />
+                      project.image && (
+                        <img
+                          src={project.image.src}
+                          width={project.image.width}
+                          height={project.image.height}
+                          loading="lazy"
+                          decoding="async"
+                          alt={`${project.title} preview`}
+                          className={`h-full w-full opacity-85 transition duration-700 group-hover:scale-[1.03] group-hover:opacity-100 ${
+                            project.mediaFit === "contain" ? "object-contain p-3" : "object-cover"
+                          }`}
+                        />
+                      )
                     )}
                   </div>
                 )}
@@ -71,11 +61,15 @@ export function Projects() {
                   <div className="mb-7 grid grid-cols-3 gap-2">
                     {project.gallery.map((image, imageIndex) => (
                       <div
-                        key={image}
+                        key={image.src}
                         className="aspect-[4/3] overflow-hidden border border-[#2A2520] bg-[#161410]"
                       >
                         <img
-                          src={image}
+                          src={image.src}
+                          width={image.width}
+                          height={image.height}
+                          loading="lazy"
+                          decoding="async"
                           alt={`${project.title} screenshot ${imageIndex + 1}`}
                           className={`h-full w-full opacity-75 transition duration-700 group-hover:opacity-100 ${
                             project.mediaFit === "contain" ? "object-contain p-2" : "object-cover"
@@ -101,15 +95,14 @@ export function Projects() {
                     </h3>
                   </div>
                   {project.link && (
-                    <motion.a
+                    <a
                       href={project.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      whileHover={{ scale: 1.1, rotate: 45 }}
-                      className="text-[#C9A84C]"
+                      className="text-[#C9A84C] transition-transform duration-300 hover:scale-110 hover:rotate-45"
                     >
                       <ArrowUpRight size={24} />
-                    </motion.a>
+                    </a>
                   )}
                 </div>
 
@@ -138,20 +131,19 @@ export function Projects() {
 
                 {/* View Project Button */}
                 {project.link && (
-                  <motion.a
+                  <a
                     href={project.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-6 inline-block text-sm text-[#C9A84C] underline hover:no-underline"
-                    whileHover={{ x: 4 }}
+                    className="mt-6 inline-block text-sm text-[#C9A84C] underline hover:no-underline transition-transform duration-300 hover:translate-x-1"
                   >
                     View project
-                  </motion.a>
+                  </a>
                 )}
               </div>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

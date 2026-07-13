@@ -1,41 +1,70 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
-import { Award, ExternalLink, FileText } from "lucide-react";
+import { useState } from "react";
+import { Award, ExternalLink, FileText, Play } from "lucide-react";
 import { CERTIFICATES, RESUME } from "@/lib/constants";
-import { ANIMATION_VARIANTS } from "@/lib/animations";
 
-export function Proof() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+/**
+ * Click-to-load YouTube embed: shows a local thumbnail until the visitor
+ * asks for the video, so no YouTube JS or cookies load with the page.
+ */
+function VideoFacade() {
+  const [playing, setPlaying] = useState(false);
+
+  if (playing) {
+    return (
+      <iframe
+        title="Project video"
+        src={`https://www.youtube-nocookie.com/embed/${RESUME.youtubeId}?autoplay=1`}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowFullScreen
+        className="h-full w-full"
+      />
+    );
+  }
 
   return (
-    <section id="resume" ref={ref} className="py-32 px-4 bg-[#0E0D0B]">
+    <button
+      type="button"
+      onClick={() => setPlaying(true)}
+      aria-label="Play project walkthrough video"
+      className="group/video relative h-full w-full cursor-pointer"
+    >
+      <img
+        src={RESUME.videoThumb.src}
+        width={RESUME.videoThumb.width}
+        height={RESUME.videoThumb.height}
+        loading="lazy"
+        decoding="async"
+        alt="Project walkthrough video thumbnail"
+        className="h-full w-full object-cover opacity-85 transition duration-500 group-hover/video:opacity-100"
+      />
+      <span className="absolute inset-0 flex items-center justify-center">
+        <span className="flex h-16 w-16 items-center justify-center rounded-full border border-[#C9A84C] bg-[#0E0D0B]/80 text-[#C9A84C] transition duration-300 group-hover/video:scale-110 group-hover/video:bg-[#0E0D0B]">
+          <Play size={24} fill="currentColor" aria-hidden="true" />
+        </span>
+      </span>
+    </button>
+  );
+}
+
+export function Proof() {
+  return (
+    <section id="resume" className="py-32 px-4 bg-[#0E0D0B]">
       <div className="max-w-7xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={isInView ? "visible" : "hidden"}
-          variants={ANIMATION_VARIANTS.fadeInUp}
-          className="mb-16"
-        >
+        <div className="mb-16" data-reveal>
           <p className="text-xs tracking-[0.3em] text-[#C9A84C] uppercase mb-8">
-            Resume & Proof
+            Resume &amp; Proof
           </p>
           <h2 className="font-display text-5xl md:text-6xl text-[#F2EBD9] leading-tight max-w-none">
             Work you can inspect
           </h2>
-        </motion.div>
+        </div>
 
-        <motion.div
-          className="grid lg:grid-cols-[1.1fr_0.9fr] gap-10"
-          variants={ANIMATION_VARIANTS.staggerContainer}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-        >
-          <motion.article
-            variants={ANIMATION_VARIANTS.staggerItem}
+        <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-10">
+          <article
             className="border border-[#2A2520] bg-[#161410] p-4 md:p-6"
+            data-reveal
           >
             <div className="mb-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
@@ -59,15 +88,17 @@ export function Proof() {
               <iframe
                 title="Ruben Maxwell resume PDF"
                 src={`${RESUME.pdf}#toolbar=0&navpanes=0`}
+                loading="lazy"
                 className="h-full w-full"
               />
             </div>
-          </motion.article>
+          </article>
 
           <div className="space-y-10">
-            <motion.article
-              variants={ANIMATION_VARIANTS.staggerItem}
+            <article
               className="border border-[#2A2520] bg-[#161410] p-4 md:p-6"
+              data-reveal
+              style={{ "--reveal-delay": 1 } as React.CSSProperties}
             >
               <div className="mb-5 flex items-center justify-between gap-4">
                 <div>
@@ -90,33 +121,27 @@ export function Proof() {
               </div>
 
               <div className="aspect-video overflow-hidden border border-[#2A2520] bg-[#0E0D0B]">
-                <iframe
-                  title="Project video"
-                  src={RESUME.youtubeEmbed}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                  className="h-full w-full"
-                />
+                <VideoFacade />
               </div>
-            </motion.article>
+            </article>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          className="mt-10 grid md:grid-cols-3 gap-6"
-          variants={ANIMATION_VARIANTS.staggerContainer}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-        >
-          {CERTIFICATES.map((certificate) => (
-            <motion.figure
+        <div className="mt-10 grid md:grid-cols-3 gap-6">
+          {CERTIFICATES.map((certificate, i) => (
+            <figure
               key={certificate.title}
-              variants={ANIMATION_VARIANTS.staggerItem}
               className="group overflow-hidden border border-[#2A2520] bg-[#161410]"
+              data-reveal
+              style={{ "--reveal-delay": i } as React.CSSProperties}
             >
               <div className="aspect-[16/10] overflow-hidden bg-[#F2EBD9]">
                 <img
-                  src={certificate.image}
+                  src={certificate.image.src}
+                  width={certificate.image.width}
+                  height={certificate.image.height}
+                  loading="lazy"
+                  decoding="async"
                   alt={`${certificate.title} certificate`}
                   className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.02]"
                 />
@@ -131,9 +156,9 @@ export function Proof() {
                 </p>
                 <p className="mt-2 text-sm text-[#7A7060]">{certificate.issuer}</p>
               </figcaption>
-            </motion.figure>
+            </figure>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

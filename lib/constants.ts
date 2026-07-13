@@ -139,13 +139,19 @@ export const EXPERIENCE = [
 
 export type ProjectVisual = "wireframe" | "voronoi" | "gradient";
 
+export type ProjectImage = {
+  src: string;
+  width: number;
+  height: number;
+};
+
 export type Project = {
   title: string;
   description: string;
   stack: string[];
-  image?: string;
+  image?: ProjectImage;
   video?: string;
-  gallery?: string[];
+  gallery?: ProjectImage[];
   mediaFit?: "cover" | "contain";
   metric?: string;
   link: string;
@@ -158,11 +164,11 @@ export const PROJECTS: Project[] = [
     description:
       "React Native microgame with Firebase auth, score submissions, daily limits, streaks, and live rankings.",
     stack: ["React Native", "Expo", "TypeScript", "Firebase"],
-    image: "/media/work/decyphergamehomepage.png",
+    image: { src: "/media/work/decyphergamehomepage.webp", width: 348, height: 730 },
     gallery: [
-      "/media/work/decyphergame1.png",
-      "/media/work/decyphergame2.png",
-      "/media/work/decyphergame3.png",
+      { src: "/media/work/decyphergame1.webp", width: 460, height: 640 },
+      { src: "/media/work/decyphergame2.webp", width: 424, height: 640 },
+      { src: "/media/work/decyphergame3.webp", width: 325, height: 640 },
     ],
     mediaFit: "contain",
     metric: "Live rankings + daily attempts",
@@ -174,10 +180,10 @@ export const PROJECTS: Project[] = [
     description:
       "Market intelligence app that ranks live game-economy opportunities by return, liquidity, and execution time.",
     stack: ["React", "APIs", "Data Modeling", "Caching"],
-    image: "/media/work/marketopportunityanalyzer.png",
+    image: { src: "/media/work/marketopportunityanalyzer.webp", width: 1168, height: 1097 },
     gallery: [
-      "/media/work/marketopportunityanalyzer2.png",
-      "/media/work/marketopportunityanalyzer3.png",
+      { src: "/media/work/marketopportunityanalyzer2.webp", width: 560, height: 482 },
+      { src: "/media/work/marketopportunityanalyzer3.webp", width: 560, height: 534 },
     ],
     mediaFit: "contain",
     metric: "70% faster decisions, up to 60% better margins",
@@ -198,7 +204,7 @@ export const PROJECTS: Project[] = [
     description:
       "3D-printed motor-controlled robot designed in Fusion 360 and programmed with Arduino.",
     stack: ["Arduino", "Fusion 360", "Robotics", "Prototyping"],
-    image: "/media/work/arduinorrobot.jpg",
+    image: { src: "/media/work/arduinorrobot.webp", width: 1168, height: 879 },
     link: "",
     visual: "voronoi",
   },
@@ -207,23 +213,24 @@ export const PROJECTS: Project[] = [
 export const RESUME = {
   pdf: "/media/RUBEN_RESUME_V.3.0.docx.pdf",
   youtubeUrl: "https://youtu.be/Y57MlI380UM",
-  youtubeEmbed: "https://www.youtube.com/embed/Y57MlI380UM",
+  youtubeId: "Y57MlI380UM",
+  videoThumb: { src: "/media/work/video-thumb.webp", width: 1168, height: 657 },
 };
 
 export const CERTIFICATES = [
   {
     title: "Machine Learning with Python",
     issuer: "IBM / Coursera",
-    image: "/media/work/certificate-machine-learning-python.jpeg",
+    image: { src: "/media/work/certificate-machine-learning-python.webp", width: 810, height: 424 },
   },
   {
     title: "AI For Everyone",
     issuer: "DeepLearning.AI / Coursera",
-    image: "/media/work/certificate-ai-for-everyone.jpeg",
+    image: { src: "/media/work/certificate-ai-for-everyone.webp", width: 810, height: 424 },
   },
   {
     title: "Version Control",
     issuer: "Meta / Coursera",
-    image: "/media/work/certificate-version-control.jpeg",
+    image: { src: "/media/work/certificate-version-control.webp", width: 810, height: 424 },
   },
 ];

@@ -1,8 +1,22 @@
 import type { Metadata } from "next";
+import { Inter, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import { LenisWrapper } from "./LenisWrapper";
-import { Noise } from "@/components/Noise";
-import { ScrollProgress } from "@/components/ScrollProgress";
+import { RevealObserver } from "./RevealObserver";
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "600"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["500", "600"],
+  variable: "--font-cormorant",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Ruben Maxwell | Software Engineer & Builder",
@@ -22,13 +36,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${inter.variable} ${cormorant.variable}`}
+    >
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {/* Tag <html> before first paint so reveal-hidden styles only apply when JS runs */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "document.documentElement.classList.add('js')",
+          }}
+        />
       </head>
       <body>
-        <Noise />
-        <ScrollProgress />
+        <div className="scroll-progress" aria-hidden="true" />
+        <RevealObserver />
         <LenisWrapper>{children}</LenisWrapper>
       </body>
     </html>
