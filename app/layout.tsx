@@ -14,11 +14,14 @@ const inter = Inter({
   display: "optional",
 });
 
+/* Also "optional": a late Cormorant swap relayouts the hero and re-registers
+   the quote's LCP paint. Both fonts are preloaded, so fast connections still
+   get them on first paint; slow first visits keep the metric-matched fallback. */
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["500", "600"],
   variable: "--font-cormorant",
-  display: "swap",
+  display: "optional",
 });
 
 export const metadata: Metadata = {
