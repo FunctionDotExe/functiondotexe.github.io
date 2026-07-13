@@ -174,16 +174,18 @@ h3 {
 /* ---------------------------------------------------------------------------
    Hero entrance animations (CSS only, run immediately - no JS gate)
 --------------------------------------------------------------------------- */
+/* Start at 0.01, not 0: fully transparent text never registers a paint
+   entry in Chrome, which breaks LCP measurement (NO_LCP). */
 .hero-letter {
   display: inline-block;
-  opacity: 0;
+  opacity: 0.01;
   transform: translateY(40px);
   animation: hero-rise 0.6s var(--ease-out-expo) forwards;
   animation-delay: calc(var(--i, 0) * 60ms);
 }
 
 .hero-fade {
-  opacity: 0;
+  opacity: 0.01;
   animation: hero-fade 0.8s ease forwards;
   animation-delay: var(--d, 0s);
 }
