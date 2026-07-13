@@ -19,7 +19,7 @@ const config: Config = {
       },
       fontFamily: {
         display: ["var(--font-cormorant)", "Cormorant Garamond", "Georgia", "serif"],
-        body: ["var(--font-inter)", "Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+        body: ["ui-sans-serif", "system-ui", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
       },
       spacing: {
         gutter: "clamp(1.25rem, 4vw, 4.5rem)",

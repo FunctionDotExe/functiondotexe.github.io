@@ -1,22 +1,12 @@
 import type { Metadata } from "next";
-import { Inter, Cormorant_Garamond } from "next/font/google";
+import { Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import { LenisWrapper } from "./LenisWrapper";
 import { RevealObserver } from "./RevealObserver";
 
-/* display "optional": body text is the mobile LCP element, and a late font
-   swap re-registers the LCP paint. With "optional" the fallback stays for
-   the session if the font misses first paint; cached visits get Inter. */
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "600"],
-  variable: "--font-inter",
-  display: "optional",
-});
-
-/* Also "optional": a late Cormorant swap relayouts the hero and re-registers
-   the quote's LCP paint. Both fonts are preloaded, so fast connections still
-   get them on first paint; slow first visits keep the metric-matched fallback. */
+/* Body text uses the system font stack (see globals.css): the hero quote is
+   the mobile LCP element, and any webfont dependency delays its first paint.
+   Cormorant stays as the display face; "optional" avoids late-swap repaints. */
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["500", "600"],
@@ -45,7 +35,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} ${cormorant.variable}`}
+      className={cormorant.variable}
     >
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
