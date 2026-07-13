@@ -48,10 +48,9 @@ export function Hero() {
           </h1>
         </div>
 
-        <blockquote
-          className="hero-fade mb-12"
-          style={{ "--d": `${fadeDelay + 0.2}s` } as React.CSSProperties}
-        >
+        {/* No entrance fade: this is the LCP element on mobile, and delaying
+            its paint directly delays LCP */}
+        <blockquote className="mb-12">
           <p className="text-lg md:text-xl text-[#F2EBD9]">{PERSONAL.role}</p>
           <footer className="mt-3 text-xs tracking-[0.24em] uppercase text-[#7A7060]">
             {PERSONAL.roleAttribution}
