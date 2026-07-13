@@ -4,11 +4,14 @@ import "./globals.css";
 import { LenisWrapper } from "./LenisWrapper";
 import { RevealObserver } from "./RevealObserver";
 
+/* display "optional": body text is the mobile LCP element, and a late font
+   swap re-registers the LCP paint. With "optional" the fallback stays for
+   the session if the font misses first paint; cached visits get Inter. */
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "600"],
   variable: "--font-inter",
-  display: "swap",
+  display: "optional",
 });
 
 const cormorant = Cormorant_Garamond({
