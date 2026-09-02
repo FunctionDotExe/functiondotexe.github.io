@@ -72,8 +72,13 @@ function Waypoint({ landmark, index }: { landmark: Landmark; index: number }) {
   };
 
   return (
-    <article className={`waypoint waypoint--${side} waypoint--${landmark.visual}`} aria-labelledby={headingId}>
-      <div className="waypoint__stage">
+    <article
+      className={`waypoint waypoint--${side} waypoint--${landmark.visual}`}
+      aria-labelledby={headingId}
+      data-journey-scene
+      data-nav-theme="dark"
+    >
+      <div className="waypoint__stage" data-journey-stage>
         <div className="waypoint__inner">
           <div className="waypoint__copy" data-reveal>
             <p className="scene-kicker scene-kicker--light">
@@ -117,8 +122,8 @@ export function Landmarks() {
       </div>
 
       <div className="climb__waypoints">
-        <header className="climb-intro">
-          <div className="climb-intro__stage">
+        <header className="climb-intro" data-journey-scene data-nav-theme="dark">
+          <div className="climb-intro__stage" data-journey-stage>
             <div className="climb-intro__content" data-reveal>
               <p className="scene-kicker scene-kicker--light">
                 <span>02</span>

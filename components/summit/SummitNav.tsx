@@ -16,29 +16,28 @@ export function SummitNav() {
   };
 
   useEffect(() => {
-    const climb = document.querySelector<HTMLElement>(".climb");
-    const highAltitude = document.querySelector<HTMLElement>(".high-altitude");
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const themedScenes = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-nav-theme]"),
+    );
     let animationFrame = 0;
 
     const updateNavigation = () => {
-      const climbRect = climb?.getBoundingClientRect();
-      const climbProgress = climbRect
-        ? Math.min(
-            1,
-            Math.max(
-              0,
-              -climbRect.top / Math.max(climbRect.height - window.innerHeight, 1),
-            ),
-          )
-        : 0;
+      const viewportCenter = window.innerHeight * 0.5;
+      let activeScene: HTMLElement | null = null;
+      let activeDistance = Number.POSITIVE_INFINITY;
+
+      for (const scene of themedScenes) {
+        const rect = scene.getBoundingClientRect();
+        if (rect.bottom <= 0 || rect.top >= window.innerHeight) continue;
+        const distance = Math.abs(rect.top + rect.height * 0.5 - viewportCenter);
+        if (distance < activeDistance) {
+          activeDistance = distance;
+          activeScene = scene;
+        }
+      }
 
       setScrolled(window.scrollY > 32);
-      setOnLightScene(
-        reducedMotion.matches ||
-          climbProgress >= 0.855 ||
-          Boolean(highAltitude && highAltitude.getBoundingClientRect().top <= window.innerHeight * 0.58),
-      );
+      setOnLightScene(activeScene?.dataset.navTheme === "light");
       animationFrame = 0;
     };
 
@@ -49,12 +48,10 @@ export function SummitNav() {
     updateNavigation();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
-    reducedMotion.addEventListener("change", onScroll);
 
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
-      reducedMotion.removeEventListener("change", onScroll);
       if (animationFrame) window.cancelAnimationFrame(animationFrame);
     };
   }, []);
@@ -65,12 +62,17 @@ export function SummitNav() {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") closeMenu();
     };
+    const onResize = () => {
+      if (window.innerWidth > 720) setOpen(false);
+    };
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("resize", onResize);
 
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("resize", onResize);
     };
   }, [open]);
 

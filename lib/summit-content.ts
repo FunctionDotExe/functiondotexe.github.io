@@ -51,6 +51,11 @@ export const SUMMIT_CONTENT = {
     valley: "/media/summit-parallax-valley-v2.webp",
     trail: "/media/summit-parallax-trail-v2.webp",
     foreground: "/media/summit-parallax-foreground-v2.webp",
+    depth: {
+      master: "/media/earth-descent-master-v1.webp",
+      frame: "/media/earth-descent-frame-v1.webp",
+      glow: "/media/earth-descent-glow-v1.webp",
+    },
   },
   hero: {
     eyebrow: "Ruben Maxwell / Selected work",
@@ -172,6 +177,55 @@ export const SUMMIT_CONTENT = {
       },
     },
   ] satisfies Landmark[],
+  descent: {
+    threshold: {
+      number: "04",
+      label: "The threshold",
+      depth: "Surface / 0 M",
+      title: "The path turns inward.",
+      body:
+        "At the tree line, the route slips beneath the mountain. Daylight narrows, stone closes in, and the same journey continues below the surface.",
+      cue: "Continue into the crust",
+    },
+    crust: {
+      number: "05",
+      label: "Crystalline crust",
+      depth: "Depth / 3 KM",
+      title: "Every build leaves a trace.",
+      body:
+        "Crystal seams and stacked strata hold the evidence of a project taking shape: tests, revisions, wrong turns, and the patterns worth keeping.",
+      notes: [
+        { label: "Strata", value: "Accumulated iterations" },
+        { label: "Crystal seam", value: "Useful patterns" },
+        { label: "Fault line", value: "Lessons carried forward" },
+      ],
+    },
+    mantle: {
+      number: "06",
+      label: "The mantle",
+      depth: "Depth / 660 KM",
+      title: "Pressure changes the work.",
+      body:
+        "Deeper down, the landscape moves slowly. This chapter holds space for the systems, experiments, and difficult questions that need sustained pressure before they find a form.",
+      notes: [
+        { label: "Heat", value: "Sustained curiosity" },
+        { label: "Pressure", value: "Useful constraints" },
+        { label: "Flow", value: "Systems in motion" },
+      ],
+    },
+    inner: {
+      number: "07",
+      label: "Inner structure",
+      depth: "Depth / 2,900 KM",
+    },
+    core: {
+      number: "08",
+      label: "The core",
+      depth: "Depth / 6,371 KM",
+      title: "The next view.",
+      returnLabel: "Back to the surface",
+    },
+  },
   about: {
     label: "About the climber",
     statement: "I like turning rough ideas into useful, polished systems.",

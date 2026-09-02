@@ -5,21 +5,58 @@ export function JourneyWorld() {
 
   return (
     <div className="journey-world" aria-hidden="true">
-      <div className="journey-world__layer journey-world__layer--sky">
-        <img src={world.sky} width="1536" height="1024" alt="" fetchPriority="high" />
+      <div className="journey-world__realm journey-world__realm--surface">
+        <div className="journey-world__layer journey-world__layer--sky">
+          <img src={world.sky} width="1536" height="1024" alt="" fetchPriority="high" />
+        </div>
+        <div className="journey-world__layer journey-world__layer--clouds">
+          <img src={world.clouds} width="1536" height="1024" alt="" decoding="async" />
+        </div>
+        <div className="journey-world__layer journey-world__layer--valley">
+          <img src={world.valley} width="1536" height="1024" alt="" decoding="async" />
+        </div>
+        <div className="journey-world__layer journey-world__layer--trail">
+          <img src={world.trail} width="1536" height="1024" alt="" decoding="async" />
+        </div>
+        <div className="journey-world__layer journey-world__layer--foreground">
+          <img src={world.foreground} width="1536" height="1024" alt="" decoding="async" />
+        </div>
       </div>
-      <div className="journey-world__layer journey-world__layer--clouds">
-        <img src={world.clouds} width="1536" height="1024" alt="" decoding="async" />
+
+      <div className="journey-world__realm journey-world__realm--depth">
+        <div className="journey-world__depth-layer journey-world__depth-layer--master">
+          <img
+            className="journey-world__depth-plate"
+            src={world.depth.master}
+            width="1024"
+            height="1536"
+            alt=""
+            decoding="async"
+          />
+        </div>
+        <div className="journey-world__depth-layer journey-world__depth-layer--glow">
+          <img
+            className="journey-world__depth-plate"
+            src={world.depth.glow}
+            width="1024"
+            height="1536"
+            alt=""
+            decoding="async"
+          />
+        </div>
+        <div className="journey-world__depth-layer journey-world__depth-layer--frame">
+          <img
+            className="journey-world__depth-plate"
+            src={world.depth.frame}
+            width="1024"
+            height="1536"
+            alt=""
+            decoding="async"
+          />
+        </div>
+        <span className="journey-world__depth-shade" />
       </div>
-      <div className="journey-world__layer journey-world__layer--valley">
-        <img src={world.valley} width="1536" height="1024" alt="" decoding="async" />
-      </div>
-      <div className="journey-world__layer journey-world__layer--trail">
-        <img src={world.trail} width="1536" height="1024" alt="" decoding="async" />
-      </div>
-      <div className="journey-world__layer journey-world__layer--foreground">
-        <img src={world.foreground} width="1536" height="1024" alt="" decoding="async" />
-      </div>
+
       <span className="journey-world__grade" />
       <span className="journey-world__grain" />
     </div>

@@ -33,17 +33,25 @@ export function JourneyMotion() {
     const heroElement = document.querySelector<HTMLElement>(".journey-hero");
     const basecampElement = document.querySelector<HTMLElement>(".basecamp-scene");
     const climbElement = document.querySelector<HTMLElement>(".climb");
-    const highAltitudeElement = document.querySelector<HTMLElement>(".high-altitude");
+    const surfaceChapterElement = document.querySelector<HTMLElement>(
+      '[data-journey-chapter="surface"]',
+    );
+    const depthChapterElement = document.querySelector<HTMLElement>(
+      '[data-journey-chapter="depth"]',
+    );
+    const depthMasterPlate = document.querySelector<HTMLImageElement>(
+      ".journey-world__depth-layer--master .journey-world__depth-plate",
+    );
     const sceneElements = Array.from(
-      document.querySelectorAll<HTMLElement>(
-        ".climb-intro, .waypoint, .about-scene, .contact-scene",
-      ),
+      document.querySelectorAll<HTMLElement>("[data-journey-scene]"),
     );
 
     let hero: MeasuredScene | null = null;
     let basecamp: MeasuredScene | null = null;
     let climb: MeasuredScene | null = null;
-    let highAltitude: MeasuredScene | null = null;
+    let surfaceChapter: MeasuredScene | null = null;
+    let depthChapter: MeasuredScene | null = null;
+    let depthTravel = Math.max(window.innerHeight, 1);
     let scenes: MeasuredScene[] = [];
     let metrics: ViewportMetrics = {
       height: Math.max(window.innerHeight, 1),
@@ -90,11 +98,16 @@ export function JourneyMotion() {
     };
 
     const writeSceneInteractivity = (element: HTMLElement, interactive: boolean) => {
+      const activeElement = document.activeElement;
+      const containsFocus =
+        activeElement instanceof HTMLElement && element.contains(activeElement);
+      const shouldBeInteractive = interactive || containsFocus;
+
       managedScenes.add(element);
-      element.classList.toggle("journey-scene--interactive", interactive);
+      element.classList.toggle("journey-scene--interactive", shouldBeInteractive);
       element
         .querySelectorAll<HTMLElement>("a, button, input, select, textarea, [tabindex]")
-        .forEach((control) => writeInert(control, !interactive));
+        .forEach((control) => writeInert(control, !shouldBeInteractive));
     };
 
     const resetManagedInert = () => {
@@ -125,13 +138,21 @@ export function JourneyMotion() {
         height: viewportHeight,
         width: viewportWidth,
         pageRange: Math.max(document.documentElement.scrollHeight - viewportHeight, 1),
-        motionScale: viewportWidth <= 720 ? 0.52 : viewportWidth <= 980 ? 0.74 : 1,
+        motionScale:
+          (viewportWidth <= 720 ? 0.52 : viewportWidth <= 980 ? 0.74 : 1) *
+          (viewportHeight <= 650 ? 0.72 : 1),
       };
 
       hero = measureElement(heroElement, scrollY);
       basecamp = measureElement(basecampElement, scrollY);
       climb = measureElement(climbElement, scrollY);
-      highAltitude = measureElement(highAltitudeElement, scrollY);
+      surfaceChapter = measureElement(surfaceChapterElement, scrollY);
+      depthChapter = measureElement(depthChapterElement, scrollY);
+      depthTravel = Math.max(
+        (depthMasterPlate?.getBoundingClientRect().height ?? viewportHeight * 2) -
+          viewportHeight,
+        viewportHeight * 0.65,
+      );
       scenes = sceneElements.map((element) => {
         const rect = element.getBoundingClientRect();
         return { element, top: rect.top + scrollY, height: rect.height };
@@ -169,10 +190,10 @@ export function JourneyMotion() {
       scene.top <= scrollY + viewportHeight * 2.5;
 
     const writeRootWorld = (
-      pageProgress: number,
+      surfaceProgress: number,
       motionScale: number,
     ) => {
-      const centered = pageProgress - 0.5;
+      const centered = surfaceProgress - 0.5;
       const depthOffset = (distance: number) =>
         `${(-centered * distance * motionScale).toFixed(2)}px`;
 
@@ -209,7 +230,43 @@ export function JourneyMotion() {
       writeStyle(
         root,
         "--world-scale",
-        (1.055 + pageProgress * 0.012 * motionScale).toFixed(4),
+        (1.055 + surfaceProgress * 0.012 * motionScale).toFixed(4),
+      );
+    };
+
+    const writeDepthWorld = (progress: number, motionScale: number) => {
+      // Keep the geological plate moving at a near-constant rate. The old
+      // smoothstep lingered on the surface, then revealed the core a chapter
+      // too early; a linear journey keeps each scene aligned to its stratum.
+      const plateProgress = clamp((progress - 0.015) / 0.97);
+      const realmMix = smoothstep(0.015, 0.13, progress);
+      const parallaxArc = Math.sin(plateProgress * Math.PI);
+      const masterY = -depthTravel * plateProgress;
+      const glowY = masterY - parallaxArc * 36 * motionScale;
+      const frameY = masterY - parallaxArc * 82 * motionScale;
+      const focusX = 58 - smoothstep(0.04, 0.96, progress) * 8;
+      const deepHeat = smoothstep(0.48, 0.92, progress);
+
+      writeStyle(root, "--surface-world-opacity", (1 - realmMix).toFixed(4));
+      writeStyle(root, "--depth-world-opacity", realmMix.toFixed(4));
+      writeStyle(
+        root,
+        "--climb-hud-opacity",
+        (1 - smoothstep(0, 0.015, progress)).toFixed(4),
+      );
+      writeStyle(root, "--depth-master-y", `${masterY.toFixed(2)}px`);
+      writeStyle(root, "--depth-glow-y", `${glowY.toFixed(2)}px`);
+      writeStyle(root, "--depth-frame-y", `${frameY.toFixed(2)}px`);
+      writeStyle(root, "--depth-focus-x", `${focusX.toFixed(3)}%`);
+      writeStyle(
+        root,
+        "--depth-glow-opacity",
+        (0.34 + progress * 0.18 + deepHeat * 0.18).toFixed(3),
+      );
+      writeStyle(
+        root,
+        "--depth-shade-opacity",
+        (0.14 + deepHeat * 0.22).toFixed(3),
       );
     };
 
@@ -234,14 +291,23 @@ export function JourneyMotion() {
     };
 
     const writeMotion = (scrollY: number) => {
-      const { height: viewportHeight, pageRange, motionScale } = metrics;
+      const {
+        height: viewportHeight,
+        width: viewportWidth,
+        pageRange,
+        motionScale,
+      } = metrics;
+      const depthUsesNormalFlow =
+        viewportHeight <= 600 && viewportWidth > viewportHeight;
       const pageProgress = clamp(scrollY / pageRange);
       const basecampProgress = enteringProgress(basecamp, scrollY, viewportHeight);
       const climbProgress = sectionProgress(climb, scrollY, viewportHeight);
-      const highProgress = sectionProgress(highAltitude, scrollY, viewportHeight);
+      const surfaceProgress = sectionProgress(surfaceChapter, scrollY, viewportHeight);
+      const depthProgress = sectionProgress(depthChapter, scrollY, viewportHeight);
 
       writeStyle(root, "--journey-progress", pageProgress.toFixed(4));
-      writeRootWorld(pageProgress, motionScale);
+      writeRootWorld(surfaceProgress, motionScale);
+      writeDepthWorld(depthProgress, motionScale);
 
       if (hero && isNearViewport(hero, scrollY, viewportHeight)) {
         const progress = clamp(
@@ -332,31 +398,6 @@ export function JourneyMotion() {
         );
       }
 
-      if (highAltitude && isNearViewport(highAltitude, scrollY, viewportHeight)) {
-        const centered = highProgress - 0.5;
-        writeStyle(highAltitude.element, "--high-progress", highProgress.toFixed(4));
-        writeStyle(
-          highAltitude.element,
-          "--high-backdrop-y",
-          `${(centered * 82 * motionScale).toFixed(2)}px`,
-        );
-        writeStyle(
-          highAltitude.element,
-          "--high-scale",
-          (1.055 + highProgress * 0.055 * motionScale).toFixed(4),
-        );
-        writeStyle(
-          highAltitude.element,
-          "--high-cloud-one-x",
-          `${(centered * 150 * motionScale).toFixed(2)}px`,
-        );
-        writeStyle(
-          highAltitude.element,
-          "--high-cloud-two-x",
-          `${(centered * -120 * motionScale).toFixed(2)}px`,
-        );
-      }
-
       for (const scene of scenes) {
         if (!isNearViewport(scene, scrollY, viewportHeight)) continue;
 
@@ -376,7 +417,12 @@ export function JourneyMotion() {
         // so layered panels blend without turning into an unreadable double image.
         const focus = Math.pow(smoothstep(0, 1, rawFocus), 3.2);
         writeStyle(scene.element, "--scene-focus", focus.toFixed(3));
-        writeSceneInteractivity(scene.element, focus >= 0.35);
+        const isNormalFlowDepthScene =
+          depthUsesNormalFlow && scene.element.closest(".earth-journey") !== null;
+        writeSceneInteractivity(
+          scene.element,
+          isNormalFlowDepthScene || focus >= 0.35,
+        );
         writeStyle(
           scene.element,
           "--scene-tint-opacity",

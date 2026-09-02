@@ -1,5 +1,5 @@
 import { Basecamp } from "@/components/summit/Basecamp";
-import { HighAltitude } from "@/components/summit/HighAltitude";
+import { EarthJourney } from "@/components/summit/EarthJourney";
 import { JourneyWorld } from "@/components/summit/JourneyWorld";
 import { Landmarks } from "@/components/summit/Landmarks";
 import { SummitHero } from "@/components/summit/SummitHero";
@@ -12,10 +12,12 @@ export default function Home() {
       <main className="journey" id="main-content">
         <JourneyWorld />
         <div className="journey__story">
-          <SummitHero />
-          <Basecamp />
-          <Landmarks />
-          <HighAltitude />
+          <div className="surface-journey" data-journey-chapter="surface">
+            <SummitHero />
+            <Basecamp />
+            <Landmarks />
+          </div>
+          <EarthJourney />
         </div>
       </main>
     </>
