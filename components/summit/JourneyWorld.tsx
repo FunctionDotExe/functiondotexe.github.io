@@ -73,6 +73,22 @@ export function JourneyWorld() {
         <span className="journey-world__depth-shade" />
       </div>
 
+      <div className="journey-world__portal">
+        <picture>
+          <source
+            media="(max-width: 820px) and (orientation: portrait)"
+            srcSet={world.depth.mobilePortal}
+          />
+          <img
+            src={world.depth.portal}
+            width="1536"
+            height="1024"
+            alt=""
+            decoding="async"
+          />
+        </picture>
+      </div>
+
       <span className="journey-world__grade" />
       <span className="journey-world__grain" />
     </div>

@@ -15,12 +15,46 @@ type ViewportMetrics = {
   motionScale: number;
 };
 
+type DepthPlane = "back" | "atmosphere" | "mid" | "near";
+
+type CameraShot = {
+  at: number;
+  y: number;
+  x: number;
+  zoom: number;
+};
+
+const DEPTH_PLANES: DepthPlane[] = ["back", "atmosphere", "mid", "near"];
+
 const clamp = (value: number, minimum = 0, maximum = 1) =>
   Math.min(maximum, Math.max(minimum, value));
 
 const smoothstep = (start: number, end: number, value: number) => {
   const progress = clamp((value - start) / Math.max(end - start, Number.EPSILON));
   return progress * progress * (3 - 2 * progress);
+};
+
+const mix = (from: number, to: number, amount: number) =>
+  from + (to - from) * amount;
+
+const sampleCameraShots = (shots: CameraShot[], scrollY: number): CameraShot => {
+  if (scrollY <= shots[0].at) return shots[0];
+
+  for (let index = 1; index < shots.length; index += 1) {
+    const next = shots[index];
+    if (scrollY > next.at) continue;
+
+    const previous = shots[index - 1];
+    const amount = smoothstep(previous.at, next.at, scrollY);
+    return {
+      at: scrollY,
+      y: mix(previous.y, next.y, amount),
+      x: mix(previous.x, next.x, amount),
+      zoom: mix(previous.zoom, next.zoom, amount),
+    };
+  }
+
+  return shots[shots.length - 1];
 };
 
 export function JourneyMotion() {
@@ -39,9 +73,20 @@ export function JourneyMotion() {
     const depthChapterElement = document.querySelector<HTMLElement>(
       '[data-journey-chapter="depth"]',
     );
-    const depthBackPlate = document.querySelector<HTMLImageElement>(
-      ".journey-world__depth-layer--back .journey-world__depth-plate",
-    );
+    const depthPlates: Record<DepthPlane, HTMLImageElement | null> = {
+      back: document.querySelector<HTMLImageElement>(
+        ".journey-world__depth-layer--back .journey-world__depth-plate",
+      ),
+      atmosphere: document.querySelector<HTMLImageElement>(
+        ".journey-world__depth-layer--atmosphere .journey-world__depth-plate",
+      ),
+      mid: document.querySelector<HTMLImageElement>(
+        ".journey-world__depth-layer--mid .journey-world__depth-plate",
+      ),
+      near: document.querySelector<HTMLImageElement>(
+        ".journey-world__depth-layer--near .journey-world__depth-plate",
+      ),
+    };
     const sceneElements = Array.from(
       document.querySelectorAll<HTMLElement>("[data-journey-scene]"),
     );
@@ -51,8 +96,14 @@ export function JourneyMotion() {
     let climb: MeasuredScene | null = null;
     let surfaceChapter: MeasuredScene | null = null;
     let depthChapter: MeasuredScene | null = null;
-    let depthTravel = Math.max(window.innerHeight, 1);
+    let depthTravels: Record<DepthPlane, number> = {
+      back: 0,
+      atmosphere: 0,
+      mid: 0,
+      near: 0,
+    };
     let scenes: MeasuredScene[] = [];
+    let depthScenes: MeasuredScene[] = [];
     let metrics: ViewportMetrics = {
       height: Math.max(window.innerHeight, 1),
       width: Math.max(window.innerWidth, 1),
@@ -68,6 +119,11 @@ export function JourneyMotion() {
     let disposed = false;
     let scrollListening = false;
     let motionIsReduced = reducedMotion.matches;
+    let cameraScrollY = window.scrollY;
+    let previousScrollY = window.scrollY;
+    let scrollVelocity = 0;
+    let lastFrameTime = performance.now();
+    let hasRenderedFrame = false;
 
     const writeStyle = (element: HTMLElement, property: string, value: string) => {
       let elementStyles = writtenStyles.get(element);
@@ -149,15 +205,21 @@ export function JourneyMotion() {
       climb = measureElement(climbElement, scrollY);
       surfaceChapter = measureElement(surfaceChapterElement, scrollY);
       depthChapter = measureElement(depthChapterElement, scrollY);
-      depthTravel = Math.max(
-        (depthBackPlate?.getBoundingClientRect().height ?? viewportHeight * 2) -
-          viewportHeight,
-        viewportHeight * 0.65,
-      );
       scenes = sceneElements.map((element) => {
         const rect = element.getBoundingClientRect();
         return { element, top: rect.top + scrollY, height: rect.height };
       });
+      depthScenes = scenes.filter(
+        (scene) => scene.element.closest(".earth-journey") !== null,
+      );
+      depthTravels = DEPTH_PLANES.reduce<Record<DepthPlane, number>>(
+        (travels, plane) => {
+          const plateHeight = depthPlates[plane]?.offsetHeight ?? viewportHeight;
+          travels[plane] = Math.max(plateHeight - viewportHeight, 0);
+          return travels;
+        },
+        { back: 0, atmosphere: 0, mid: 0, near: 0 },
+      );
       needsMeasure = false;
     };
 
@@ -190,122 +252,181 @@ export function JourneyMotion() {
       scene.top + scene.height >= scrollY - viewportHeight * 1.5 &&
       scene.top <= scrollY + viewportHeight * 2.5;
 
+    const depthHandoffAt = (scrollY: number, viewportHeight: number) => {
+      if (!depthChapter) return 0;
+      return smoothstep(
+        depthChapter.top,
+        depthChapter.top + viewportHeight * 0.92,
+        scrollY,
+      );
+    };
+
     const writeRootWorld = (
       surfaceProgress: number,
       motionScale: number,
+      depthHandoff: number,
     ) => {
       const centered = surfaceProgress - 0.5;
-      const depthOffset = (distance: number) =>
-        `${(-centered * distance * motionScale).toFixed(2)}px`;
+      const exit = smoothstep(0.03, 0.96, depthHandoff);
+      const depthOffset = (distance: number, exitDistance: number) =>
+        `${(
+          -centered * distance * motionScale -
+          exit * exitDistance * motionScale
+        ).toFixed(2)}px`;
 
-      writeStyle(
-        root,
-        "--world-sky-y",
-        depthOffset(14),
-      );
-      writeStyle(
-        root,
-        "--world-clouds-y",
-        depthOffset(42),
-      );
+      writeStyle(root, "--world-sky-y", depthOffset(14, 22));
+      writeStyle(root, "--world-clouds-y", depthOffset(42, 56));
       writeStyle(
         root,
         "--world-clouds-x",
-        `${(centered * 16 * motionScale).toFixed(2)}px`,
+        `${((centered * 16 - exit * 26) * motionScale).toFixed(2)}px`,
+      );
+      writeStyle(root, "--world-valley-y", depthOffset(74, 92));
+      writeStyle(root, "--world-trail-y", depthOffset(116, 148));
+      writeStyle(root, "--world-foreground-y", depthOffset(168, 224));
+      writeStyle(
+        root,
+        "--world-trail-x",
+        `${(exit * 28 * motionScale).toFixed(2)}px`,
       );
       writeStyle(
         root,
-        "--world-valley-y",
-        depthOffset(74),
-      );
-      writeStyle(
-        root,
-        "--world-trail-y",
-        depthOffset(116),
-      );
-      writeStyle(
-        root,
-        "--world-foreground-y",
-        depthOffset(168),
+        "--world-foreground-x",
+        `${(exit * 58 * motionScale).toFixed(2)}px`,
       );
       writeStyle(
         root,
         "--world-scale",
-        (1.055 + surfaceProgress * 0.012 * motionScale).toFixed(4),
+        (
+          1.055 +
+          surfaceProgress * 0.012 * motionScale +
+          exit * 0.045 * motionScale
+        ).toFixed(4),
       );
     };
 
+    const depthCameraShots = (viewportHeight: number): CameraShot[] => {
+      if (!depthChapter) {
+        return [{ at: 0, y: 0, x: 0, zoom: 1 }];
+      }
+
+      const chapterEnd =
+        depthChapter.top + Math.max(depthChapter.height - viewportHeight, 1);
+      const transitionEnd = depthChapter.top + viewportHeight * 0.92;
+      const targetY = [0, 0.22, 0.48, 0.74, 1];
+      const targetX = [0, 0.058, -0.064, 0.072, 0];
+      const targetZoom = [1.018, 1.006, 1.024, 1.012, 1.042];
+
+      const shots = targetY.map((y, index) => {
+        if (index === 0) {
+          return { at: transitionEnd, y, x: targetX[index], zoom: targetZoom[index] };
+        }
+
+        const scene = depthScenes[index];
+        const fallback = mix(transitionEnd, chapterEnd, index / (targetY.length - 1));
+        const stickyRange = scene
+          ? Math.max(scene.height - viewportHeight, viewportHeight * 0.35)
+          : 0;
+        const sceneAnchor = scene
+          ? scene.top + stickyRange * (index === targetY.length - 1 ? 0.72 : 0.5)
+          : fallback;
+
+        return {
+          at: Math.min(sceneAnchor, chapterEnd),
+          y,
+          x: targetX[index],
+          zoom: targetZoom[index],
+        };
+      });
+
+      for (let index = 1; index < shots.length; index += 1) {
+        shots[index].at = Math.max(shots[index].at, shots[index - 1].at + 1);
+      }
+
+      return shots;
+    };
+
     const writeDepthWorld = (
-      progress: number,
+      scrollY: number,
       motionScale: number,
       viewportHeight: number,
+      viewportWidth: number,
     ) => {
-      // The two realms meet at the same moving edge. There is no dissolve:
-      // the mountain physically leaves through the top while the cave enters
-      // from directly beneath it, with the cave roof overlapping the seam.
-      const handoff = smoothstep(0, 0.075, progress);
-      const plateProgress = clamp((progress - 0.075) / 0.925);
-      const cameraY = -depthTravel * plateProgress;
-      const surfaceRealmY = -handoff * viewportHeight;
-      const seamArc = Math.sin(handoff * Math.PI);
-      const seamDepth = seamArc * Math.min(viewportHeight * 0.065, 72);
-      const seamOverlap = seamArc * viewportHeight * 0.1;
-      const depthRealmY = (1 - handoff) * viewportHeight - seamOverlap;
-      const focusX = 53 - smoothstep(0.08, 0.96, plateProgress) * 3;
-      const deepHeat = smoothstep(0.48, 0.92, plateProgress);
+      const handoff = depthHandoffAt(scrollY, viewportHeight);
+      const portalRelease = depthChapter
+        ? smoothstep(
+            depthChapter.top + viewportHeight * 0.9,
+            depthChapter.top + viewportHeight * 1.45,
+            scrollY,
+          )
+        : 0;
+      const portalScale = Math.max(
+        0.001,
+        handoff * 5.25 + portalRelease * 3.75,
+      );
+      const isPortraitPortal =
+        viewportWidth <= 820 && viewportHeight > viewportWidth;
+      const portalRadius =
+        portalScale * Math.min(viewportWidth, viewportHeight) * 0.255 +
+        (isPortraitPortal
+          ? smoothstep(0.34, 0.54, handoff) * viewportHeight * 0.032
+          : 0);
+      const shot = sampleCameraShots(depthCameraShots(viewportHeight), scrollY);
+      const depthPulse =
+        Math.sin(shot.y * Math.PI * 3.5) *
+        Math.sin(shot.y * Math.PI) ** 2 *
+        viewportHeight *
+        0.045 *
+        motionScale;
+      const deepHeat = smoothstep(0.46, 0.94, shot.y);
+      const planeFactors: Record<DepthPlane, number> = {
+        back: 0.18,
+        atmosphere: 0.34,
+        mid: 0.68,
+        near: 1,
+      };
 
-      writeStyle(root, "--surface-realm-y", `${surfaceRealmY.toFixed(2)}px`);
-      writeStyle(root, "--depth-realm-y", `${depthRealmY.toFixed(2)}px`);
-      writeStyle(root, "--depth-seam-a", `${(seamDepth * 0.36).toFixed(2)}px`);
-      writeStyle(root, "--depth-seam-b", `${(seamDepth * 0.92).toFixed(2)}px`);
-      writeStyle(root, "--depth-seam-c", `${(seamDepth * 0.54).toFixed(2)}px`);
-      writeStyle(root, "--depth-seam-d", `${(seamDepth * 0.78).toFixed(2)}px`);
+      writeStyle(root, "--depth-reveal-radius", `${portalRadius.toFixed(2)}px`);
+      writeStyle(root, "--depth-portal-scale", portalScale.toFixed(4));
+      writeStyle(
+        root,
+        "--depth-portal-opacity",
+        (1 - smoothstep(0.64, 1, portalRelease)).toFixed(4),
+      );
+      writeStyle(root, "--depth-zoom", shot.zoom.toFixed(4));
       writeStyle(
         root,
         "--climb-hud-opacity",
-        (1 - smoothstep(0, 0.015, progress)).toFixed(4),
-      );
-      writeStyle(root, "--depth-back-y", `${cameraY.toFixed(2)}px`);
-      writeStyle(
-        root,
-        "--depth-atmosphere-y",
-        `${(cameraY - plateProgress * 42 * motionScale).toFixed(2)}px`,
+        (1 - smoothstep(0.02, 0.22, handoff)).toFixed(4),
       );
       writeStyle(
         root,
-        "--depth-atmosphere-x",
-        `${(-plateProgress * 18 * motionScale).toFixed(2)}px`,
+        "--threshold-copy-opacity",
+        smoothstep(0.28, 0.7, handoff).toFixed(4),
       );
       writeStyle(
         root,
-        "--depth-mid-y",
-        `${(cameraY - plateProgress * 108 * motionScale).toFixed(2)}px`,
+        "--threshold-copy-y",
+        `${((1 - handoff) * 46 * motionScale).toFixed(2)}px`,
       );
-      writeStyle(
-        root,
-        "--depth-mid-x",
-        `${(plateProgress * 10 * motionScale).toFixed(2)}px`,
-      );
-      writeStyle(
-        root,
-        "--depth-near-y",
-        `${(cameraY - plateProgress * 184 * motionScale).toFixed(2)}px`,
-      );
-      writeStyle(
-        root,
-        "--depth-near-x",
-        `${(plateProgress * 22 * motionScale).toFixed(2)}px`,
-      );
-      writeStyle(root, "--depth-focus-x", `${focusX.toFixed(3)}%`);
+
+      for (const plane of DEPTH_PLANES) {
+        const factor = planeFactors[plane];
+        const x = -shot.x * viewportWidth * factor * motionScale;
+        const y = -depthTravels[plane] * shot.y - depthPulse * factor;
+        writeStyle(root, `--depth-${plane}-x`, `${x.toFixed(2)}px`);
+        writeStyle(root, `--depth-${plane}-y`, `${y.toFixed(2)}px`);
+      }
+
       writeStyle(
         root,
         "--depth-atmosphere-opacity",
-        (0.16 + plateProgress * 0.08 + deepHeat * 0.1).toFixed(3),
+        (0.42 + deepHeat * 0.2).toFixed(3),
       );
       writeStyle(
         root,
         "--depth-shade-opacity",
-        (0.14 + deepHeat * 0.22).toFixed(3),
+        (0.07 + deepHeat * 0.11).toFixed(3),
       );
     };
 
@@ -329,7 +450,7 @@ export function JourneyMotion() {
       if (basecamp) writeSceneInteractivity(basecamp.element, copyExit <= 0.94);
     };
 
-    const writeMotion = (scrollY: number) => {
+    const writeMotion = (scrollY: number, worldScrollY: number) => {
       const {
         height: viewportHeight,
         width: viewportWidth,
@@ -339,18 +460,27 @@ export function JourneyMotion() {
       const depthUsesNormalFlow =
         viewportHeight <= 600 && viewportWidth > viewportHeight;
       const pageProgress = clamp(scrollY / pageRange);
-      const basecampProgress = enteringProgress(basecamp, scrollY, viewportHeight);
-      const climbProgress = sectionProgress(climb, scrollY, viewportHeight);
-      const surfaceProgress = sectionProgress(surfaceChapter, scrollY, viewportHeight);
-      const depthProgress = sectionProgress(depthChapter, scrollY, viewportHeight);
+      const basecampProgress = enteringProgress(basecamp, worldScrollY, viewportHeight);
+      const climbProgress = sectionProgress(climb, worldScrollY, viewportHeight);
+      const surfaceProgress = sectionProgress(
+        surfaceChapter,
+        worldScrollY,
+        viewportHeight,
+      );
+      const depthHandoff = depthHandoffAt(worldScrollY, viewportHeight);
 
       writeStyle(root, "--journey-progress", pageProgress.toFixed(4));
-      writeRootWorld(surfaceProgress, motionScale);
-      writeDepthWorld(depthProgress, motionScale, viewportHeight);
+      writeRootWorld(surfaceProgress, motionScale, depthHandoff);
+      writeDepthWorld(
+        worldScrollY,
+        motionScale,
+        viewportHeight,
+        viewportWidth,
+      );
 
-      if (hero && isNearViewport(hero, scrollY, viewportHeight)) {
+      if (hero && isNearViewport(hero, worldScrollY, viewportHeight)) {
         const progress = clamp(
-          (scrollY - hero.top) /
+          (worldScrollY - hero.top) /
             Math.max(hero.height - viewportHeight * 0.35, 1),
         );
         const copyOpacity = clamp(1 - progress * 1.35);
@@ -395,7 +525,7 @@ export function JourneyMotion() {
       // preserves the existing section-level variable API.
       writeBasecampMotion(basecampProgress, motionScale, basecampIsNear);
 
-      if (climb && isNearViewport(climb, scrollY, viewportHeight)) {
+      if (climb && isNearViewport(climb, worldScrollY, viewportHeight)) {
         const centered = climbProgress - 0.5;
         const peakBridgeOpacity = smoothstep(0.75, 0.98, climbProgress);
         writeStyle(climb.element, "--climb-progress", climbProgress.toFixed(4));
@@ -499,13 +629,37 @@ export function JourneyMotion() {
       }
     };
 
-    const runFrame = () => {
+    const runFrame = (time: number) => {
       animationFrame = 0;
       if (disposed || motionIsReduced) return;
 
       const scrollY = window.scrollY;
-      if (needsMeasure) readMeasurements(scrollY);
-      writeMotion(scrollY);
+      if (needsMeasure) {
+        readMeasurements(scrollY);
+        if (!hasRenderedFrame) {
+          cameraScrollY = scrollY;
+          previousScrollY = scrollY;
+        }
+      }
+
+      const elapsed = clamp(time - lastFrameTime, 8, 48);
+      const instantVelocity = (scrollY - previousScrollY) / elapsed;
+      const velocityFollow = 1 - Math.exp(-elapsed / 58);
+      scrollVelocity += (instantVelocity - scrollVelocity) * velocityFollow;
+      previousScrollY = scrollY;
+
+      const lookAhead = clamp(
+        scrollVelocity * 30 * metrics.motionScale,
+        -36 * metrics.motionScale,
+        36 * metrics.motionScale,
+      );
+      const cameraTarget = clamp(scrollY + lookAhead, 0, metrics.pageRange);
+      const cameraFollow = 1 - Math.exp(-elapsed / 92);
+      cameraScrollY += (cameraTarget - cameraScrollY) * cameraFollow;
+      lastFrameTime = time;
+
+      writeMotion(scrollY, cameraScrollY);
+      hasRenderedFrame = true;
 
       if (!root.classList.contains("journey-motion-ready")) {
         // Viewport-fixed panels keep their semantic content available to
@@ -519,6 +673,10 @@ export function JourneyMotion() {
         root.classList.add("journey-motion-ready");
       }
       if (root.dataset.motion !== "active") root.dataset.motion = "active";
+
+      const cameraIsSettling = Math.abs(cameraTarget - cameraScrollY) > 0.12;
+      const velocityIsSettling = Math.abs(scrollVelocity) > 0.002;
+      if (cameraIsSettling || velocityIsSettling) scheduleUpdate();
     };
 
     const scheduleUpdate = () => {
@@ -561,11 +719,20 @@ export function JourneyMotion() {
         root.classList.remove("journey-motion-ready");
         if (root.dataset.motion !== "reduced") root.dataset.motion = "reduced";
         needsMeasure = true;
+        cameraScrollY = window.scrollY;
+        previousScrollY = window.scrollY;
+        scrollVelocity = 0;
+        hasRenderedFrame = false;
         return;
       }
 
       attachScrollListener();
       needsMeasure = true;
+      cameraScrollY = window.scrollY;
+      previousScrollY = window.scrollY;
+      scrollVelocity = 0;
+      lastFrameTime = performance.now();
+      hasRenderedFrame = false;
       scheduleUpdate();
     };
 

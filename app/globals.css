@@ -19,13 +19,14 @@
   --ease-soft: cubic-bezier(0.65, 0, 0.35, 1);
   --gutter: clamp(1.25rem, 4vw, 4.75rem);
   --content: 92rem;
-  --surface-realm-y: 0px;
-  --depth-realm-y: 100dvh;
-  --depth-seam-a: 0px;
-  --depth-seam-b: 0px;
-  --depth-seam-c: 0px;
-  --depth-seam-d: 0px;
+  --depth-portal-x: 68%;
+  --depth-portal-y: 66%;
+  --depth-portal-scale: 0.001;
+  --depth-portal-opacity: 1;
+  --depth-reveal-radius: 0px;
+  --depth-zoom: 1;
   --climb-hud-opacity: 1;
+  --depth-back-x: 0px;
   --depth-back-y: 0px;
   --depth-atmosphere-x: 0px;
   --depth-atmosphere-y: 0px;
@@ -33,9 +34,10 @@
   --depth-mid-y: 0px;
   --depth-near-x: 0px;
   --depth-near-y: 0px;
-  --depth-focus-x: 53%;
-  --depth-atmosphere-opacity: 0.16;
-  --depth-shade-opacity: 0.2;
+  --depth-atmosphere-opacity: 0.42;
+  --depth-shade-opacity: 0.07;
+  --threshold-copy-opacity: 0;
+  --threshold-copy-y: 46px;
 }
 
 * {
@@ -461,6 +463,7 @@ html:not(.journey-motion-ready):has(#contact:target) .journey-nav:not(.journey-n
 .journey-world__realm,
 .journey-world__depth-layer,
 .journey-world__depth-shade,
+.journey-world__portal,
 .journey-world__grade,
 .journey-world__grain {
   position: absolute;
@@ -469,31 +472,21 @@ html:not(.journey-motion-ready):has(#contact:target) .journey-nav:not(.journey-n
 .journey-world__realm {
   inset: 0;
   overflow: hidden;
-  will-change: translate;
 }
 
 .journey-world__realm--surface {
   z-index: 0;
-  translate: 0 var(--surface-realm-y);
 }
 
 .journey-world__realm--depth {
   z-index: 1;
   background: #120c29;
-  clip-path: polygon(
-    0 var(--depth-seam-a),
-    10% var(--depth-seam-c),
-    22% var(--depth-seam-b),
-    36% var(--depth-seam-d),
-    50% var(--depth-seam-a),
-    64% var(--depth-seam-b),
-    78% var(--depth-seam-c),
-    90% var(--depth-seam-d),
-    100% var(--depth-seam-a),
-    100% 100%,
-    0 100%
+  clip-path: circle(
+    var(--depth-reveal-radius) at var(--depth-portal-x) var(--depth-portal-y)
   );
-  translate: 0 var(--depth-realm-y);
+  transform: scale(var(--depth-zoom));
+  transform-origin: center;
+  will-change: clip-path, transform;
 }
 
 .journey-world__layer {
@@ -531,12 +524,12 @@ html:not(.journey-motion-ready):has(#contact:target) .journey-nav:not(.journey-n
 
 .journey-world__layer--trail {
   z-index: 3;
-  translate: 0 var(--world-trail-y, 0px);
+  translate: var(--world-trail-x, 0px) var(--world-trail-y, 0px);
 }
 
 .journey-world__layer--foreground {
   z-index: 4;
-  translate: 0 var(--world-foreground-y, 0px);
+  translate: var(--world-foreground-x, 0px) var(--world-foreground-y, 0px);
 }
 
 .journey-world__depth-layer {
@@ -565,29 +558,47 @@ html:not(.journey-motion-ready):has(#contact:target) .journey-nav:not(.journey-n
 .journey-world__depth-plate {
   position: absolute;
   top: 0;
-  left: var(--depth-focus-x);
+  left: 50%;
   width: auto;
-  height: max(162vw, 116dvh);
   max-width: none;
-  transform: translateX(-50%) scale(1.015);
   transform-origin: top center;
-  will-change: translate, left;
+  will-change: transform;
 }
 
 .journey-world__depth-layer--back .journey-world__depth-plate {
-  translate: 0 var(--depth-back-y);
+  height: max(164vw, 145dvh);
+  transform: translate3d(
+    calc(-50% + var(--depth-back-x)),
+    var(--depth-back-y),
+    0
+  );
 }
 
 .journey-world__depth-layer--atmosphere .journey-world__depth-plate {
-  translate: var(--depth-atmosphere-x) var(--depth-atmosphere-y);
+  height: max(174vw, 153dvh);
+  transform: translate3d(
+    calc(-50% + var(--depth-atmosphere-x)),
+    var(--depth-atmosphere-y),
+    0
+  );
 }
 
 .journey-world__depth-layer--mid .journey-world__depth-plate {
-  translate: var(--depth-mid-x) var(--depth-mid-y);
+  height: max(190vw, 166dvh);
+  transform: translate3d(
+    calc(-50% + var(--depth-mid-x)),
+    var(--depth-mid-y),
+    0
+  );
 }
 
 .journey-world__depth-layer--near .journey-world__depth-plate {
-  translate: var(--depth-near-x) var(--depth-near-y);
+  height: max(214vw, 184dvh);
+  transform: translate3d(
+    calc(-50% + var(--depth-near-x)),
+    var(--depth-near-y),
+    0
+  );
 }
 
 .journey-world__depth-shade {
@@ -598,6 +609,30 @@ html:not(.journey-motion-ready):has(#contact:target) .journey-nav:not(.journey-n
     linear-gradient(90deg, rgba(10, 6, 27, 0.42), transparent 28% 72%, rgba(10, 6, 27, 0.42)),
     linear-gradient(180deg, rgba(15, 9, 34, 0.12), transparent 34%, rgba(9, 5, 24, 0.24));
   will-change: opacity;
+}
+
+.journey-world__portal {
+  z-index: 5;
+  top: var(--depth-portal-y);
+  left: var(--depth-portal-x);
+  width: 100vw;
+  height: 100svh;
+  transform: translate3d(-50%, -50%, 0) scale(var(--depth-portal-scale));
+  transform-origin: center;
+  opacity: var(--depth-portal-opacity);
+  will-change: transform, opacity;
+}
+
+.journey-world__portal picture,
+.journey-world__portal img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.journey-world__portal img {
+  max-width: none;
+  object-fit: contain;
 }
 
 .journey-world__grade,
@@ -1393,7 +1428,7 @@ html:not(.journey-motion-ready) .earth-journey {
 html:not(.journey-motion-ready) .earth-stage {
   background:
     linear-gradient(90deg, rgba(12, 7, 30, 0.5), rgba(12, 7, 30, 0.12) 55%, rgba(12, 7, 30, 0.36)),
-    url("/media/earth-depth-back-v2.webp") center 24% / cover no-repeat;
+    url("/media/earth-depth-back-v3.webp") center 24% / cover no-repeat;
 }
 
 html:not(.journey-motion-ready) .earth-stage--threshold {
@@ -1515,7 +1550,14 @@ html:not(.journey-motion-ready) .earth-stage--core {
 .descent-threshold .descent-scene__content {
   width: min(100%, 70rem);
   margin-inline: auto;
+  opacity: 1;
   text-align: center;
+}
+
+.journey-motion-ready .descent-threshold .descent-scene__content {
+  opacity: var(--threshold-copy-opacity);
+  translate: 0 calc(var(--copy-shift, 0px) + var(--threshold-copy-y));
+  will-change: opacity, translate;
 }
 
 .descent-crust .descent-scene__content {
@@ -2709,10 +2751,6 @@ html:not(.journey-motion-ready) .altitude-stage--contact::after {
 }
 
 @media (max-width: 720px) {
-  .journey-world__depth-plate {
-    height: 220dvh;
-  }
-
   .earth-journey {
     margin-top: 0;
   }

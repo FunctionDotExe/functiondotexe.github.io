@@ -52,10 +52,12 @@ export const SUMMIT_CONTENT = {
     trail: "/media/summit-parallax-trail-v2.webp",
     foreground: "/media/summit-parallax-foreground-v2.webp",
     depth: {
-      back: "/media/earth-depth-back-v2.webp",
-      atmosphere: "/media/earth-depth-atmosphere-v2.webp",
-      mid: "/media/earth-depth-mid-v2.webp",
-      near: "/media/earth-depth-near-v2.webp",
+      portal: "/media/earth-cave-portal-v3.webp",
+      mobilePortal: "/media/earth-cave-portal-mobile-v3.webp",
+      back: "/media/earth-depth-back-v3.webp",
+      atmosphere: "/media/earth-depth-atmosphere-v3.webp",
+      mid: "/media/earth-depth-mid-v3.webp",
+      near: "/media/earth-depth-near-v3.webp",
     },
   },
   hero: {
