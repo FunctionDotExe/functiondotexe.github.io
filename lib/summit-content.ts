@@ -52,8 +52,8 @@ export const SUMMIT_CONTENT = {
     trail: "/media/summit-parallax-trail-v2.webp",
     foreground: "/media/summit-parallax-foreground-v2.webp",
     depth: {
-      bridge: "/media/earth-transition-bridge-v4.webp",
-      mobileBridge: "/media/earth-transition-bridge-mobile-v4.webp",
+      bridge: "/media/earth-transition-bridge-v5.webp",
+      mobileBridge: "/media/earth-transition-bridge-mobile-v5.webp",
       back: "/media/earth-depth-back-v3.webp",
       atmosphere: "/media/earth-depth-atmosphere-v3.webp",
       mid: "/media/earth-depth-mid-v3.webp",

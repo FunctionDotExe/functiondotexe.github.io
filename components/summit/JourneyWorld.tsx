@@ -92,6 +92,16 @@ export function JourneyWorld() {
         </picture>
       </div>
 
+      <div className="journey-world__handoff-lip">
+        <img
+          src={world.foreground}
+          width="1536"
+          height="1024"
+          alt=""
+          decoding="async"
+        />
+      </div>
+
       <span className="journey-world__grade" />
       <span className="journey-world__grain" />
     </div>

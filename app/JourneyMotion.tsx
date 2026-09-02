@@ -74,6 +74,9 @@ export function JourneyMotion() {
     const heroElement = document.querySelector<HTMLElement>(".journey-hero");
     const basecampElement = document.querySelector<HTMLElement>(".basecamp-scene");
     const climbElement = document.querySelector<HTMLElement>(".climb");
+    const journeyWorldElement = document.querySelector<HTMLElement>(
+      ".journey-world",
+    );
     const surfaceChapterElement = document.querySelector<HTMLElement>(
       '[data-journey-chapter="surface"]',
     );
@@ -94,6 +97,9 @@ export function JourneyMotion() {
     );
     const bridgePlateElement = document.querySelector<HTMLImageElement>(
       ".journey-world__bridge-plate",
+    );
+    const handoffLipElement = document.querySelector<HTMLElement>(
+      ".journey-world__handoff-lip",
     );
     const depthPlates: Record<DepthPlane, HTMLImageElement | null> = {
       back: document.querySelector<HTMLImageElement>(
@@ -284,9 +290,11 @@ export function JourneyMotion() {
 
       return {
         enterProgress:
-          entryEnd > 0 ? smoothstep(0, entryEnd, local) : local > 0 ? 1 : 0,
+          entryEnd > 0 ? clamp(local / entryEnd) : local > 0 ? 1 : 0,
         exitProgress:
-          range > exitStart ? smoothstep(exitStart, range, local) : 0,
+          range > exitStart
+            ? clamp((local - exitStart) / (range - exitStart))
+            : 0,
         panProgress:
           bridgeTravel > 0
             ? clamp(panDistance / bridgeTravel)
@@ -322,17 +330,14 @@ export function JourneyMotion() {
       motionScale: number,
       bridgeProgress: number,
     ) => {
-      const worldTarget = surfaceRealmElement ?? root;
+      const worldTarget = journeyWorldElement ?? root;
       const centered = surfaceProgress - 0.5;
       const exit = smoothstep(0.02, 0.22, bridgeProgress);
-      const deviceScale = Math.max(window.devicePixelRatio, 1);
-      const snap = (value: number) =>
-        Math.round(value * deviceScale * 4) / (deviceScale * 4);
       const depthOffset = (distance: number, exitDistance: number) => {
         const value =
           -centered * distance * motionScale -
           exit * exitDistance * motionScale;
-        return `${snap(value).toFixed(2)}px`;
+        return `${value.toFixed(3)}px`;
       };
 
       writeStyle(worldTarget, "--world-sky-y", depthOffset(14, 0));
@@ -340,7 +345,7 @@ export function JourneyMotion() {
       writeStyle(
         worldTarget,
         "--world-clouds-x",
-        `${snap((centered * 16 - exit * 26) * motionScale).toFixed(2)}px`,
+        `${((centered * 16 - exit * 26) * motionScale).toFixed(3)}px`,
       );
       writeStyle(worldTarget, "--world-valley-y", depthOffset(74, 16));
       writeStyle(worldTarget, "--world-trail-y", depthOffset(92, 12));
@@ -348,12 +353,12 @@ export function JourneyMotion() {
       writeStyle(
         worldTarget,
         "--world-trail-x",
-        `${snap(exit * 28 * motionScale).toFixed(2)}px`,
+        `${(exit * 28 * motionScale).toFixed(3)}px`,
       );
       writeStyle(
         worldTarget,
         "--world-foreground-x",
-        `${snap(exit * 58 * motionScale).toFixed(2)}px`,
+        `${(exit * 58 * motionScale).toFixed(3)}px`,
       );
     };
 
@@ -411,40 +416,45 @@ export function JourneyMotion() {
       const thresholdEnd = threshold
         ? threshold.top + Math.max(threshold.height - viewportHeight, 1)
         : thresholdStart + viewportHeight;
-      const normalFlowDepth = normalFlowDepthAt(scrollY, viewportHeight);
+      const normalFlowDepth = normalFlowDepthAt(worldScrollY, viewportHeight);
+      const panDistance = bridgeTravel * bridgeState.panProgress;
       const surfaceOpacity = depthUsesNormalFlow
-        ? normalFlowDepth < 0.999
-          ? 1
-          : 0
-        : bridgeState.local < bridgeState.entryEnd + viewportHeight * 0.08
-          ? 1
-          : 0;
+        ? 1 - normalFlowDepth
+        : 1 - smoothstep(0, 0.35, bridgeState.exitProgress);
       const bridgeOpacity = depthUsesNormalFlow
         ? 0
-        : bridgeState.enterProgress * (1 - bridgeState.exitProgress);
-      const depthRampStart = Math.max(
-        bridgeState.entryEnd,
-        bridgeState.exitStart - viewportHeight * 0.18,
-      );
+        : 1;
       const realmOpacity = depthUsesNormalFlow
         ? normalFlowDepth
-        : smoothstep(depthRampStart, bridgeState.exitStart, bridgeState.local);
+        : smoothstep(0.78, 0.96, bridgeState.panProgress);
+      const rawScrollIsNearBridge =
+        scrollY >= thresholdStart - viewportHeight * 1.25 &&
+        scrollY <= thresholdEnd + viewportHeight * 1.25;
+      const visualBridgeIsActive =
+        bridgeState.enterProgress > 0.0001 &&
+        bridgeState.exitProgress < 0.9999;
       const shouldPrewarmBridge =
         !depthUsesNormalFlow &&
-        scrollY >= thresholdStart - viewportHeight * 0.5 &&
-        scrollY <= thresholdEnd + viewportHeight * 0.15;
+        (rawScrollIsNearBridge || visualBridgeIsActive);
       const shouldPrewarmDepth = depthUsesNormalFlow
         ? Boolean(
             depthChapter && scrollY >= depthChapter.top - viewportHeight * 0.35,
           )
-        : bridgeState.local >= depthRampStart - viewportHeight * 0.12;
-      const deviceScale = Math.max(window.devicePixelRatio, 1);
+        : bridgeState.panProgress >= 0.58;
       const bridgeY = depthUsesNormalFlow
         ? 0
-        : Math.round(
-            -bridgeTravel * bridgeState.panProgress * deviceScale * 4,
-          ) /
-          (deviceScale * 4);
+        : viewportHeight * (1 - bridgeState.enterProgress) -
+          panDistance -
+          viewportHeight * bridgeState.exitProgress;
+      const lipExit = smoothstep(
+        viewportHeight * 0.035,
+        viewportHeight * 0.24,
+        panDistance,
+      );
+      const handoffLipOpacity = depthUsesNormalFlow
+        ? 0
+        : smoothstep(0, 0.16, bridgeState.enterProgress) * (1 - lipExit);
+      const handoffLipY = -Math.min(panDistance * 0.52, viewportHeight * 0.13);
       const shot = sampleCameraShots(
         depthCameraShots(viewportHeight),
         worldScrollY,
@@ -462,6 +472,9 @@ export function JourneyMotion() {
         mid: 0.68,
         near: 1,
       };
+      const climbTarget = climbElement ?? root;
+      const thresholdTarget = thresholdElement ?? root;
+      const depthTarget = depthRealmElement ?? root;
 
       if (surfaceRealmElement) {
         writeStyle(
@@ -492,6 +505,23 @@ export function JourneyMotion() {
           shouldPrewarmBridge ? "visible" : "hidden",
         );
       }
+      if (handoffLipElement) {
+        writeStyle(
+          handoffLipElement,
+          "--handoff-lip-opacity",
+          handoffLipOpacity.toFixed(4),
+        );
+        writeStyle(
+          handoffLipElement,
+          "--handoff-lip-y",
+          `${handoffLipY.toFixed(3)}px`,
+        );
+        writeStyle(
+          handoffLipElement,
+          "visibility",
+          shouldPrewarmBridge ? "visible" : "hidden",
+        );
+      }
       if (depthRealmElement) {
         writeStyle(
           depthRealmElement,
@@ -505,7 +535,7 @@ export function JourneyMotion() {
         );
       }
       writeStyle(
-        root,
+        climbTarget,
         "--climb-hud-opacity",
         (
           depthUsesNormalFlow
@@ -514,16 +544,28 @@ export function JourneyMotion() {
         ).toFixed(4),
       );
       writeStyle(
-        root,
+        thresholdTarget,
         "--threshold-copy-opacity",
         (
           depthUsesNormalFlow
             ? 1
-            : smoothstep(0.64, 0.74, bridgeState.panProgress)
+            : smoothstep(0.58, 0.72, bridgeState.panProgress) *
+              (1 - smoothstep(0.04, 0.58, bridgeState.exitProgress))
         ).toFixed(4),
       );
       writeStyle(
-        root,
+        thresholdTarget,
+        "--threshold-tint-opacity",
+        (
+          depthUsesNormalFlow
+            ? 0.42
+            : 0.42 *
+              smoothstep(0.5, 0.7, bridgeState.panProgress) *
+              (1 - smoothstep(0, 0.72, bridgeState.exitProgress))
+        ).toFixed(4),
+      );
+      writeStyle(
+        thresholdTarget,
         "--threshold-copy-y",
         `${(
           depthUsesNormalFlow
@@ -536,17 +578,40 @@ export function JourneyMotion() {
         const factor = planeFactors[plane];
         const x = -shot.x * viewportWidth * factor * motionScale;
         const y = -depthTravels[plane] * shot.y - depthPulse * factor;
-        writeStyle(root, `--depth-${plane}-x`, `${x.toFixed(2)}px`);
-        writeStyle(root, `--depth-${plane}-y`, `${y.toFixed(2)}px`);
+        writeStyle(depthTarget, `--depth-${plane}-x`, `${x.toFixed(2)}px`);
+        writeStyle(depthTarget, `--depth-${plane}-y`, `${y.toFixed(2)}px`);
       }
 
       writeStyle(
-        root,
+        depthTarget,
         "--depth-atmosphere-opacity",
-        (0.42 + deepHeat * 0.2).toFixed(3),
+        (
+          (0.42 + deepHeat * 0.2) *
+          (depthUsesNormalFlow
+            ? 1
+            : smoothstep(0, 0.62, bridgeState.exitProgress))
+        ).toFixed(3),
       );
       writeStyle(
-        root,
+        depthTarget,
+        "--depth-mid-opacity",
+        (
+          depthUsesNormalFlow
+            ? 1
+            : smoothstep(0.12, 0.82, bridgeState.exitProgress)
+        ).toFixed(3),
+      );
+      writeStyle(
+        depthTarget,
+        "--depth-near-opacity",
+        (
+          depthUsesNormalFlow
+            ? 1
+            : smoothstep(0.34, 1, bridgeState.exitProgress)
+        ).toFixed(3),
+      );
+      writeStyle(
+        depthTarget,
         "--depth-shade-opacity",
         (0.07 + deepHeat * 0.11).toFixed(3),
       );
@@ -555,33 +620,30 @@ export function JourneyMotion() {
     const writeBasecampMotion = (
       progress: number,
       motionScale: number,
-      writeLocally: boolean,
     ) => {
+      if (!basecamp) return;
+
       const copyExit = smoothstep(0.52, 0.7, progress);
       const values = {
-        "--basecamp-progress": progress.toFixed(4),
         "--basecamp-copy-opacity": (1 - copyExit).toFixed(4),
         "--basecamp-copy-y": `${(-copyExit * 64 * motionScale).toFixed(2)}px`,
       };
 
       for (const [property, value] of Object.entries(values)) {
-        writeStyle(root, property, value);
-        if (writeLocally && basecamp) writeStyle(basecamp.element, property, value);
+        writeStyle(basecamp.element, property, value);
       }
 
-      if (basecamp) writeSceneInteractivity(basecamp.element, copyExit <= 0.94);
+      writeSceneInteractivity(basecamp.element, copyExit <= 0.94);
     };
 
     const writeMotion = (scrollY: number, worldScrollY: number) => {
       const {
         height: viewportHeight,
         width: viewportWidth,
-        pageRange,
         motionScale,
       } = metrics;
       const depthUsesNormalFlow =
         viewportHeight <= 600 && viewportWidth > viewportHeight;
-      const pageProgress = clamp(scrollY / pageRange);
       const basecampProgress = enteringProgress(basecamp, worldScrollY, viewportHeight);
       const climbProgress = sectionProgress(climb, worldScrollY, viewportHeight);
       const surfaceProgress = sectionProgress(
@@ -589,12 +651,11 @@ export function JourneyMotion() {
         worldScrollY,
         viewportHeight,
       );
-      const bridgeState = bridgeStateAt(scrollY, viewportHeight);
+      const bridgeState = bridgeStateAt(worldScrollY, viewportHeight);
       const transitionProgress = depthUsesNormalFlow
-        ? normalFlowDepthAt(scrollY, viewportHeight)
+        ? normalFlowDepthAt(worldScrollY, viewportHeight)
         : bridgeState.panProgress;
 
-      writeStyle(root, "--journey-progress", pageProgress.toFixed(4));
       writeRootWorld(surfaceProgress, motionScale, transitionProgress);
       writeDepthWorld(
         scrollY,
@@ -646,12 +707,7 @@ export function JourneyMotion() {
         writeSceneInteractivity(hero.element, copyOpacity >= 0.06);
       }
 
-      const basecampIsNear = Boolean(
-        basecamp && isNearViewport(basecamp, scrollY, viewportHeight),
-      );
-      // JourneyWorld inherits these values from root. Mirroring them locally
-      // preserves the existing section-level variable API.
-      writeBasecampMotion(basecampProgress, motionScale, basecampIsNear);
+      writeBasecampMotion(basecampProgress, motionScale);
 
       if (climb && isNearViewport(climb, worldScrollY, viewportHeight)) {
         const centered = climbProgress - 0.5;
