@@ -20,6 +20,7 @@
   --gutter: clamp(1.25rem, 4vw, 4.75rem);
   --content: 92rem;
   --surface-realm-opacity: 1;
+  --continuum-realm-opacity: 0;
   --continuum-y: 0px;
   --depth-realm-opacity: 0;
   --climb-hud-opacity: 1;
@@ -492,9 +493,11 @@ html:not(.journey-motion-ready):has(#contact:target) .journey-nav:not(.journey-n
 .journey-world__realm--continuum {
   z-index: 2;
   visibility: hidden;
+  opacity: var(--continuum-realm-opacity);
   background: #17112f;
   backface-visibility: hidden;
   contain: paint;
+  will-change: opacity;
 }
 
 .journey-world__realm--continuum picture {
@@ -508,7 +511,7 @@ html:not(.journey-motion-ready):has(#contact:target) .journey-nav:not(.journey-n
   top: 0;
   left: 50%;
   width: auto;
-  height: max(336.112dvh, 189.063vw);
+  height: max(336.1112dvh, 189.0625vw);
   aspect-ratio: 64 / 121;
   max-width: none;
   transform: translate3d(-50%, var(--continuum-y), 0);
@@ -1124,11 +1127,11 @@ html:not(.journey-motion-ready):has(#contact:target) .journey-nav:not(.journey-n
 }
 
 .journey-motion-ready [data-journey-scene] > [data-journey-stage] {
-  opacity: 0;
+  opacity: var(--scene-presence, 0);
 }
 
 .journey-motion-ready [data-journey-scene].journey-scene--active > [data-journey-stage] {
-  opacity: 1;
+  opacity: var(--scene-presence, 1);
 }
 
 .journey-motion-ready .journey-scene--interactive > [data-journey-stage] {
@@ -1502,7 +1505,7 @@ html:not(.journey-motion-ready) .earth-stage--core {
 }
 
 .descent-threshold.descent-scene {
-  min-height: max(336.112dvh, 189.063vw);
+  min-height: max(336.1112dvh, 189.0625vw);
 }
 
 @media (max-width: 820px) and (orientation: portrait) {

@@ -121,6 +121,8 @@ export function JourneyMotion() {
     let depthChapter: MeasuredScene | null = null;
     let threshold: MeasuredScene | null = null;
     let continuumTravel = 0;
+    let continuumStartOffset = 0;
+    let continuumEndOffset = 0;
     let depthTravels: Record<DepthPlane, number> = {
       back: 0,
       atmosphere: 0,
@@ -232,8 +234,36 @@ export function JourneyMotion() {
       surfaceChapter = measureElement(surfaceChapterElement, scrollY);
       depthChapter = measureElement(depthChapterElement, scrollY);
       threshold = measureElement(thresholdElement, scrollY);
+      const continuumRect = continuumPlateElement?.getBoundingClientRect();
+      const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+      const continuumAnchorRatio =
+        isPortrait && viewportWidth <= 600
+          ? 844 / 390
+          : isPortrait && viewportWidth <= 820
+            ? 11 / 8
+            : 9 / 16;
+      const continuumPlateHeight = continuumRect?.height ?? viewportHeight;
+      const continuumAnchorHeight = Math.max(
+        viewportHeight,
+        (continuumRect?.width ?? viewportWidth) * continuumAnchorRatio,
+      );
+      const continuumAnchorExcess = Math.max(
+        continuumAnchorHeight - viewportHeight,
+        0,
+      );
+
+      // The stitched plate contains full viewport captures at both ends. On
+      // wider screens those captures become taller than the viewport, so the
+      // terminal frame must stop at the start of the final capture instead of
+      // at the physical bottom of the bitmap. A small entry bias aligns the
+      // live trail/valley layers with the flattened surface capture.
+      continuumStartOffset = continuumAnchorExcess * 0.24;
+      continuumEndOffset = Math.max(
+        continuumPlateHeight - continuumAnchorHeight,
+        continuumStartOffset,
+      );
       continuumTravel = Math.max(
-        (continuumPlateElement?.offsetHeight ?? viewportHeight) - viewportHeight,
+        continuumEndOffset - continuumStartOffset,
         0,
       );
       scenes = sceneElements.map((element) => {
@@ -275,11 +305,17 @@ export function JourneyMotion() {
     const continuumStateAt = (
       visualScrollY: number,
       viewportHeight: number,
+      includeHandoffRunway: boolean,
     ): ContinuumState => {
-      const start = threshold?.top ?? depthChapter?.top ?? 0;
-      const range = threshold
+      const thresholdStart = threshold?.top ?? depthChapter?.top ?? 0;
+      const thresholdRange = threshold
         ? Math.max(threshold.height - viewportHeight, 1)
         : Math.max(continuumTravel, 1);
+      const handoffRunway = includeHandoffRunway
+        ? Math.min(viewportHeight * 0.58, thresholdRange * 0.34)
+        : 0;
+      const start = thresholdStart - handoffRunway;
+      const range = thresholdRange + handoffRunway * 2;
       const travel = Math.max(continuumTravel, 0);
       const scrollLocal = clamp(visualScrollY - start, 0, range);
       const edgeLength = Math.min(range * 0.1, viewportHeight * 0.32);
@@ -398,9 +434,13 @@ export function JourneyMotion() {
         const sceneAnchor = scene
           ? scene.top + stickyRange * (index === targetY.length - 1 ? 0.72 : 0.5)
           : fallback;
+        const pacedAnchor =
+          index === 1
+            ? Math.max(sceneAnchor, transitionEnd + viewportHeight * 0.9)
+            : sceneAnchor;
 
         return {
-          at: Math.min(sceneAnchor, chapterEnd),
+          at: Math.min(pacedAnchor, chapterEnd),
           y,
           x: targetX[index],
         };
@@ -423,6 +463,12 @@ export function JourneyMotion() {
     ) => {
       const thresholdStart = continuumState.start;
       const thresholdEnd = continuumState.end;
+      const continuumRange = Math.max(thresholdEnd - thresholdStart, 1);
+      const seamBlendDistance = Math.min(
+        viewportHeight * 0.14,
+        continuumRange * 0.08,
+      );
+      const continuumPrewarmStart = thresholdStart - viewportHeight * 0.65;
       const normalFlowDepth = normalFlowDepthAt(visualScrollY, viewportHeight);
       const surfaceOpacity = depthUsesNormalFlow
         ? 1 - normalFlowDepth
@@ -430,10 +476,23 @@ export function JourneyMotion() {
       const realmOpacity = depthUsesNormalFlow
         ? normalFlowDepth
         : 1;
-      const continuumIsActive =
+      const continuumOpacity = depthUsesNormalFlow
+        ? 0
+        : smoothstep(
+            thresholdStart - seamBlendDistance,
+            thresholdStart,
+            visualScrollY,
+          ) *
+          (1 -
+            smoothstep(
+              thresholdEnd,
+              thresholdEnd + seamBlendDistance,
+              visualScrollY,
+            ));
+      const continuumShouldPaint =
         !depthUsesNormalFlow &&
-        visualScrollY >= thresholdStart &&
-        visualScrollY <= thresholdEnd;
+        visualScrollY >= continuumPrewarmStart &&
+        visualScrollY <= thresholdEnd + seamBlendDistance;
       const shouldPrewarmDepth = depthUsesNormalFlow
         ? Boolean(
             depthChapter &&
@@ -445,7 +504,10 @@ export function JourneyMotion() {
         : smoothstep(0.22, 0.34, continuumState.progress) *
           (1 - smoothstep(0.66, 0.8, continuumState.progress));
       const shot = sampleCameraShots(
-        depthCameraShots(viewportHeight, thresholdEnd),
+        depthCameraShots(
+          viewportHeight,
+          thresholdEnd + seamBlendDistance,
+        ),
         visualScrollY,
       );
       const depthPulse =
@@ -481,15 +543,27 @@ export function JourneyMotion() {
         );
       }
       if (continuumRealmElement) {
+        const continuumY = -(continuumStartOffset + continuumState.local);
+        const paintOpacity =
+          continuumShouldPaint &&
+          visualScrollY < thresholdStart - seamBlendDistance &&
+          continuumOpacity === 0
+            ? 0.001
+            : continuumOpacity;
         writeStyle(
           continuumRealmElement,
           "--continuum-y",
-          `${(-continuumState.local).toFixed(2)}px`,
+          `${continuumY.toFixed(3)}px`,
+        );
+        writeStyle(
+          continuumRealmElement,
+          "--continuum-realm-opacity",
+          paintOpacity.toFixed(4),
         );
         writeStyle(
           continuumRealmElement,
           "visibility",
-          continuumIsActive ? "visible" : "hidden",
+          continuumShouldPaint ? "visible" : "hidden",
         );
       }
       if (depthRealmElement) {
@@ -576,7 +650,7 @@ export function JourneyMotion() {
       writeSceneInteractivity(basecamp.element, copyExit <= 0.94);
     };
 
-    const writeMotion = (scrollY: number, worldScrollY: number) => {
+    const writeMotion = (worldScrollY: number) => {
       const {
         height: viewportHeight,
         width: viewportWidth,
@@ -595,7 +669,11 @@ export function JourneyMotion() {
         worldScrollY,
         viewportHeight,
       );
-      const continuumState = continuumStateAt(worldScrollY, viewportHeight);
+      const continuumState = continuumStateAt(
+        worldScrollY,
+        viewportHeight,
+        !depthUsesNormalFlow,
+      );
 
       writeRootWorld(surfaceProgress, motionScale);
       writeDepthWorld(
@@ -691,7 +769,8 @@ export function JourneyMotion() {
         );
       }
 
-      const viewportCenter = scrollY + viewportHeight / 2;
+      const viewportCenter = worldScrollY + viewportHeight / 2;
+      const sceneBoundaryBlend = viewportHeight * 0.14;
       const activeScene = scenes.find(
         (scene) =>
           viewportCenter >= scene.top &&
@@ -709,7 +788,12 @@ export function JourneyMotion() {
 
         scene.element.classList.toggle("journey-scene--active", isActive);
 
-        if (!isNearViewport(scene, scrollY, viewportHeight)) {
+        if (!isNearViewport(scene, worldScrollY, viewportHeight)) {
+          writeStyle(
+            scene.element,
+            "--scene-presence",
+            isNormalFlowDepthScene ? "1" : "0",
+          );
           writeStyle(
             scene.element,
             "--scene-focus",
@@ -724,12 +808,31 @@ export function JourneyMotion() {
         }
 
         const centerOffset = clamp(
-          (scene.top + scene.height / 2 - (scrollY + viewportHeight / 2)) /
+          (scene.top + scene.height / 2 -
+            (worldScrollY + viewportHeight / 2)) /
             viewportHeight,
           -1.25,
           1.25,
         );
-        const focus = isActive || isNormalFlowDepthScene ? 1 : 0;
+        const scenePresence = isNormalFlowDepthScene
+          ? 1
+          : smoothstep(
+              scene.top - sceneBoundaryBlend,
+              scene.top + sceneBoundaryBlend,
+              viewportCenter,
+            ) *
+            (1 -
+              smoothstep(
+                scene.top + scene.height - sceneBoundaryBlend,
+                scene.top + scene.height + sceneBoundaryBlend,
+                viewportCenter,
+              ));
+        const focus = scenePresence > 0.001 ? 1 : 0;
+        writeStyle(
+          scene.element,
+          "--scene-presence",
+          scenePresence.toFixed(4),
+        );
         writeStyle(scene.element, "--scene-focus", focus.toFixed(3));
         writeSceneInteractivity(
           scene.element,
@@ -781,7 +884,7 @@ export function JourneyMotion() {
       }
       lastFrameTime = time;
 
-      writeMotion(scrollY, cameraScrollY);
+      writeMotion(cameraScrollY);
       hasRenderedFrame = true;
 
       if (!root.classList.contains("journey-motion-ready")) {
