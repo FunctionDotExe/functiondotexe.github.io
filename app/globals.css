@@ -19,14 +19,22 @@
   --ease-soft: cubic-bezier(0.65, 0, 0.35, 1);
   --gutter: clamp(1.25rem, 4vw, 4.75rem);
   --content: 92rem;
-  --surface-world-opacity: 1;
-  --depth-world-opacity: 0;
+  --surface-realm-y: 0px;
+  --depth-realm-y: 100dvh;
+  --depth-seam-a: 0px;
+  --depth-seam-b: 0px;
+  --depth-seam-c: 0px;
+  --depth-seam-d: 0px;
   --climb-hud-opacity: 1;
-  --depth-master-y: 0px;
-  --depth-glow-y: 0px;
-  --depth-frame-y: 0px;
-  --depth-focus-x: 58%;
-  --depth-glow-opacity: 0.48;
+  --depth-back-y: 0px;
+  --depth-atmosphere-x: 0px;
+  --depth-atmosphere-y: 0px;
+  --depth-mid-x: 0px;
+  --depth-mid-y: 0px;
+  --depth-near-x: 0px;
+  --depth-near-y: 0px;
+  --depth-focus-x: 53%;
+  --depth-atmosphere-opacity: 0.16;
   --depth-shade-opacity: 0.2;
 }
 
@@ -461,18 +469,31 @@ html:not(.journey-motion-ready):has(#contact:target) .journey-nav:not(.journey-n
 .journey-world__realm {
   inset: 0;
   overflow: hidden;
-  will-change: opacity;
+  will-change: translate;
 }
 
 .journey-world__realm--surface {
   z-index: 0;
-  opacity: var(--surface-world-opacity);
+  translate: 0 var(--surface-realm-y);
 }
 
 .journey-world__realm--depth {
   z-index: 1;
   background: #120c29;
-  opacity: var(--depth-world-opacity);
+  clip-path: polygon(
+    0 var(--depth-seam-a),
+    10% var(--depth-seam-c),
+    22% var(--depth-seam-b),
+    36% var(--depth-seam-d),
+    50% var(--depth-seam-a),
+    64% var(--depth-seam-b),
+    78% var(--depth-seam-c),
+    90% var(--depth-seam-d),
+    100% var(--depth-seam-a),
+    100% 100%,
+    0 100%
+  );
+  translate: 0 var(--depth-realm-y);
 }
 
 .journey-world__layer {
@@ -523,20 +544,22 @@ html:not(.journey-motion-ready):has(#contact:target) .journey-nav:not(.journey-n
   overflow: hidden;
 }
 
-.journey-world__depth-layer--master {
+.journey-world__depth-layer--back {
   z-index: 0;
 }
 
-.journey-world__depth-layer--glow {
+.journey-world__depth-layer--atmosphere {
   z-index: 1;
-  opacity: var(--depth-glow-opacity);
+  opacity: var(--depth-atmosphere-opacity);
   mix-blend-mode: screen;
 }
 
-.journey-world__depth-layer--frame {
+.journey-world__depth-layer--mid {
   z-index: 2;
-  opacity: 0.9;
-  mix-blend-mode: multiply;
+}
+
+.journey-world__depth-layer--near {
+  z-index: 3;
 }
 
 .journey-world__depth-plate {
@@ -546,25 +569,29 @@ html:not(.journey-motion-ready):has(#contact:target) .journey-nav:not(.journey-n
   width: auto;
   height: max(162vw, 116dvh);
   max-width: none;
-  transform: translateX(-50%) scale(1.01);
+  transform: translateX(-50%) scale(1.015);
   transform-origin: top center;
   will-change: translate, left;
 }
 
-.journey-world__depth-layer--master .journey-world__depth-plate {
-  translate: 0 var(--depth-master-y);
+.journey-world__depth-layer--back .journey-world__depth-plate {
+  translate: 0 var(--depth-back-y);
 }
 
-.journey-world__depth-layer--glow .journey-world__depth-plate {
-  translate: 0 var(--depth-glow-y);
+.journey-world__depth-layer--atmosphere .journey-world__depth-plate {
+  translate: var(--depth-atmosphere-x) var(--depth-atmosphere-y);
 }
 
-.journey-world__depth-layer--frame .journey-world__depth-plate {
-  translate: 0 var(--depth-frame-y);
+.journey-world__depth-layer--mid .journey-world__depth-plate {
+  translate: var(--depth-mid-x) var(--depth-mid-y);
+}
+
+.journey-world__depth-layer--near .journey-world__depth-plate {
+  translate: var(--depth-near-x) var(--depth-near-y);
 }
 
 .journey-world__depth-shade {
-  z-index: 3;
+  z-index: 4;
   inset: 0;
   opacity: var(--depth-shade-opacity);
   background:
@@ -1026,6 +1053,14 @@ html:not(.journey-motion-ready):has(#contact:target) .journey-nav:not(.journey-n
   --scene-tint-opacity: 0;
 }
 
+.journey-motion-ready [data-journey-scene] > [data-journey-stage] {
+  opacity: 0;
+}
+
+.journey-motion-ready [data-journey-scene].journey-scene--active > [data-journey-stage] {
+  opacity: 1;
+}
+
 .journey-motion-ready .journey-scene--interactive > [data-journey-stage] {
   pointer-events: auto;
 }
@@ -1346,7 +1381,7 @@ html:not(.journey-motion-ready):has(#contact:target) .journey-nav:not(.journey-n
 
 .earth-journey {
   z-index: 2;
-  margin-top: -10svh;
+  margin-top: 0;
   color: var(--cream);
   background: transparent;
 }
@@ -1358,7 +1393,7 @@ html:not(.journey-motion-ready) .earth-journey {
 html:not(.journey-motion-ready) .earth-stage {
   background:
     linear-gradient(90deg, rgba(12, 7, 30, 0.5), rgba(12, 7, 30, 0.12) 55%, rgba(12, 7, 30, 0.36)),
-    url("/media/earth-descent-master-v1.webp") center 24% / cover no-repeat;
+    url("/media/earth-depth-back-v2.webp") center 24% / cover no-repeat;
 }
 
 html:not(.journey-motion-ready) .earth-stage--threshold {
@@ -1379,6 +1414,12 @@ html:not(.journey-motion-ready) .earth-stage--about {
 
 html:not(.journey-motion-ready) .earth-stage--core {
   background-position: center 100%;
+}
+
+@media (max-aspect-ratio: 2 / 3) {
+  html:not(.journey-motion-ready) .earth-stage {
+    background-size: 100% 100%, auto 270%;
+  }
 }
 
 .descent-scene,
@@ -2673,7 +2714,7 @@ html:not(.journey-motion-ready) .altitude-stage--contact::after {
   }
 
   .earth-journey {
-    margin-top: -6svh;
+    margin-top: 0;
   }
 
   .descent-scene,
@@ -2795,16 +2836,26 @@ html:not(.journey-motion-ready) .altitude-stage--contact::after {
   .earth-journey [data-journey-stage] {
     position: relative;
     inset: auto;
+    align-items: flex-start;
     width: 100%;
     height: auto;
     min-height: 100svh;
+    padding-top: 9rem;
     overflow: visible;
     opacity: 1;
     pointer-events: auto;
   }
 
+  .journey-motion-ready .earth-journey [data-journey-scene] > [data-journey-stage] {
+    opacity: 1;
+  }
+
   .earth-journey .earth-stage--core {
     padding-bottom: 6rem;
+  }
+
+  .earth-journey .contact-scene__content {
+    margin-top: 0;
   }
 }
 
@@ -2918,6 +2969,13 @@ html:not(.journey-motion-ready) .altitude-stage--contact::after {
   [data-journey-scene] {
     min-height: 100svh;
     margin-block: 0;
+  }
+
+  .earth-journey .descent-scene,
+  .earth-journey .about-scene,
+  .earth-journey .contact-scene,
+  .earth-journey .descent-core {
+    min-height: 100svh;
   }
 
   .journey-hero__stage,

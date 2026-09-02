@@ -19,37 +19,53 @@ export function JourneyWorld() {
           <img src={world.trail} width="1536" height="1024" alt="" decoding="async" />
         </div>
         <div className="journey-world__layer journey-world__layer--foreground">
-          <img src={world.foreground} width="1536" height="1024" alt="" decoding="async" />
+          <img
+            src={world.foreground}
+            width="1536"
+            height="1024"
+            alt=""
+            decoding="async"
+          />
         </div>
       </div>
 
       <div className="journey-world__realm journey-world__realm--depth">
-        <div className="journey-world__depth-layer journey-world__depth-layer--master">
+        <div className="journey-world__depth-layer journey-world__depth-layer--back">
           <img
             className="journey-world__depth-plate"
-            src={world.depth.master}
-            width="1024"
-            height="1536"
+            src={world.depth.back}
+            width="1536"
+            height="2304"
             alt=""
             decoding="async"
           />
         </div>
-        <div className="journey-world__depth-layer journey-world__depth-layer--glow">
+        <div className="journey-world__depth-layer journey-world__depth-layer--atmosphere">
           <img
             className="journey-world__depth-plate"
-            src={world.depth.glow}
-            width="1024"
-            height="1536"
+            src={world.depth.atmosphere}
+            width="1536"
+            height="2304"
             alt=""
             decoding="async"
           />
         </div>
-        <div className="journey-world__depth-layer journey-world__depth-layer--frame">
+        <div className="journey-world__depth-layer journey-world__depth-layer--mid">
           <img
             className="journey-world__depth-plate"
-            src={world.depth.frame}
-            width="1024"
-            height="1536"
+            src={world.depth.mid}
+            width="1536"
+            height="2304"
+            alt=""
+            decoding="async"
+          />
+        </div>
+        <div className="journey-world__depth-layer journey-world__depth-layer--near">
+          <img
+            className="journey-world__depth-plate"
+            src={world.depth.near}
+            width="1536"
+            height="2304"
             alt=""
             decoding="async"
           />

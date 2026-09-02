@@ -39,8 +39,8 @@ export function JourneyMotion() {
     const depthChapterElement = document.querySelector<HTMLElement>(
       '[data-journey-chapter="depth"]',
     );
-    const depthMasterPlate = document.querySelector<HTMLImageElement>(
-      ".journey-world__depth-layer--master .journey-world__depth-plate",
+    const depthBackPlate = document.querySelector<HTMLImageElement>(
+      ".journey-world__depth-layer--back .journey-world__depth-plate",
     );
     const sceneElements = Array.from(
       document.querySelectorAll<HTMLElement>("[data-journey-scene]"),
@@ -117,6 +117,7 @@ export function JourneyMotion() {
       managedInert.clear();
       managedScenes.forEach((element) => {
         element.classList.remove("journey-scene--interactive");
+        element.classList.remove("journey-scene--active");
       });
       managedScenes.clear();
     };
@@ -149,7 +150,7 @@ export function JourneyMotion() {
       surfaceChapter = measureElement(surfaceChapterElement, scrollY);
       depthChapter = measureElement(depthChapterElement, scrollY);
       depthTravel = Math.max(
-        (depthMasterPlate?.getBoundingClientRect().height ?? viewportHeight * 2) -
+        (depthBackPlate?.getBoundingClientRect().height ?? viewportHeight * 2) -
           viewportHeight,
         viewportHeight * 0.65,
       );
@@ -234,34 +235,72 @@ export function JourneyMotion() {
       );
     };
 
-    const writeDepthWorld = (progress: number, motionScale: number) => {
-      // Keep the geological plate moving at a near-constant rate. The old
-      // smoothstep lingered on the surface, then revealed the core a chapter
-      // too early; a linear journey keeps each scene aligned to its stratum.
-      const plateProgress = clamp((progress - 0.015) / 0.97);
-      const realmMix = smoothstep(0.015, 0.13, progress);
-      const parallaxArc = Math.sin(plateProgress * Math.PI);
-      const masterY = -depthTravel * plateProgress;
-      const glowY = masterY - parallaxArc * 36 * motionScale;
-      const frameY = masterY - parallaxArc * 82 * motionScale;
-      const focusX = 58 - smoothstep(0.04, 0.96, progress) * 8;
-      const deepHeat = smoothstep(0.48, 0.92, progress);
+    const writeDepthWorld = (
+      progress: number,
+      motionScale: number,
+      viewportHeight: number,
+    ) => {
+      // The two realms meet at the same moving edge. There is no dissolve:
+      // the mountain physically leaves through the top while the cave enters
+      // from directly beneath it, with the cave roof overlapping the seam.
+      const handoff = smoothstep(0, 0.075, progress);
+      const plateProgress = clamp((progress - 0.075) / 0.925);
+      const cameraY = -depthTravel * plateProgress;
+      const surfaceRealmY = -handoff * viewportHeight;
+      const seamArc = Math.sin(handoff * Math.PI);
+      const seamDepth = seamArc * Math.min(viewportHeight * 0.065, 72);
+      const seamOverlap = seamArc * viewportHeight * 0.1;
+      const depthRealmY = (1 - handoff) * viewportHeight - seamOverlap;
+      const focusX = 53 - smoothstep(0.08, 0.96, plateProgress) * 3;
+      const deepHeat = smoothstep(0.48, 0.92, plateProgress);
 
-      writeStyle(root, "--surface-world-opacity", (1 - realmMix).toFixed(4));
-      writeStyle(root, "--depth-world-opacity", realmMix.toFixed(4));
+      writeStyle(root, "--surface-realm-y", `${surfaceRealmY.toFixed(2)}px`);
+      writeStyle(root, "--depth-realm-y", `${depthRealmY.toFixed(2)}px`);
+      writeStyle(root, "--depth-seam-a", `${(seamDepth * 0.36).toFixed(2)}px`);
+      writeStyle(root, "--depth-seam-b", `${(seamDepth * 0.92).toFixed(2)}px`);
+      writeStyle(root, "--depth-seam-c", `${(seamDepth * 0.54).toFixed(2)}px`);
+      writeStyle(root, "--depth-seam-d", `${(seamDepth * 0.78).toFixed(2)}px`);
       writeStyle(
         root,
         "--climb-hud-opacity",
         (1 - smoothstep(0, 0.015, progress)).toFixed(4),
       );
-      writeStyle(root, "--depth-master-y", `${masterY.toFixed(2)}px`);
-      writeStyle(root, "--depth-glow-y", `${glowY.toFixed(2)}px`);
-      writeStyle(root, "--depth-frame-y", `${frameY.toFixed(2)}px`);
+      writeStyle(root, "--depth-back-y", `${cameraY.toFixed(2)}px`);
+      writeStyle(
+        root,
+        "--depth-atmosphere-y",
+        `${(cameraY - plateProgress * 42 * motionScale).toFixed(2)}px`,
+      );
+      writeStyle(
+        root,
+        "--depth-atmosphere-x",
+        `${(-plateProgress * 18 * motionScale).toFixed(2)}px`,
+      );
+      writeStyle(
+        root,
+        "--depth-mid-y",
+        `${(cameraY - plateProgress * 108 * motionScale).toFixed(2)}px`,
+      );
+      writeStyle(
+        root,
+        "--depth-mid-x",
+        `${(plateProgress * 10 * motionScale).toFixed(2)}px`,
+      );
+      writeStyle(
+        root,
+        "--depth-near-y",
+        `${(cameraY - plateProgress * 184 * motionScale).toFixed(2)}px`,
+      );
+      writeStyle(
+        root,
+        "--depth-near-x",
+        `${(plateProgress * 22 * motionScale).toFixed(2)}px`,
+      );
       writeStyle(root, "--depth-focus-x", `${focusX.toFixed(3)}%`);
       writeStyle(
         root,
-        "--depth-glow-opacity",
-        (0.34 + progress * 0.18 + deepHeat * 0.18).toFixed(3),
+        "--depth-atmosphere-opacity",
+        (0.16 + plateProgress * 0.08 + deepHeat * 0.1).toFixed(3),
       );
       writeStyle(
         root,
@@ -307,7 +346,7 @@ export function JourneyMotion() {
 
       writeStyle(root, "--journey-progress", pageProgress.toFixed(4));
       writeRootWorld(surfaceProgress, motionScale);
-      writeDepthWorld(depthProgress, motionScale);
+      writeDepthWorld(depthProgress, motionScale, viewportHeight);
 
       if (hero && isNearViewport(hero, scrollY, viewportHeight)) {
         const progress = clamp(
@@ -398,8 +437,30 @@ export function JourneyMotion() {
         );
       }
 
+      const viewportCenter = scrollY + viewportHeight / 2;
+      const activeScene = scenes.find(
+        (scene) =>
+          viewportCenter >= scene.top &&
+          viewportCenter < scene.top + scene.height,
+      );
+
       for (const scene of scenes) {
-        if (!isNearViewport(scene, scrollY, viewportHeight)) continue;
+        const isActive = scene === activeScene;
+        const isNormalFlowDepthScene =
+          depthUsesNormalFlow && scene.element.closest(".earth-journey") !== null;
+
+        scene.element.classList.toggle("journey-scene--active", isActive);
+
+        if (!isNearViewport(scene, scrollY, viewportHeight)) {
+          writeStyle(
+            scene.element,
+            "--scene-focus",
+            isNormalFlowDepthScene ? "1" : "0",
+          );
+          writeStyle(scene.element, "--scene-tint-opacity", "0");
+          writeSceneInteractivity(scene.element, isNormalFlowDepthScene);
+          continue;
+        }
 
         const centerOffset = clamp(
           (scene.top + scene.height / 2 - (scrollY + viewportHeight / 2)) /
@@ -407,26 +468,18 @@ export function JourneyMotion() {
           -1.25,
           1.25,
         );
-        const sceneDistance =
-          Math.abs(
-            scene.top + scene.height / 2 - (scrollY + viewportHeight / 2),
-          ) / Math.max(scene.height, 1);
-        const rawFocus = clamp(1 - sceneDistance, 0, 1);
-        // Scene-height normalization gives every breakpoint the same dissolve.
-        // The eased midpoint leaves the shared landscape visually dominant
-        // so layered panels blend without turning into an unreadable double image.
-        const focus = Math.pow(smoothstep(0, 1, rawFocus), 3.2);
+        const focus = isActive || isNormalFlowDepthScene ? 1 : 0;
         writeStyle(scene.element, "--scene-focus", focus.toFixed(3));
-        const isNormalFlowDepthScene =
-          depthUsesNormalFlow && scene.element.closest(".earth-journey") !== null;
         writeSceneInteractivity(
           scene.element,
-          isNormalFlowDepthScene || focus >= 0.35,
+          isNormalFlowDepthScene || isActive,
         );
         writeStyle(
           scene.element,
           "--scene-tint-opacity",
-          (focus * 0.62).toFixed(3),
+          (
+            focus * (scene.element.closest(".earth-journey") ? 0.42 : 0.62)
+          ).toFixed(3),
         );
         writeStyle(
           scene.element,
