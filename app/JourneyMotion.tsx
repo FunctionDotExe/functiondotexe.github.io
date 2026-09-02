@@ -26,6 +26,8 @@ type CameraShot = {
 type ContinuumState = {
   progress: number;
   local: number;
+  start: number;
+  end: number;
 };
 
 const DEPTH_PLANES: DepthPlane[] = ["back", "atmosphere", "mid", "near"];
@@ -271,19 +273,49 @@ export function JourneyMotion() {
         : 0;
 
     const continuumStateAt = (
-      scrollY: number,
+      visualScrollY: number,
       viewportHeight: number,
     ): ContinuumState => {
       const start = threshold?.top ?? depthChapter?.top ?? 0;
       const range = threshold
         ? Math.max(threshold.height - viewportHeight, 1)
         : Math.max(continuumTravel, 1);
-      const travel = Math.max(Math.min(continuumTravel, range), 1);
-      const local = clamp(scrollY - start, 0, travel);
+      const travel = Math.max(continuumTravel, 0);
+      const scrollLocal = clamp(visualScrollY - start, 0, range);
+      const edgeLength = Math.min(range * 0.1, viewportHeight * 0.32);
+      let local = travel * (scrollLocal / range);
+
+      if (travel > 0 && edgeLength > Number.EPSILON) {
+        const centerSpeed = travel / Math.max(range - edgeLength, 1);
+
+        if (scrollLocal <= edgeLength) {
+          const edgeProgress = scrollLocal / edgeLength;
+          local =
+            centerSpeed *
+            edgeLength *
+            (edgeProgress / 2 -
+              Math.sin(Math.PI * edgeProgress) / (2 * Math.PI));
+        } else if (scrollLocal >= range - edgeLength) {
+          const edgeProgress =
+            (scrollLocal - (range - edgeLength)) / edgeLength;
+          local =
+            centerSpeed * (range - edgeLength * 1.5) +
+            centerSpeed *
+              edgeLength *
+              (edgeProgress / 2 +
+                Math.sin(Math.PI * edgeProgress) / (2 * Math.PI));
+        } else {
+          local = centerSpeed * (scrollLocal - edgeLength / 2);
+        }
+      }
+
+      local = clamp(local, 0, travel);
 
       return {
-        progress: clamp(local / travel),
+        progress: travel > 0 ? clamp(local / travel) : 1,
         local,
+        start,
+        end: start + range,
       };
     };
 
@@ -340,16 +372,16 @@ export function JourneyMotion() {
       );
     };
 
-    const depthCameraShots = (viewportHeight: number): CameraShot[] => {
+    const depthCameraShots = (
+      viewportHeight: number,
+      transitionEnd: number,
+    ): CameraShot[] => {
       if (!depthChapter) {
         return [{ at: 0, y: 0, x: 0 }];
       }
 
       const chapterEnd =
         depthChapter.top + Math.max(depthChapter.height - viewportHeight, 1);
-      const transitionEnd = threshold
-        ? threshold.top + Math.max(threshold.height - viewportHeight, 1)
-        : depthChapter.top;
       const targetY = [0, 0.22, 0.48, 0.74, 1];
       const targetX = [0, 0.058, -0.064, 0.072, 0];
 
@@ -382,17 +414,16 @@ export function JourneyMotion() {
     };
 
     const writeDepthWorld = (
-      scrollY: number,
-      worldScrollY: number,
+      visualScrollY: number,
       motionScale: number,
       viewportHeight: number,
       viewportWidth: number,
       continuumState: ContinuumState,
       depthUsesNormalFlow: boolean,
     ) => {
-      const thresholdStart = threshold?.top ?? depthChapter?.top ?? 0;
-      const thresholdEnd = thresholdStart + Math.max(continuumTravel, 1);
-      const normalFlowDepth = normalFlowDepthAt(worldScrollY, viewportHeight);
+      const thresholdStart = continuumState.start;
+      const thresholdEnd = continuumState.end;
+      const normalFlowDepth = normalFlowDepthAt(visualScrollY, viewportHeight);
       const surfaceOpacity = depthUsesNormalFlow
         ? 1 - normalFlowDepth
         : 1;
@@ -401,20 +432,21 @@ export function JourneyMotion() {
         : 1;
       const continuumIsActive =
         !depthUsesNormalFlow &&
-        scrollY >= thresholdStart &&
-        scrollY <= thresholdEnd;
+        visualScrollY >= thresholdStart &&
+        visualScrollY <= thresholdEnd;
       const shouldPrewarmDepth = depthUsesNormalFlow
         ? Boolean(
-            depthChapter && scrollY >= depthChapter.top - viewportHeight * 0.35,
+            depthChapter &&
+              visualScrollY >= depthChapter.top - viewportHeight * 0.35,
           )
-        : scrollY >= thresholdEnd - viewportHeight * 1.2;
+        : visualScrollY >= thresholdEnd - viewportHeight * 1.2;
       const thresholdCopyOpacity = depthUsesNormalFlow
         ? 1
         : smoothstep(0.22, 0.34, continuumState.progress) *
           (1 - smoothstep(0.66, 0.8, continuumState.progress));
       const shot = sampleCameraShots(
-        depthCameraShots(viewportHeight),
-        worldScrollY,
+        depthCameraShots(viewportHeight, thresholdEnd),
+        visualScrollY,
       );
       const depthPulse =
         Math.sin(shot.y * Math.PI * 3.5) *
@@ -443,7 +475,7 @@ export function JourneyMotion() {
           surfaceRealmElement,
           "visibility",
           (depthUsesNormalFlow && surfaceOpacity > 0.001) ||
-            (!depthUsesNormalFlow && scrollY < thresholdStart)
+            (!depthUsesNormalFlow && visualScrollY < thresholdStart)
             ? "visible"
             : "hidden",
         );
@@ -563,11 +595,10 @@ export function JourneyMotion() {
         worldScrollY,
         viewportHeight,
       );
-      const continuumState = continuumStateAt(scrollY, viewportHeight);
+      const continuumState = continuumStateAt(worldScrollY, viewportHeight);
 
       writeRootWorld(surfaceProgress, motionScale);
       writeDepthWorld(
-        scrollY,
         worldScrollY,
         motionScale,
         viewportHeight,
@@ -741,10 +772,13 @@ export function JourneyMotion() {
         }
       }
 
-      const elapsed = clamp(time - lastFrameTime, 8, 48);
+      const elapsed = clamp(time - lastFrameTime, 1, 50);
       const cameraTarget = clamp(scrollY, 0, metrics.pageRange);
       const cameraFollow = 1 - Math.exp(-elapsed / 72);
       cameraScrollY += (cameraTarget - cameraScrollY) * cameraFollow;
+      if (Math.abs(cameraTarget - cameraScrollY) <= 0.12) {
+        cameraScrollY = cameraTarget;
+      }
       lastFrameTime = time;
 
       writeMotion(scrollY, cameraScrollY);
@@ -824,12 +858,22 @@ export function JourneyMotion() {
     const onResize = () => requestMeasure();
     const onLoad = () => requestMeasure();
     const onPageShow = () => requestMeasure();
+    const onContinuumLoad = () => {
+      const decode = continuumPlateElement?.decode();
+      if (!decode) {
+        requestMeasure();
+        return;
+      }
+
+      decode.then(requestMeasure).catch(requestMeasure);
+    };
     const resizeObserver =
       main && "ResizeObserver" in window
         ? new ResizeObserver(() => requestMeasure())
         : null;
 
     if (main) resizeObserver?.observe(main);
+    continuumPlateElement?.addEventListener("load", onContinuumLoad);
     window.addEventListener("resize", onResize);
     visualViewport?.addEventListener("resize", onResize);
     window.addEventListener("load", onLoad, { once: true });
@@ -840,6 +884,7 @@ export function JourneyMotion() {
         if (!disposed) requestMeasure();
       })
       .catch(() => undefined);
+    onContinuumLoad();
 
     applyMotionPreference();
 
@@ -849,6 +894,7 @@ export function JourneyMotion() {
       if (animationFrame) window.cancelAnimationFrame(animationFrame);
       animationFrame = 0;
       resizeObserver?.disconnect();
+      continuumPlateElement?.removeEventListener("load", onContinuumLoad);
       window.removeEventListener("resize", onResize);
       visualViewport?.removeEventListener("resize", onResize);
       window.removeEventListener("load", onLoad);
