@@ -73,31 +73,23 @@ export function JourneyWorld() {
         <span className="journey-world__depth-shade" />
       </div>
 
-      <div className="journey-world__portal">
-        <div className="journey-world__portal-body">
-          <span className="journey-world__portal-window">
-            <img
-              src={world.depth.back}
-              width="1536"
-              height="2304"
-              alt=""
-              decoding="async"
-            />
-          </span>
-          <picture>
-            <source
-              media="(max-width: 820px) and (orientation: portrait)"
-              srcSet={world.depth.mobilePortal}
-            />
-            <img
-              src={world.depth.portal}
-              width="1536"
-              height="1024"
-              alt=""
-              decoding="async"
-            />
-          </picture>
-        </div>
+      <div className="journey-world__realm journey-world__realm--bridge">
+        <picture>
+          <source
+            media="(max-width: 820px) and (orientation: portrait)"
+            srcSet={world.depth.mobileBridge}
+            width="768"
+            height="2304"
+          />
+          <img
+            className="journey-world__bridge-plate"
+            src={world.depth.bridge}
+            width="1536"
+            height="2304"
+            alt=""
+            decoding="async"
+          />
+        </picture>
       </div>
 
       <span className="journey-world__grade" />
