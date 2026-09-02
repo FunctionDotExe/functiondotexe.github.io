@@ -73,33 +73,29 @@ export function JourneyWorld() {
         <span className="journey-world__depth-shade" />
       </div>
 
-      <div className="journey-world__realm journey-world__realm--bridge">
+      <div className="journey-world__realm journey-world__realm--continuum">
         <picture>
           <source
+            media="(max-width: 600px) and (orientation: portrait)"
+            srcSet={world.depth.phoneContinuum}
+            width="780"
+            height="3998"
+          />
+          <source
             media="(max-width: 820px) and (orientation: portrait)"
-            srcSet={world.depth.mobileBridge}
+            srcSet={world.depth.mobileContinuum}
             width="768"
-            height="2304"
+            height="2784"
           />
           <img
-            className="journey-world__bridge-plate"
-            src={world.depth.bridge}
+            className="journey-world__continuum-plate"
+            src={world.depth.continuum}
             width="1536"
-            height="2304"
+            height="2904"
             alt=""
             decoding="async"
           />
         </picture>
-      </div>
-
-      <div className="journey-world__handoff-lip">
-        <img
-          src={world.foreground}
-          width="1536"
-          height="1024"
-          alt=""
-          decoding="async"
-        />
       </div>
 
       <span className="journey-world__grade" />
