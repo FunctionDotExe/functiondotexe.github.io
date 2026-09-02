@@ -73,6 +73,15 @@ export function JourneyMotion() {
     const depthChapterElement = document.querySelector<HTMLElement>(
       '[data-journey-chapter="depth"]',
     );
+    const surfaceRealmElement = document.querySelector<HTMLElement>(
+      ".journey-world__realm--surface",
+    );
+    const depthRealmElement = document.querySelector<HTMLElement>(
+      ".journey-world__realm--depth",
+    );
+    const portalElement = document.querySelector<HTMLElement>(
+      ".journey-world__portal",
+    );
     const depthPlates: Record<DepthPlane, HTMLImageElement | null> = {
       back: document.querySelector<HTMLImageElement>(
         ".journey-world__depth-layer--back .journey-world__depth-plate",
@@ -120,8 +129,6 @@ export function JourneyMotion() {
     let scrollListening = false;
     let motionIsReduced = reducedMotion.matches;
     let cameraScrollY = window.scrollY;
-    let previousScrollY = window.scrollY;
-    let scrollVelocity = 0;
     let lastFrameTime = performance.now();
     let hasRenderedFrame = false;
 
@@ -266,42 +273,38 @@ export function JourneyMotion() {
       motionScale: number,
       depthHandoff: number,
     ) => {
+      const worldTarget = surfaceRealmElement ?? root;
       const centered = surfaceProgress - 0.5;
       const exit = smoothstep(0.03, 0.96, depthHandoff);
-      const depthOffset = (distance: number, exitDistance: number) =>
-        `${(
+      const deviceScale = Math.max(window.devicePixelRatio, 1);
+      const snap = (value: number) =>
+        Math.round(value * deviceScale * 4) / (deviceScale * 4);
+      const depthOffset = (distance: number, exitDistance: number) => {
+        const value =
           -centered * distance * motionScale -
-          exit * exitDistance * motionScale
-        ).toFixed(2)}px`;
+          exit * exitDistance * motionScale;
+        return `${snap(value).toFixed(2)}px`;
+      };
 
-      writeStyle(root, "--world-sky-y", depthOffset(14, 22));
-      writeStyle(root, "--world-clouds-y", depthOffset(42, 56));
+      writeStyle(worldTarget, "--world-sky-y", depthOffset(14, 0));
+      writeStyle(worldTarget, "--world-clouds-y", depthOffset(42, 8));
       writeStyle(
-        root,
+        worldTarget,
         "--world-clouds-x",
-        `${((centered * 16 - exit * 26) * motionScale).toFixed(2)}px`,
+        `${snap((centered * 16 - exit * 26) * motionScale).toFixed(2)}px`,
       );
-      writeStyle(root, "--world-valley-y", depthOffset(74, 92));
-      writeStyle(root, "--world-trail-y", depthOffset(116, 148));
-      writeStyle(root, "--world-foreground-y", depthOffset(168, 224));
+      writeStyle(worldTarget, "--world-valley-y", depthOffset(74, 16));
+      writeStyle(worldTarget, "--world-trail-y", depthOffset(92, 12));
+      writeStyle(worldTarget, "--world-foreground-y", depthOffset(120, 0));
       writeStyle(
-        root,
+        worldTarget,
         "--world-trail-x",
-        `${(exit * 28 * motionScale).toFixed(2)}px`,
+        `${snap(exit * 28 * motionScale).toFixed(2)}px`,
       );
       writeStyle(
-        root,
+        worldTarget,
         "--world-foreground-x",
-        `${(exit * 58 * motionScale).toFixed(2)}px`,
-      );
-      writeStyle(
-        root,
-        "--world-scale",
-        (
-          1.055 +
-          surfaceProgress * 0.012 * motionScale +
-          exit * 0.045 * motionScale
-        ).toFixed(4),
+        `${snap(exit * 58 * motionScale).toFixed(2)}px`,
       );
     };
 
@@ -353,24 +356,28 @@ export function JourneyMotion() {
       viewportWidth: number,
     ) => {
       const handoff = depthHandoffAt(scrollY, viewportHeight);
-      const portalRelease = depthChapter
+      const portalExit = depthChapter
         ? smoothstep(
-            depthChapter.top + viewportHeight * 0.9,
-            depthChapter.top + viewportHeight * 1.45,
+            depthChapter.top + viewportHeight * 0.88,
+            depthChapter.top + viewportHeight * 1.12,
             scrollY,
           )
         : 0;
       const portalScale = Math.max(
         0.001,
-        handoff * 5.25 + portalRelease * 3.75,
+        handoff * 4.5 + portalExit * 0.75,
       );
       const isPortraitPortal =
         viewportWidth <= 820 && viewportHeight > viewportWidth;
-      const portalRadius =
-        portalScale * Math.min(viewportWidth, viewportHeight) * 0.255 +
-        (isPortraitPortal
-          ? smoothstep(0.34, 0.54, handoff) * viewportHeight * 0.032
-          : 0);
+      const portalCentering = smoothstep(0.18, 0.82, handoff);
+      const portalX = mix(isPortraitPortal ? 65 : 68, 50, portalCentering);
+      const portalY = mix(isPortraitPortal ? 68 : 66, 50, portalCentering);
+      const realmOpacity = smoothstep(0.76, 0.9, handoff);
+      const portalWindowOpacity = 1 - smoothstep(0.84, 0.98, handoff);
+      const portalOpacity = 1 - portalExit;
+      const shouldPrewarmDepth = Boolean(
+        depthChapter && scrollY >= depthChapter.top - viewportHeight * 0.6,
+      );
       const shot = sampleCameraShots(depthCameraShots(viewportHeight), scrollY);
       const depthPulse =
         Math.sin(shot.y * Math.PI * 3.5) *
@@ -386,13 +393,40 @@ export function JourneyMotion() {
         near: 1,
       };
 
-      writeStyle(root, "--depth-reveal-radius", `${portalRadius.toFixed(2)}px`);
+      writeStyle(root, "--depth-portal-x", `${portalX.toFixed(3)}%`);
+      writeStyle(root, "--depth-portal-y", `${portalY.toFixed(3)}%`);
       writeStyle(root, "--depth-portal-scale", portalScale.toFixed(4));
+      writeStyle(root, "--depth-portal-opacity", portalOpacity.toFixed(4));
       writeStyle(
         root,
-        "--depth-portal-opacity",
-        (1 - smoothstep(0.64, 1, portalRelease)).toFixed(4),
+        "--depth-portal-window-opacity",
+        portalWindowOpacity.toFixed(4),
       );
+      writeStyle(root, "--depth-realm-opacity", realmOpacity.toFixed(4));
+      if (depthRealmElement) {
+        writeStyle(
+          depthRealmElement,
+          "visibility",
+          shouldPrewarmDepth ? "visible" : "hidden",
+        );
+      }
+      if (surfaceRealmElement) {
+        writeStyle(
+          surfaceRealmElement,
+          "visibility",
+          realmOpacity >= 0.999 ? "hidden" : "visible",
+        );
+      }
+      if (portalElement) {
+        writeStyle(
+          portalElement,
+          "visibility",
+          handoff > 0.005 &&
+            (portalOpacity > 0.001 || portalWindowOpacity > 0.001)
+            ? "visible"
+            : "hidden",
+        );
+      }
       writeStyle(root, "--depth-zoom", shot.zoom.toFixed(4));
       writeStyle(
         root,
@@ -402,7 +436,7 @@ export function JourneyMotion() {
       writeStyle(
         root,
         "--threshold-copy-opacity",
-        smoothstep(0.28, 0.7, handoff).toFixed(4),
+        smoothstep(0.9, 0.99, handoff).toFixed(4),
       );
       writeStyle(
         root,
@@ -638,23 +672,12 @@ export function JourneyMotion() {
         readMeasurements(scrollY);
         if (!hasRenderedFrame) {
           cameraScrollY = scrollY;
-          previousScrollY = scrollY;
         }
       }
 
       const elapsed = clamp(time - lastFrameTime, 8, 48);
-      const instantVelocity = (scrollY - previousScrollY) / elapsed;
-      const velocityFollow = 1 - Math.exp(-elapsed / 58);
-      scrollVelocity += (instantVelocity - scrollVelocity) * velocityFollow;
-      previousScrollY = scrollY;
-
-      const lookAhead = clamp(
-        scrollVelocity * 30 * metrics.motionScale,
-        -36 * metrics.motionScale,
-        36 * metrics.motionScale,
-      );
-      const cameraTarget = clamp(scrollY + lookAhead, 0, metrics.pageRange);
-      const cameraFollow = 1 - Math.exp(-elapsed / 92);
+      const cameraTarget = clamp(scrollY, 0, metrics.pageRange);
+      const cameraFollow = 1 - Math.exp(-elapsed / 72);
       cameraScrollY += (cameraTarget - cameraScrollY) * cameraFollow;
       lastFrameTime = time;
 
@@ -675,8 +698,7 @@ export function JourneyMotion() {
       if (root.dataset.motion !== "active") root.dataset.motion = "active";
 
       const cameraIsSettling = Math.abs(cameraTarget - cameraScrollY) > 0.12;
-      const velocityIsSettling = Math.abs(scrollVelocity) > 0.002;
-      if (cameraIsSettling || velocityIsSettling) scheduleUpdate();
+      if (cameraIsSettling) scheduleUpdate();
     };
 
     const scheduleUpdate = () => {
@@ -720,8 +742,6 @@ export function JourneyMotion() {
         if (root.dataset.motion !== "reduced") root.dataset.motion = "reduced";
         needsMeasure = true;
         cameraScrollY = window.scrollY;
-        previousScrollY = window.scrollY;
-        scrollVelocity = 0;
         hasRenderedFrame = false;
         return;
       }
@@ -729,8 +749,6 @@ export function JourneyMotion() {
       attachScrollListener();
       needsMeasure = true;
       cameraScrollY = window.scrollY;
-      previousScrollY = window.scrollY;
-      scrollVelocity = 0;
       lastFrameTime = performance.now();
       hasRenderedFrame = false;
       scheduleUpdate();
