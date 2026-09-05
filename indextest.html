@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruben Maxwell | Creative Developer</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Scripts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Syne', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        bg: '#030304',
+                        surface: '#0A0A0C',
+                        accent: '#6366f1', 
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #030304;
+            color: #e5e5e5;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #030304; }
+        ::-webkit-scrollbar-thumb { background: #222; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #444; }
+
+        /* Hero Celestial Elements */
+        .hero-viewport {
+            position: relative;
+            height: 110vh;
+            width: 100%;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #0a0a1a 0%, #030304 100%);
+        }
+
+        .moon {
+            position: absolute;
+            top: 15%;
+            right: 15%;
+            width: 150px;
+            height: 150px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 60px rgba(255, 255, 255, 0.4), inset -20px -20px 40px rgba(0,0,0,0.1);
+            z-index: 1;
+        }
+
+        .star-layer {
+            position: absolute;
+            inset: -50%;
+            background-image: radial-gradient(1px 1px at 20px 30px, #eee, rgba(0,0,0,0)),
+                              radial-gradient(1px 1px at 40px 70px, #fff, rgba(0,0,0,0)),
+                              radial-gradient(2px 2px at 50px 160px, #ddd, rgba(0,0,0,0)),
+                              radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0));
+            background-size: 200px 200px;
+            opacity: 0.5;
+            z-index: 0;
+        }
+
+        /* Glass Visuals */
+        .glass-panel {
+            background: rgba(10, 10, 12, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        /* Spotlight Card */
+        .spotlight-card {
+            position: relative;
+            background: #0A0A0C;
+            border: 1px solid rgba(255,255,255,0.05);
+            overflow: hidden;
+            transition: transform 0.4s ease, border-color 0.3s;
+        }
+        .spotlight-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(99, 102, 241, 0.1), transparent 40%);
+            z-index: 1; opacity: 0; transition: opacity 0.5s; pointer-events: none;
+        }
+        .spotlight-card:hover::before { opacity: 1; }
+        .spotlight-card:hover { transform: translateY(-8px); border-color: rgba(99, 102, 241, 0.4); }
+
+        .typewriter-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.1em;
+            background-color: #6366f1;
+            margin-left: 4px;
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        .parallax-mountain {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* Perspective for Photo Card */
+        .perspective-container { perspective: 1000px; }
+        .tilt-card { transform-style: preserve-3d; transition: transform 0.1s; }
+    </style>
+</head>
+<body class="selection:bg-indigo-500 selection:text-white">
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 left-0 w-full z-50 px-6 py-6" id="navbar">
+        <div class="max-w-7xl mx-auto flex justify-between items-center glass-panel rounded-full px-6 py-3">
+            <a href="#" class="font-display text-xl font-bold tracking-tight">
+                RUBEN<span class="text-indigo-500">.</span>
+            </a>
+            <div class="hidden md:flex gap-8 text-sm font-medium text-gray-400">
+                <a href="#about" class="hover:text-white transition-colors">About</a>
+                <a href="#projects" class="hover:text-white transition-colors">Projects</a>
+                <a href="#experience" class="hover:text-white transition-colors">Journey</a>
+                <a href="mailto:rubenbmaxwell@gmail.com" class="text-white bg-indigo-600 px-4 py-1.5 rounded-full hover:bg-indigo-500 transition-colors">Connect</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-viewport" id="hero">
+        <div class="star-layer" id="stars"></div>
+        <div class="moon" id="moon"></div>
+        
+        <!-- Mountains (Using standard placeholders, swap for your assets) -->
+        <img src="mountains.png" class="parallax-mountain opacity-40 scale-110" id="mtn-back" style="bottom: -10%;" alt="">
+        <img src="mountains.png" class="parallax-mountain scale-105" id="mtn-front" style="bottom: -5%;" alt="">
+
+        <div class="relative z-20 h-full flex items-center max-w-7xl mx-auto px-6 pt-20">
+            <div class="grid md:grid-cols-2 gap-12 items-center w-full">
+                
+                <div>
+                    <h1 class="font-display text-7xl md:text-9xl font-extrabold tracking-tighter mb-4 leading-none">
+                        <span class="block text-white" id="name-scramble">RUBEN</span>
+                        <span class="block text-gray-600">MAXWELL</span>
+                    </h1>
+                    
+                    <div class="font-mono text-xl text-indigo-400 mb-8 flex items-center">
+                        <span id="typewriter"></span><span class="typewriter-cursor"></span>
+                    </div>
+                    
+                    <p class="text-gray-400 max-w-sm mb-10 leading-relaxed">
+                        Engineering intelligent systems at the intersection of <span class="text-white">AI Research</span> and <span class="text-white">Quantum Physics</span>.
+                    </p>
+                    
+                    <div class="flex gap-4">
+                        <a href="#projects" class="bg-white text-black px-8 py-4 rounded-full font-bold hover:scale-105 transition-transform">Explore Work</a>
+                        <button class="glass-panel px-8 py-4 rounded-full font-bold hover:bg-white/10 transition-colors">Resume</button>
+                    </div>
+                </div>
+
+                <!-- Interactive Profile Card -->
+                <div class="hidden md:flex justify-end perspective-container">
+                    <div class="tilt-card w-80 h-[28rem] glass-panel rounded-2xl p-3 border-white/10 relative overflow-hidden group">
+                        <div class="w-full h-full rounded-xl bg-gradient-to-br from-indigo-900/40 to-black overflow-hidden relative">
+                            <!-- Placeholder for your photo -->
+                            <img src="https://placehold.co/600x800/111/333?text=Ruben+Maxwell" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt="Ruben">
+                            
+                            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                            <div class="absolute bottom-6 left-6">
+                                <p class="text-xs uppercase tracking-[0.3em] text-indigo-400 font-bold mb-1">Based in</p>
+                                <p class="text-xl font-display font-bold text-white">Toronto, Canada</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="relative z-30 bg-[#030304]">
+        
+        <!-- Constellation Background -->
+        <canvas id="canvas-bg" class="absolute top-0 left-0 w-full h-full pointer-events-none opacity-20"></canvas>
+
+        <!-- Stats / About -->
+        <section id="about" class="py-32">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="glass-panel p-10 rounded-3xl border-white/5 reveal">
+                        <div class="text-indigo-400 font-mono text-sm mb-4">01 // VISION</div>
+                        <h3 class="text-2xl font-bold mb-4">CS @ UofT</h3>
+                        <p class="text-gray-500 text-sm leading-relaxed">Class of 2029. Focusing on high-performance computing and machine learning architectures.</p>
+                    </div>
+                    <div class="glass-panel p-10 rounded-3xl border-white/5 reveal" style="transition-delay: 0.1s;">
+                        <div class="text-emerald-400 font-mono text-sm mb-4">02 // METRICS</div>
+                        <h3 class="text-2xl font-bold mb-4">97% Accuracy</h3>
+                        <p class="text-gray-500 text-sm leading-relaxed">Achieved industry-standard benchmarks in real-time object detection using custom CNN layers.</p>
+                    </div>
+                    <div class="glass-panel p-10 rounded-3xl border-white/5 reveal" style="transition-delay: 0.2s;">
+                        <div class="text-purple-400 font-mono text-sm mb-4">03 // RESEARCH</div>
+                        <h3 class="text-2xl font-bold mb-4">Quantum ML</h3>
+                        <p class="text-gray-500 text-sm leading-relaxed">Exploring VQE and QNN simulations with Qiskit for next-generation compute optimization.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Project Bento Grid -->
+        <section id="projects" class="py-20">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="mb-20 flex justify-between items-end">
+                    <h2 class="font-display text-5xl font-bold tracking-tight">Featured<br><span class="text-gray-500">Deployments</span></h2>
+                    <p class="text-gray-400 max-w-xs text-right hidden md:block">Hover to interact with the neural spotlight system.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-[300px]">
+                    
+                    <!-- Main Project -->
+                    <div class="md:col-span-8 spotlight-card rounded-3xl p-10 flex flex-col justify-between">
+                        <div>
+                            <span class="text-[10px] font-bold tracking-widest text-indigo-400 uppercase border border-indigo-500/30 px-3 py-1 rounded-full bg-indigo-500/10">Computer Vision</span>
+                            <h3 class="text-4xl font-display font-bold mt-6 mb-4">AI Object Detection</h3>
+                            <p class="text-gray-400 max-w-lg leading-relaxed">Real-time neural network designed for high-speed tracking with optimized visual output.</p>
+                        </div>
+                        <div class="flex gap-4">
+                            <span class="text-xs font-mono text-gray-500">Python</span>
+                            <span class="text-xs font-mono text-gray-500">TensorFlow</span>
+                            <span class="text-xs font-mono text-gray-500">OpenCV</span>
+                        </div>
+                    </div>
+
+                    <!-- Side Card -->
+                    <div class="md:col-span-4 spotlight-card rounded-3xl p-10">
+                        <div class="h-full flex flex-col justify-between">
+                            <i data-lucide="layers" class="text-indigo-500 w-10 h-10"></i>
+                            <div>
+                                <h3 class="text-2xl font-bold mb-2">Churn Analysis</h3>
+                                <p class="text-gray-500 text-sm">Deep learning for predictive user behavior modeling.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Skills Card -->
+                    <div class="md:col-span-4 spotlight-card rounded-3xl p-10">
+                        <h3 class="text-xl font-bold mb-6">Toolstack</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="text-xs font-mono p-3 bg-white/5 rounded-lg border border-white/5">React.js</div>
+                            <div class="text-xs font-mono p-3 bg-white/5 rounded-lg border border-white/5">Qiskit</div>
+                            <div class="text-xs font-mono p-3 bg-white/5 rounded-lg border border-white/5">Keras</div>
+                            <div class="text-xs font-mono p-3 bg-white/5 rounded-lg border border-white/5">Pandas</div>
+                        </div>
+                    </div>
+
+                    <!-- Quantum Card -->
+                    <div class="md:col-span-8 spotlight-card rounded-3xl p-10 group cursor-pointer overflow-hidden">
+                        <div class="relative z-10 flex flex-col justify-between h-full">
+                            <div>
+                                <h3 class="text-3xl font-display font-bold mb-4">Quantum Computing</h3>
+                                <p class="text-gray-400 max-w-md">Simulating VQE and Quantum Neural Networks in Python-based environments.</p>
+                            </div>
+                            <div class="flex items-center gap-3 text-indigo-400 font-bold group-hover:gap-5 transition-all">
+                                View Research Paper <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                            </div>
+                        </div>
+                        <!-- Abstract Graphic -->
+                        <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-600/10 rounded-full blur-[100px] pointer-events-none"></div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <section id="contact" class="py-40">
+            <div class="max-w-4xl mx-auto px-6 text-center">
+                <h2 class="font-display text-6xl md:text-8xl font-black mb-10 text-white tracking-tighter">LET'S BUILD<br><span class="text-gray-700">THE FUTURE.</span></h2>
+                <a href="mailto:rubenbmaxwell@gmail.com" class="inline-flex items-center gap-4 bg-white text-black px-10 py-5 rounded-full font-bold text-xl hover:scale-110 transition-transform">
+                    Get in touch <i data-lucide="mail" class="w-5 h-5"></i>
+                </a>
+                <div class="mt-20 flex justify-center gap-10 text-gray-500 font-mono text-sm">
+                    <a href="#" class="hover:text-white transition-colors">LinkedIn</a>
+                    <a href="#" class="hover:text-white transition-colors">GitHub</a>
+                    <a href="#" class="hover:text-white transition-colors">Twitter</a>
+                </div>
+            </div>
+        </footer class="py-10 text-center text-gray-700 text-xs uppercase tracking-widest">
+            <p>&copy; 2026 Ruben Maxwell. All Rights Reserved.</p>
+        </footer>
+    </main>
+
+    <script>
+        // Init Lucide
+        lucide.createIcons();
+
+        // 1. Celestial Scroll Animation
+        gsap.registerPlugin(ScrollTrigger);
+
+        gsap.to("#moon", {
+            scrollTrigger: {
+                trigger: "#hero",
+                start: "top top",
+                end: "bottom top",
+                scrub: true
+            },
+            y: 400,
+            x: -200,
+            scale: 0.5,
+            opacity: 0,
+            rotation: 45
+        });
+
+        gsap.to("#stars", {
+            scrollTrigger: {
+                trigger: "#hero",
+                start: "top top",
+                end: "bottom top",
+                scrub: true
+            },
+            y: 200,
+            rotation: 10
+        });
+
+        gsap.to("#mtn-back", {
+            scrollTrigger: {
+                trigger: "#hero",
+                start: "top top",
+                end: "bottom top",
+                scrub: true
+            },
+            y: 100
+        });
+
+        gsap.to("#mtn-front", {
+            scrollTrigger: {
+                trigger: "#hero",
+                start: "top top",
+                end: "bottom top",
+                scrub: true
+            },
+            y: 50
+        });
+
+        // 2. Typewriter Effect
+        const phrases = ["Computer Science Student", "AI/ML Practitioner", "Quantum Enthusiast", "Creative Developer"];
+        let i = 0;
+        let j = 0;
+        let currentPhrase = "";
+        let isDeleting = false;
+        const typewriterEl = document.getElementById("typewriter");
+
+        function type() {
+            const phrase = phrases[i];
+            if (isDeleting) {
+                currentPhrase = phrase.substring(0, j - 1);
+                j--;
+            } else {
+                currentPhrase = phrase.substring(0, j + 1);
+                j++;
+            }
+
+            typewriterEl.innerHTML = currentPhrase;
+
+            let speed = isDeleting ? 50 : 150;
+            if (!isDeleting && j === phrase.length) {
+                speed = 2000;
+                isDeleting = true;
+            } else if (isDeleting && j === 0) {
+                isDeleting = false;
+                i = (i + 1) % phrases.length;
+                speed = 500;
+            }
+
+            setTimeout(type, speed);
+        }
+        type();
+
+        // 3. Name Scramble
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const nameEl = document.getElementById("name-scramble");
+        nameEl.onmouseover = event => {
+            let iteration = 0;
+            const interval = setInterval(() => {
+                event.target.innerText = event.target.innerText
+                    .split("")
+                    .map((l, index) => {
+                        if (index < iteration) return "RUBEN"[index];
+                        return letters[Math.floor(Math.random() * 26)];
+                    })
+                    .join("");
+                if (iteration >= 5) clearInterval(interval);
+                iteration += 1 / 3;
+            }, 30);
+        };
+
+        // 4. Spotlight & Tilt
+        document.querySelectorAll(".spotlight-card").forEach(card => {
+            card.addEventListener("mousemove", e => {
+                const rect = card.getBoundingClientRect();
+                card.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`);
+                card.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`);
+            });
+        });
+
+        const tiltCard = document.querySelector(".tilt-card");
+        window.addEventListener("mousemove", e => {
+            const x = (window.innerWidth / 2 - e.pageX) / 30;
+            const y = (window.innerHeight / 2 - e.pageY) / 30;
+            tiltCard.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+        });
+
+        // 5. Constellation Background
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+        let dots = [];
+        function initCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = document.body.scrollHeight;
+            for(let i=0; i<150; i++) {
+                dots.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5
+                });
+            }
+        }
+        function drawCanvas() {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            ctx.fillStyle = "rgba(255,255,255,0.5)";
+            ctx.strokeStyle = "rgba(255,255,255,0.05)";
+            dots.forEach((d, idx) => {
+                d.x += d.vx; d.y += d.vy;
+                if(d.x<0 || d.x>canvas.width) d.vx *= -1;
+                if(d.y<0 || d.y>canvas.height) d.vy *= -1;
+                ctx.beginPath(); ctx.arc(d.x, d.y, 1, 0, Math.PI*2); ctx.fill();
+                
+                for(let j=idx+1; j<dots.length; j++){
+                    const d2 = dots[j];
+                    const dist = Math.hypot(d.x-d2.x, d.y-d2.y);
+                    if(dist < 100) {
+                        ctx.beginPath(); ctx.moveTo(d.x, d.y); ctx.lineTo(d2.x, d2.y); ctx.stroke();
+                    }
+                }
+            });
+            requestAnimationFrame(drawCanvas);
+        }
+        initCanvas(); drawCanvas();
+
+        // 6. Reveal on Scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.classList.add('opacity-100', 'translate-y-0');
+                    entry.target.classList.remove('opacity-0', 'translate-y-10');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => {
+            el.classList.add('opacity-0', 'translate-y-10', 'transition-all', 'duration-1000', 'ease-out');
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+/* Custom small styles for portfolio enhancements */
+body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
+.bg-accent { background-color: #2563eb; }
+.text-accent { color: #2563eb; }
+.project-open { cursor: pointer; }
+#projectModal { display: none; }
+#projectModal.show { display: flex; }
+.accent-link { color: #2563eb; }
