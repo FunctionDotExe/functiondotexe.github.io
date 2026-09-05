@@ -74,7 +74,7 @@
 
   .project-media, .about-portrait { transform: none !important; break-inside: avoid; }
   .artifact, .artifact__object { transform: none !important; width: 100%; perspective: none; }
-  .skill-field { break-inside: avoid; border-color: #aaa; }
+  .skill-field { min-height: 0 !important; padding: .75rem 0 !important; break-inside: avoid; border-color: #aaa; }
   .skill-field summary { min-height: 0; padding-block: .5rem; }
   .skill-field summary > svg { display: none; }
   .skill-field__body { padding: 0 0 .75rem; }

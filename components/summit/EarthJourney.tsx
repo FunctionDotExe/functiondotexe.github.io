@@ -24,7 +24,7 @@ export function EarthJourney() {
 
       <section className="depth-section descent-crust" id="crust" tabIndex={-1} aria-labelledby="skills-title">
         <div className="shell depth-grid">
-          <div className="depth-intro"><p className="section-label">Technical foundations</p><h2 id="skills-title">Many facets.<br />One mindset.</h2><p>The interesting problems rarely fit inside one discipline. These are the tools I bring together to solve them.</p><span className="terrain-note">Explore a field. Turn the specimen.<br />See what sits beneath the surface.</span></div>
+          <div className="depth-intro"><p className="section-label">Technical foundations</p><h2 id="skills-title">Many facets.<br />One mindset.</h2><p>The interesting problems rarely fit inside one discipline. These are the tools I bring together to solve them.</p><span className="terrain-note">Six fields, six facets.<br />Scroll to turn the specimen and explore each one.</span></div>
           <SkillCabinet />
         </div>
       </section>

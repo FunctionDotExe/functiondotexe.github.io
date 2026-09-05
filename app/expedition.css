@@ -119,39 +119,44 @@ h1, h2, h3 { font-optical-sizing: auto; }
 .project-thumbnails img { width: 100%; height: 100%; object-fit: contain; }
 .project-dialog__description { padding-top: 1.5rem; border-top: 1px solid #fff4db18; }
 
-/* A mineral cabinet inside the cavern: real geometry, readable native fields. */
+/* A native scroll sequence: the sculpture stays while each skill passes below. */
 .descent-crust .depth-grid { grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 5rem; }
 .depth-intro h2 { font-size: clamp(3.5rem, 5.3vw, 6rem); line-height: 1.02; }
 .depth-intro > p:not(.section-label) { font-size: 1.03rem; line-height: 1.8; }
 .terrain-note { font-size: .8rem; line-height: 1.8; }
-.skill-cabinet { position: relative; min-width: 0; }
-.skill-cabinet__specimen { position: relative; isolation: isolate; }
-.skill-cabinet__specimen::before { position: absolute; inset: 0 -15%; z-index: -1; background: radial-gradient(ellipse, #111333a8, transparent 70%); content: ""; }
+.skill-cabinet { --specimen-height: 420px; --specimen-top: 6rem; --skill-scroll-padding: 6rem; position: relative; min-width: 0; }
+.skill-cabinet__specimen { position: sticky; top: var(--specimen-top); z-index: 3; isolation: isolate; padding-bottom: .75rem; }
+.skill-cabinet__specimen::before { position: absolute; inset: -1rem -2rem 0; z-index: -1; background: linear-gradient(#17112ff5 0% 82%, #17112fe8 90%, #17112f00); content: ""; pointer-events: none; }
 .specimen-caption { display: flex; justify-content: space-between; align-items: center; gap: 1rem; color: #e5dff1; font-size: .74rem; border-top: 1px solid #b6dafa47; padding-top: 1rem; text-shadow: 0 2px 15px #11082b; }
 .specimen-caption > span:last-child { color: var(--cyan); }
-.specimen-caption--bottom { border-top: 0; padding-block: .75rem 1.5rem; }
-.specimen-caption--bottom > span:last-child { color: #e5dff1b8; font-size: .7rem; }
-.crystal-scene { height: clamp(330px, 34vw, 490px); }
+.specimen-caption--bottom { border-top: 0; padding-block: .5rem; font-size: .8125rem; }
+.specimen-caption--bottom > span { display: inline-flex; align-items: center; gap: .4rem; }
+.specimen-caption--bottom a { display: inline-flex; align-items: center; min-height: 44px; color: #e5dff1; text-decoration: underline; text-underline-offset: 4px; }
+.skill-cabinet .crystal-scene { height: clamp(180px, 29svh, 330px); }
 .crystal-scene__hint { color: #e5dff1; font-size: .75rem; text-shadow: 0 1px 10px #11082b; }
 .crystal-scene__reset { background: #171139a6; }
+.skill-cabinet__navigation { width: min(100%, 340px); margin-inline: auto; }
+.skill-cabinet__navigation nav { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 2px; }
+.skill-cabinet__navigation a { display: grid; place-items: center; min-height: 44px; border-radius: 6px; transition: background-color 180ms ease; }
+.skill-cabinet__navigation a:hover, .skill-cabinet__navigation a[aria-current="step"] { background: #b6dafa1a; }
+.skill-cabinet__navigation a[aria-current="step"] .skill-field__stone { transform: rotate(0) scale(1.15); }
+.skill-cabinet__progress { height: 2px; margin-top: .35rem; background: #b6dafa2b; }
+.skill-cabinet__progress > span { display: block; height: 100%; background: var(--cyan); transform: scaleX(var(--skill-progress, 0)); transform-origin: left; }
 .skill-cabinet__fields { position: relative; isolation: isolate; }
 .skill-cabinet__fields::before { position: absolute; z-index: -1; inset: -3rem -4rem; content: ""; background: radial-gradient(ellipse, #120929e6, #1209297a 50%, transparent 74%); }
-.skill-field { border-top: 1px solid #b6dafa33; }
-.skill-field:last-child { border-bottom: 1px solid #b6dafa33; }
-.skill-field summary { display: flex; align-items: center; gap: 1rem; list-style: none; padding: 1.1rem .25rem; min-height: 64px; cursor: pointer; font-size: 1rem; }
-.skill-field summary::-webkit-details-marker { display: none; }
-.skill-field summary > svg { margin-left: auto; transition: transform 200ms ease; }
-.skill-field[open] summary > svg { transform: rotate(180deg); }
-.skill-field--active summary { color: var(--cyan); }
+.skill-field { min-height: max(23rem, calc(100svh - var(--specimen-height) - var(--specimen-top))); padding: 1.5rem 0 4rem; border-top: 1px solid #b6dafa33; scroll-margin-top: calc(var(--specimen-height) + var(--specimen-top) + 23px - var(--skill-scroll-padding)); }
+.skill-field__number { margin-bottom: .7rem; font-size: .8125rem; color: #e5dff1b8; font-variant-numeric: tabular-nums; }
+.skill-field h3 { max-width: 20ch; font-family: var(--font-display); font-size: clamp(1.9rem, 3vw, 2.8rem); line-height: 1.1; font-weight: 500; color: var(--cream); }
+.skill-field--active h3 { color: var(--cyan); }
 .skill-field__stone { --stone-light: #9dc5f3; --stone-dark: #4b698e; width: 14px; height: 22px; flex-shrink: 0; background: linear-gradient(115deg, #f3e8da 20%, var(--stone-dark) 21% 55%, var(--stone-light) 56% 80%, var(--stone-dark) 81%); clip-path: polygon(50% 0, 100% 27%, 86% 81%, 50% 100%, 8% 75%, 0 28%); transform: rotate(-12deg); }
 .skill-field__stone--1 { --stone-light: #c6a4ef; --stone-dark: #77618f; transform: rotate(8deg); }
 .skill-field__stone--2 { --stone-light: #9cdfd9; --stone-dark: #548c8c; transform: rotate(-4deg); }
 .skill-field__stone--3 { --stone-light: #edb094; --stone-dark: #a17369; transform: rotate(10deg); }
 .skill-field__stone--4 { --stone-light: #c5eaff; --stone-dark: #6d9bbd; transform: rotate(-8deg); }
 .skill-field__stone--5 { --stone-light: #cbbbf1; --stone-dark: #84799e; transform: rotate(4deg); }
-.skill-field__body { padding: 0 .25rem 1.5rem 2.1rem; color: #e8e0ef; font-size: .91rem; line-height: 1.75; }
+.skill-field__body { padding-top: 1rem; color: #e8e0ef; font-size: 1rem; line-height: 1.65; }
 .skill-field__body .tag-list { gap: .4rem; margin-top: 1rem; }
-.skill-field__body .tag-list li { font-size: .73rem; background: #17113980; border-radius: 4px; }
+.skill-field__body .tag-list li { font-size: .8125rem; background: #17113980; border-radius: 4px; }
 .experience-entry summary strong { font-family: var(--font-display); font-size: 2rem; font-weight: 500; }
 .experience-entry summary small { font-size: .78rem; }
 .experience-role { font-size: .89rem; }
@@ -278,10 +283,12 @@ h1, h2, h3 { font-optical-sizing: auto; }
   .project-media--workshop { transform: rotate(-3deg); }
   .descent-crust .depth-grid { grid-template-columns: 1fr; gap: 3rem; }
   .depth-intro h2 { font-size: clamp(3rem, 11.5vw, 5rem); }
-  .crystal-scene { height: clamp(340px, 95vw, 490px); }
+  .skill-cabinet { --specimen-top: 4.5rem; --skill-scroll-padding: 5rem; }
+  .skill-cabinet .crystal-scene { height: clamp(165px, 25svh, 240px); }
+  .skill-cabinet__specimen::before { inset-inline: -1.25rem; }
   .specimen-caption { font-size: .73rem; }
-  .skill-field summary { font-size: 1rem; }
-  .skill-field__body { font-size: .9rem; }
+  .skill-field { min-height: max(22rem, calc(100svh - var(--specimen-height) - var(--specimen-top))); }
+  .skill-field__body { font-size: .9375rem; }
   .experience-entry summary strong { font-size: 1.7rem; }
   .experience-entry .disclosure__body { font-size: .91rem; }
   .contact-scene h2 { font-size: clamp(3.4rem, 11.6vw, 6rem); }
@@ -324,7 +331,18 @@ h1, h2, h3 { font-optical-sizing: auto; }
   .waypoint, .waypoint:nth-child(even) { min-height: auto; }
   .waypoint__stage { position: relative; min-height: 850px; }
 }
+@media (max-height: 700px) {
+  .skill-cabinet .crystal-scene { height: 165px; }
+  .skill-cabinet__specimen > .specimen-caption { display: none; }
+  .skill-cabinet__specimen { padding-bottom: .5rem; }
+}
+@media (max-height: 500px) {
+  .skill-cabinet__specimen { position: relative; top: auto; }
+  .skill-field { min-height: 0; padding-bottom: 2.5rem; scroll-margin-top: calc(99px - var(--skill-scroll-padding)); }
+}
 @media (prefers-reduced-motion: reduce) {
+  .skill-cabinet__specimen { position: relative; top: auto; }
+  .skill-field { min-height: 0; padding-bottom: 2.5rem; scroll-margin-top: calc(99px - var(--skill-scroll-padding)); }
   .journey-hero, .waypoint, .waypoint:nth-child(even) { min-height: auto; }
   .journey-hero__stage, .waypoint__stage { position: relative; }
   .artifact__object { transform: none; transition: none; }

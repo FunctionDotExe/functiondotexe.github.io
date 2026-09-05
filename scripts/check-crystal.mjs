@@ -89,13 +89,18 @@ function mount({ reducedMotion = false, mobile = false, available = true, shader
   let serial = 0;
   let ready = false;
   let drawCount = 0;
+  let layoutReads = 0;
+  let stateUpdates = 0;
+  let geometryUploads = 0;
   let observer;
   let resizeObserver;
   let rotation;
+  let projection;
   const frames = new Map();
   const refs = [];
   const cleanups = [];
   const resources = new Set();
+  const motionRef = { current: null };
   const events = () => {
     const callbacks = new Map();
     return {
@@ -120,8 +125,8 @@ function mount({ reducedMotion = false, mobile = false, available = true, shader
     getError: () => 0, bindBuffer() {}, enableVertexAttribArray() {}, vertexAttribPointer() {},
     enable() {}, cullFace() {}, clearColor() {}, viewport() {}, clear() {},
     bufferData: (_, values) => assert(values.every(Number.isFinite)),
-    bufferSubData: (_, offset, values) => assert(values.every(Number.isFinite)),
-    uniformMatrix4fv: (_, transpose, values) => assert(values.every(Number.isFinite)),
+    bufferSubData: (_, offset, values) => { geometryUploads++; assert(values.every(Number.isFinite)); },
+    uniformMatrix4fv: (_, transpose, values) => { projection = new Float32Array(values); assert(values.every(Number.isFinite)); },
     uniform2f: (_, x, y) => { assert(Number.isFinite(x) && Number.isFinite(y)); rotation = [x, y]; },
     uniform3fv: (_, values) => assert(values.every(Number.isFinite)),
     drawArrays: (_, start, count) => { assert.equal(count, meshes[0].vertexCount); drawCount++; },
@@ -130,7 +135,8 @@ function mount({ reducedMotion = false, mobile = false, available = true, shader
   const captures = new Set();
   const root = {
     ...events(), style: {}, dataset: {},
-    getBoundingClientRect: () => ({ width: mobile ? 360 : 800, height: 560 }),
+    width: mobile ? 360 : 800, height: 560,
+    getBoundingClientRect: () => { layoutReads++; return { width: root.width, height: root.height }; },
     querySelector: () => fallback,
     setPointerCapture: (id) => captures.add(id),
     hasPointerCapture: (id) => captures.has(id),
@@ -150,7 +156,7 @@ function mount({ reducedMotion = false, mobile = false, available = true, shader
       return {
         useRef: (initial) => { const ref = { current: refs.length === 0 ? root : refs.length === 1 ? canvas : initial }; refs.push(ref); return ref; },
         useEffect: (effect) => { const cleanup = effect(); if (cleanup) cleanups.push(cleanup); },
-        useState: () => [false, (value) => { ready = value; }],
+        useState: () => [false, (value) => { ready = value; stateUpdates++; }],
         useId: () => "crystal-test",
       };
     },
@@ -160,7 +166,7 @@ function mount({ reducedMotion = false, mobile = false, available = true, shader
     cancelAnimationFrame: (id) => frames.delete(id),
   };
   vm.runInNewContext(component, context);
-  const markup = context.exports.CrystalScene({ active: 0 });
+  const markup = context.exports.CrystalScene({ active: 0, motionRef });
   const frame = () => {
     time += 1000 / 60;
     const callbacks = [...frames.values()];
@@ -168,12 +174,20 @@ function mount({ reducedMotion = false, mobile = false, available = true, shader
     callbacks.forEach((callback) => callback(time));
   };
   return {
-    root, canvas, fallback, markup, motion, resources, document, window, captures,
+    root, canvas, fallback, markup, motion, motionRef, resources, document, window, captures,
     frame, pending: () => frames.size, ready: () => ready, draws: () => drawCount, rotation: () => rotation,
+    projection: () => projection,
+    layoutReads: () => layoutReads, stateUpdates: () => stateUpdates, geometryUploads: () => geometryUploads,
     reveal: () => observer?.callback([{ isIntersecting: true }]),
     hide: () => observer?.callback([{ isIntersecting: false }]),
     select: (value) => refs[2].current?.select(value),
     reset: () => refs[2].current?.reset(),
+    progress: (value) => motionRef.current?.setProgress(value),
+    resize: (width, height) => {
+      root.width = width;
+      root.height = height;
+      resizeObserver.callback([{ target: root, contentRect: { width, height } }]);
+    },
     key: (key) => root.fire("keydown", { key, target: root }),
     pointer: (name, x, y) => root.fire(name, { pointerId: 1, isPrimary: true, pointerType: "mouse", button: 0, buttons: name === "pointerup" ? 0 : 1, clientX: x, clientY: y }),
     settle: () => { for (let frameCount = 0; frameCount < 240 && frames.size; frameCount++) frame(); assert.equal(frames.size, 0, "The specimen must stop rendering when settled"); },
@@ -183,6 +197,7 @@ function mount({ reducedMotion = false, mobile = false, available = true, shader
       cleanups.forEach((cleanup) => cleanup());
       assert.equal(frames.size, 0, "Unmount must cancel pending frames");
       assert.equal(resources.size, 0, "Unmount must delete all live GPU resources");
+      assert.equal(motionRef.current, null, "Unmount must release the external scroll controller");
       for (const target of [root, canvas, document, window, motion]) assert.equal(target.callbacks.size, 0, "Unmount must remove every listener");
       if (observer) assert(observer.disconnected);
       if (resizeObserver) assert(resizeObserver.disconnected);
@@ -261,6 +276,164 @@ reduced.frame();
 assert.equal(reduced.pending(), 0, "Deliberate keyboard controls must still work without animation");
 reduced.unmount();
 
+const scroll = mount({ mobile: true });
+assert.equal(typeof scroll.motionRef.current?.setProgress, "function", "Mount must expose the requested scroll controller");
+scroll.reveal();
+scroll.settle();
+const restYaw = scroll.rotation()[1];
+const initialLayoutReads = scroll.layoutReads();
+const initialStateUpdates = scroll.stateUpdates();
+const initialGeometryUploads = scroll.geometryUploads();
+scroll.progress(0);
+let lastYaw = scroll.rotation()[1];
+for (let step = 1; step <= 60; step++) {
+  scroll.progress(step / 60);
+  scroll.frame();
+  assert(scroll.rotation()[1] > lastYaw, "Scrolling down must rotate continuously in the same direction");
+  assert(scroll.rotation()[1] - lastYaw < .2, "Ordinary scroll frames must not jump between discrete poses");
+  lastYaw = scroll.rotation()[1];
+}
+scroll.settle();
+assert(Math.abs(scroll.rotation()[1] - restYaw - Math.PI * 2) < .0002, "Each scroll stage must complete one revolution");
+lastYaw = scroll.rotation()[1];
+for (let step = 59; step >= 0; step--) {
+  scroll.progress(step / 60);
+  scroll.frame();
+  assert(scroll.rotation()[1] < lastYaw, "Reverse scrolling must reverse the sculpture naturally");
+  lastYaw = scroll.rotation()[1];
+}
+scroll.settle();
+assert(Math.abs(scroll.rotation()[1] - restYaw) < .0002, "Returning to the same scroll position must return to the same pose");
+assert.equal(scroll.layoutReads(), initialLayoutReads, "Continuous scroll rendering must not read layout on every frame");
+assert.equal(scroll.stateUpdates(), initialStateUpdates, "Scroll updates must not schedule React state renders");
+assert.equal(scroll.geometryUploads(), initialGeometryUploads, "Rotation alone must not re-upload vertex geometry");
+scroll.progress(0);
+assert.equal(scroll.pending(), 0, "An unchanged scroll position must not restart idle rendering");
+scroll.progress(NaN);
+scroll.progress(Infinity);
+assert.equal(scroll.pending(), 0, "Invalid progress must not poison the renderer or schedule work");
+for (let step = 1; step <= 12; step++) scroll.progress(step / 12);
+assert.equal(scroll.pending(), 1, "Multiple native scroll events must coalesce into one frame");
+scroll.settle();
+const beforeKey = scroll.rotation()[1];
+scroll.key("ArrowRight");
+scroll.settle();
+assert(Math.abs(scroll.rotation()[1] - beforeKey - .35) < .0002, "Keyboard exploration must offset the scroll pose");
+scroll.progress(1.25);
+scroll.settle();
+assert(Math.abs(scroll.rotation()[1] - beforeKey - Math.PI / 2 - .35) < .0002, "Scroll updates must preserve the manual keyboard offset");
+scroll.reset();
+scroll.settle();
+assert(Math.abs(scroll.rotation()[1] - beforeKey - Math.PI / 2) < .0002, "Reset must remove manual offsets while retaining the active scroll stage");
+scroll.pointer("pointerdown", 100, 100);
+scroll.pointer("pointermove", 150, 103);
+scroll.progress(1.5);
+scroll.pointer("pointermove", 200, 103);
+scroll.pointer("pointerup", 200, 103);
+scroll.settle();
+assert(Math.abs(scroll.rotation()[1] - beforeKey - Math.PI - .8) < .0002, "Drag offsets must compose with progress arriving during the drag");
+scroll.progress(2);
+scroll.frame();
+const releasedYaw = scroll.rotation()[1];
+scroll.progress(null);
+scroll.settle();
+assert(Math.abs(scroll.rotation()[1] - releasedYaw) < .00001, "Releasing scroll control must hold the visible pose without catch-up spin");
+scroll.key("ArrowLeft");
+scroll.settle();
+assert(Math.abs(scroll.rotation()[1] - releasedYaw + .35) < .0002, "Manual exploration must work after leaving the scroll sequence");
+scroll.reset();
+scroll.settle();
+assert(Math.abs(scroll.rotation()[1] - restYaw) < .0002, "Reset outside the sequence must restore the original view");
+scroll.resize(320, 400);
+scroll.frame();
+assert.equal(scroll.canvas.width, 400, "ResizeObserver dimensions must update the capped drawing buffer");
+assert.equal(scroll.canvas.height, 500);
+assert.equal(scroll.layoutReads(), initialLayoutReads, "ResizeObserver dimensions must not trigger a redundant layout read");
+scroll.window.fire("resize");
+scroll.frame();
+assert.equal(scroll.layoutReads(), initialLayoutReads + 1, "Window resizing may measure once, not throughout subsequent rendering");
+scroll.hide();
+scroll.progress(0);
+scroll.progress(5.5);
+assert.equal(scroll.pending(), 0, "Off-screen progress updates must not render");
+scroll.reveal();
+scroll.settle();
+assert(Number.isFinite(scroll.rotation()[1]));
+scroll.document.hidden = true;
+scroll.document.fire("visibilitychange");
+scroll.progress(6);
+assert.equal(scroll.pending(), 0, "Hidden-document progress updates must not render");
+scroll.document.hidden = false;
+scroll.document.fire("visibilitychange");
+scroll.settle();
+const endYaw = scroll.rotation()[1];
+scroll.progress(10);
+assert.equal(scroll.pending(), 0, "Progress beyond the sequence must clamp without needless work");
+assert.equal(scroll.rotation()[1], endYaw);
+const detachedController = scroll.motionRef.current;
+scroll.unmount();
+detachedController.setProgress(0);
+assert.equal(scroll.pending(), 0, "An old controller must be inert after unmount");
+
+const quietScroll = mount({ reducedMotion: true, mobile: true });
+quietScroll.reveal();
+quietScroll.frame();
+const quietYaw = quietScroll.rotation()[1];
+const quietDraws = quietScroll.draws();
+quietScroll.progress(0);
+for (let step = 1; step <= 60; step++) quietScroll.progress(step / 10);
+assert.equal(quietScroll.pending(), 0, "Reduced motion must suppress scroll-driven spin entirely");
+assert.equal(quietScroll.draws(), quietDraws);
+assert.equal(quietScroll.rotation()[1], quietYaw);
+quietScroll.select(4);
+quietScroll.frame();
+assert.equal(quietScroll.pending(), 0, "Reduced motion must still apply selected gemstone changes in one frame");
+quietScroll.key("ArrowRight");
+quietScroll.frame();
+assert(Math.abs(quietScroll.rotation()[1] - quietYaw - .35) < .0002);
+quietScroll.motion.matches = false;
+quietScroll.motion.fire("change");
+quietScroll.settle();
+const resumeYaw = quietScroll.rotation()[1];
+quietScroll.progress(5.9);
+quietScroll.settle();
+assert(Math.abs(quietScroll.rotation()[1] - resumeYaw + Math.PI / 5) < .0002, "Re-enabling motion must resume from the current pose without replaying skipped turns");
+quietScroll.progress(5);
+quietScroll.frame();
+const motionStoppedYaw = quietScroll.rotation()[1];
+quietScroll.motion.matches = true;
+quietScroll.motion.fire("change");
+quietScroll.frame();
+assert.equal(quietScroll.pending(), 0);
+assert(Math.abs(quietScroll.rotation()[1] - motionStoppedYaw) < .00001, "Enabling reduced motion must stop an in-flight scroll spin at the visible pose");
+quietScroll.unmount();
+
+const compact = mount({ mobile: true });
+compact.reveal();
+compact.settle();
+for (const stageHeight of [165, 180, 240, 330]) {
+  compact.resize(360, stageHeight);
+  compact.frame();
+  const projection = compact.projection();
+  for (const mesh of meshes) {
+    for (let degree = 0; degree < 360; degree += 10) {
+      const yaw = degree / 180 * Math.PI;
+      for (let i = 0; i < mesh.positions.length; i += 3) {
+        const p = mesh.positions;
+        const x = p[i] * Math.cos(yaw) + p[i + 2] * Math.sin(yaw);
+        const z = -p[i] * Math.sin(yaw) + p[i + 2] * Math.cos(yaw);
+        const y = p[i + 1] * Math.cos(.09) - z * Math.sin(.09);
+        const depth = CRYSTAL_CAMERA[2] - p[i + 1] * Math.sin(.09) - z * Math.cos(.09);
+        const screenX = (x - CRYSTAL_CAMERA[0]) * projection[0] / depth;
+        const screenY = (y - CRYSTAL_CAMERA[1]) * projection[5] / depth - projection[9];
+        assert(Math.abs(screenX) < .98 && screenY < .98, "Compact sticky stages must keep the entire gemstone visible");
+        assert(screenY > -1 + 88 / stageHeight, "Compact stages must preserve the 44px control area through every rotation");
+      }
+    }
+  }
+}
+compact.unmount();
+
 for (const options of [{ derivativeFailure: true }, { derivativesAvailable: false }]) {
   const basicShader = mount(options);
   basicShader.reveal();
@@ -278,8 +451,9 @@ for (const options of [{ available: false }, { shaderFailure: true }]) {
   const fallback = mount(options);
   assert.equal(fallback.ready(), false);
   assert.equal(fallback.pending(), 0);
+  assert.equal(fallback.motionRef.current, null, "Fallback-only renderers must not expose an unusable scroll controller");
   assert.equal(fallback.markup.props.tabIndex, -1, "A static fallback must not advertise keyboard interaction");
   fallback.unmount();
 }
 
-console.log("Crystal checks passed: all 6 meshes, pairwise morphs, full-rotation framing, outward winding, GPU lifecycle, DPR limits, reduced motion, keyboard, touch scrolling, cancelled gestures, shader fallback, context recovery and idle suspension.");
+console.log("Crystal checks passed: 6 meshes and morphs, framing, GPU lifecycle, DPR limits, native scroll spin/reversal/manual offsets, cached sizing, reduced motion, gestures, shader fallback, context recovery and idle suspension.");

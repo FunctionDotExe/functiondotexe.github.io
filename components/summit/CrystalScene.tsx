@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, type RefObject } from "react";
 import { RotateCcw } from "lucide-react";
 import {
   approachCrystalValues,
@@ -15,6 +15,7 @@ import {
 
 const REST_Y = -.38;
 const REST_X = .09;
+const FULL_TURN = Math.PI * 2;
 const CAMERA_GLSL = `const vec3 CAMERA = vec3(${CRYSTAL_CAMERA.map((value) => value.toFixed(2)).join(", ")});`;
 
 const VERTEX_SHADER = `
@@ -114,7 +115,7 @@ function cssColor(color: Vec3) {
 function CrystalFallback({ active, id }: { active: number; id: string }) {
   const palette = CRYSTAL_PALETTES[crystalIndex(active)];
   return (
-    <svg className="crystal-scene__fallback" viewBox="95 30 450 590" fill="none" aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}>
+    <svg className="crystal-scene__fallback" viewBox="95 30 450 530" fill="none" aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "calc(100% - 44px)", pointerEvents: "none" }}>
       <defs>
         <linearGradient id={`${id}-face`} x1="190" y1="120" x2="420" y2="500" gradientUnits="userSpaceOnUse">
           <stop stopColor={cssColor(palette.warm)} /><stop offset=".32" stopColor={cssColor(palette.cool)} /><stop offset="1" stopColor={cssColor(palette.shadow)} />
@@ -168,12 +169,21 @@ function CrystalFallback({ active, id }: { active: number; id: string }) {
   );
 }
 
-interface CrystalController {
+export interface CrystalScrollController {
+  /** Six scroll stages, each one turn. Null releases the specimen for manual use. */
+  setProgress: (progress: number | null) => void;
+}
+
+interface CrystalController extends CrystalScrollController {
   select: (active: number) => void;
   reset: () => void;
 }
 
-export function CrystalScene({ active = 0, className = "" }: { active?: number; className?: string }) {
+export function CrystalScene({ active = 0, className = "", motionRef }: {
+  active?: number;
+  className?: string;
+  motionRef?: RefObject<CrystalScrollController | null>;
+}) {
   const elementRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const controllerRef = useRef<CrystalController | null>(null);
@@ -206,6 +216,9 @@ export function CrystalScene({ active = 0, className = "" }: { active?: number; 
     let pitch = REST_X + (reduced.matches ? 0 : -.065);
     let targetYaw = REST_Y;
     let targetPitch = REST_X;
+    let scrollProgress: number | null = null;
+    let baseYaw = REST_Y;
+    let manualYaw = 0;
     let raf = 0;
     let lastTime = 0;
     let visible = typeof IntersectionObserver === "undefined";
@@ -216,6 +229,10 @@ export function CrystalScene({ active = 0, className = "" }: { active?: number; 
     let geometryDirty = false;
     let width = 0;
     let height = 0;
+    let cssWidth = 0;
+    let cssHeight = 0;
+    let measureSize = true;
+    let resizePending = true;
     let program: WebGLProgram | null = null;
     let positionBuffer: WebGLBuffer | null = null;
     let normalBuffer: WebGLBuffer | null = null;
@@ -311,22 +328,40 @@ export function CrystalScene({ active = 0, className = "" }: { active?: number; 
     const draw = (now: number) => {
       raf = 0;
       if (disposed || lost || failed || !visible || document.hidden) return;
-      const bounds = element.getBoundingClientRect();
-      if (bounds.width < 1 || bounds.height < 1) { lastTime = 0; return; }
-      const dpr = Math.min(window.devicePixelRatio || 1, window.innerWidth <= 640 ? 1.25 : 1.5, 1800 / bounds.width, 1800 / bounds.height);
-      const nextWidth = Math.max(1, Math.round(bounds.width * dpr));
-      const nextHeight = Math.max(1, Math.round(bounds.height * dpr));
-      if (width !== nextWidth || height !== nextHeight) {
-        width = canvas.width = nextWidth;
-        height = canvas.height = nextHeight;
-        context.viewport(0, 0, width, height);
-        context.uniformMatrix4fv(uniforms.uProjection, false, crystalProjection(width / height));
+      // Scroll-driven frames only update uniforms. Layout reads are reserved for
+      // initial sizing, visibility changes and actual resize notifications.
+      if (measureSize) {
+        const bounds = element.getBoundingClientRect();
+        cssWidth = bounds.width;
+        cssHeight = bounds.height;
+        measureSize = false;
+      }
+      if (cssWidth < 1 || cssHeight < 1) { lastTime = 0; return; }
+      if (resizePending) {
+        const dpr = Math.min(window.devicePixelRatio || 1, window.innerWidth <= 640 ? 1.25 : 1.5, 1800 / cssWidth, 1800 / cssHeight);
+        const nextWidth = Math.max(1, Math.round(cssWidth * dpr));
+        const nextHeight = Math.max(1, Math.round(cssHeight * dpr));
+        if (width !== nextWidth || height !== nextHeight) {
+          width = canvas.width = nextWidth;
+          height = canvas.height = nextHeight;
+          context.viewport(0, 0, width, height);
+          const projection = crystalProjection(width / height);
+          // The original framing reserves 44px at 330px tall. Smaller sticky
+          // stages need a tighter fit, anchored at the top, to keep that space.
+          const compactFit = Math.max(.2, Math.min(1, (cssHeight - 44) / (cssHeight * (1 - 44 / 330))));
+          projection[0] *= compactFit;
+          projection[5] *= compactFit;
+          projection[9] = compactFit - 1;
+          context.uniformMatrix4fv(uniforms.uProjection, false, projection);
+        }
+        resizePending = false;
       }
       const dt = lastTime ? Math.min(.05, (now - lastTime) / 1000) : 1 / 60;
       lastTime = now;
-      const ease = reduced.matches ? 1 : 1 - Math.exp(-dt * (pointer?.dragging ? 19 : 7.5));
-      yaw += (targetYaw - yaw) * ease;
-      pitch += (targetPitch - pitch) * ease;
+      const ease = reduced.matches ? 1 : 1 - Math.exp(-dt * 7.5);
+      const rotationEase = reduced.matches ? 1 : 1 - Math.exp(-dt * (pointer?.dragging ? 19 : scrollProgress !== null ? 18 : 7.5));
+      yaw += (targetYaw - yaw) * rotationEase;
+      pitch += (targetPitch - pitch) * rotationEase;
       let remaining = Math.max(Math.abs(targetYaw - yaw), Math.abs(targetPitch - pitch));
       if (geometryDirty) {
         const geometryRemaining = approachCrystalValues(positions, meshes[selected].positions, ease);
@@ -366,11 +401,36 @@ export function CrystalScene({ active = 0, className = "" }: { active?: number; 
       }
     };
     const reset = () => {
-      // Rebase complete turns so resetting never spins through them.
-      yaw = ((yaw - REST_Y + Math.PI) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2) - Math.PI + REST_Y;
-      targetYaw = REST_Y;
+      // Reset manual exploration relative to the current scroll stage. Outside
+      // the sequence, return to the original view without unwinding whole turns.
+      if (scrollProgress === null) baseYaw = REST_Y;
+      manualYaw = 0;
+      yaw = ((yaw - baseYaw + Math.PI) % FULL_TURN + FULL_TURN) % FULL_TURN - Math.PI + baseYaw;
+      targetYaw = baseYaw;
       targetPitch = REST_X;
       schedule();
+    };
+    const setProgress = (value: number | null) => {
+      if (disposed || (value !== null && !Number.isFinite(value))) return;
+      const next = value === null ? null : Math.max(0, Math.min(6, value));
+      if (next === scrollProgress) return;
+      const previous = scrollProgress;
+      scrollProgress = next;
+      if (next === null) {
+        // Releasing scroll control stops catch-up motion at the visible angle.
+        baseYaw = yaw - manualYaw;
+        targetYaw = yaw;
+        return;
+      }
+      if (reduced.matches) return;
+      if (previous === null) {
+        baseYaw = REST_Y + next * FULL_TURN;
+        // Opening a deep link or re-entering the sequence should not replay
+        // several unseen turns. A whole-turn rebase preserves the visible pose.
+        yaw += FULL_TURN * Math.round((baseYaw + manualYaw - yaw) / FULL_TURN);
+      } else baseYaw += (next - previous) * FULL_TURN;
+      targetYaw = baseYaw + manualYaw;
+      if (Math.abs(targetYaw - yaw) > .00008) schedule();
     };
     const finishPointer = (event?: PointerEvent) => {
       if (event && pointer && event.pointerId !== pointer.id) return;
@@ -381,7 +441,7 @@ export function CrystalScene({ active = 0, className = "" }: { active?: number; 
     };
     const pointerDown = (event: PointerEvent) => {
       if (!hasRendered || !event.isPrimary || event.button !== 0 || (event.target instanceof Element && event.target.closest("button"))) return;
-      pointer = { id: event.pointerId, x: event.clientX, y: event.clientY, yaw: targetYaw, dragging: false };
+      pointer = { id: event.pointerId, x: event.clientX, y: event.clientY, yaw: manualYaw, dragging: false };
     };
     const pointerMove = (event: PointerEvent) => {
       if (!pointer || pointer.id !== event.pointerId) return;
@@ -397,7 +457,8 @@ export function CrystalScene({ active = 0, className = "" }: { active?: number; 
         element.dataset.dragging = "true";
         element.style.cursor = "grabbing";
       }
-      targetYaw = pointer.yaw + dx * .008;
+      manualYaw = pointer.yaw + dx * .008;
+      targetYaw = baseYaw + manualYaw;
       schedule();
     };
     const pointerLeave = (event: PointerEvent) => {
@@ -407,15 +468,30 @@ export function CrystalScene({ active = 0, className = "" }: { active?: number; 
       if (event.target !== element || !hasRendered) return;
       if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
         event.preventDefault();
-        targetYaw += event.key === "ArrowLeft" ? -.35 : .35;
+        manualYaw += event.key === "ArrowLeft" ? -.35 : .35;
+        targetYaw = baseYaw + manualYaw;
         schedule();
       } else if (event.key === "Home") { event.preventDefault(); reset(); }
     };
     const visibilityChanged = () => {
       if (document.hidden) { finishPointer(); stop(); }
-      else schedule();
+      else {
+        measureSize = true;
+        resizePending = true;
+        if (scrollProgress !== null) yaw += FULL_TURN * Math.round((targetYaw - yaw) / FULL_TURN);
+        schedule();
+      }
     };
-    const motionChanged = () => { schedule(); };
+    const motionChanged = () => {
+      // Changing the preference never catches up on scroll motion skipped while
+      // reduced motion was enabled. Future scroll deltas resume from this pose.
+      if (scrollProgress !== null) {
+        baseYaw = yaw - manualYaw;
+        targetYaw = yaw;
+      }
+      schedule();
+    };
+    const viewportResized = () => { measureSize = true; resizePending = true; schedule(); };
     const contextLost = (event: Event) => {
       event.preventDefault();
       lost = true;
@@ -432,6 +508,7 @@ export function CrystalScene({ active = 0, className = "" }: { active?: number; 
       failed = false;
       width = 0;
       height = 0;
+      resizePending = true;
       try { initializeGPU(); schedule(); }
       catch { failed = true; disposeGPU(); showRenderer(false); }
     };
@@ -447,12 +524,27 @@ export function CrystalScene({ active = 0, className = "" }: { active?: number; 
         schedule();
       },
       reset,
+      setProgress,
     };
-    const resize = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(schedule);
+    const resize = typeof ResizeObserver === "undefined" ? null : new ResizeObserver((entries) => {
+      const entry = entries.find((item) => item.target === element);
+      if (entry) {
+        cssWidth = entry.contentRect.width;
+        cssHeight = entry.contentRect.height;
+        measureSize = false;
+      } else measureSize = true;
+      resizePending = true;
+      schedule();
+    });
     resize?.observe(element);
     const intersection = typeof IntersectionObserver === "undefined" ? null : new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
-      if (visible) schedule();
+      if (visible) {
+        measureSize = true;
+        resizePending = true;
+        if (scrollProgress !== null) yaw += FULL_TURN * Math.round((targetYaw - yaw) / FULL_TURN);
+        schedule();
+      }
       else { finishPointer(); stop(); }
     }, { threshold: 0 });
     intersection?.observe(element);
@@ -467,7 +559,7 @@ export function CrystalScene({ active = 0, className = "" }: { active?: number; 
     canvas.addEventListener("webglcontextrestored", contextRestored);
     document.addEventListener("visibilitychange", visibilityChanged);
     reduced.addEventListener("change", motionChanged);
-    window.addEventListener("resize", schedule);
+    window.addEventListener("resize", viewportResized);
     schedule();
     return () => {
       finishPointer();
@@ -487,16 +579,23 @@ export function CrystalScene({ active = 0, className = "" }: { active?: number; 
       canvas.removeEventListener("webglcontextrestored", contextRestored);
       document.removeEventListener("visibilitychange", visibilityChanged);
       reduced.removeEventListener("change", motionChanged);
-      window.removeEventListener("resize", schedule);
+      window.removeEventListener("resize", viewportResized);
       disposeGPU();
     };
   }, []);
 
   useEffect(() => { controllerRef.current?.select(active); }, [active]);
+  useEffect(() => {
+    if (!motionRef) return;
+    const controller = controllerRef.current;
+    const exposed = controller ? { setProgress: controller.setProgress } : null;
+    motionRef.current = exposed;
+    return () => { if (motionRef.current === exposed) motionRef.current = null; };
+  }, [motionRef]);
 
   return (
     <div ref={elementRef} className={`crystal-scene ${className}`} role="group" tabIndex={ready ? 0 : -1} aria-label={ready ? "Interactive crystal sculpture" : "Faceted crystal sculpture"} aria-describedby={`${id}-hint`} aria-keyshortcuts={ready ? "ArrowLeft ArrowRight Home" : undefined} style={{ position: "relative", width: "100%", touchAction: "pan-y", cursor: ready ? "grab" : "default", isolation: "isolate" }}>
-      <svg className="crystal-scene__shadow" viewBox="95 30 450 590" aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}>
+      <svg className="crystal-scene__shadow" viewBox="95 30 450 530" aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "calc(100% - 44px)", pointerEvents: "none" }}>
         <defs><radialGradient id={`${id}-shadow`}><stop stopColor="#0d091b" stopOpacity=".38" /><stop offset="1" stopColor="#0d091b" stopOpacity="0" /></radialGradient></defs>
         <ellipse cx="320" cy="550" rx="160" ry="30" fill={`url(#${id}-shadow)`} />
       </svg>

@@ -34,6 +34,7 @@ function continuumPosition(y: number, start: number, end: number, height: number
 export function JourneyMotion() {
   useEffect(() => {
     const root = document.documentElement;
+    const progressBar = document.querySelector<HTMLElement>(".scroll-progress");
     const world = document.querySelector<HTMLElement>(".journey-world");
     const threshold = document.querySelector<HTMLElement>(".descent-threshold");
     const story = document.querySelector<HTMLElement>(".journey__story");
@@ -49,6 +50,7 @@ export function JourneyMotion() {
     let frame = 0;
     let dirty = true;
     let height = 1;
+    let width = innerWidth;
     let range = 1;
     let start = 0;
     let end = 1;
@@ -80,17 +82,19 @@ export function JourneyMotion() {
     };
 
     const measure = () => {
+      width = innerWidth;
       height = world.clientHeight || innerHeight;
       range = Math.max(root.scrollHeight - innerHeight, 1);
-      compact = reduced.matches || (height <= 600 && innerWidth > height);
+      const sceneRange = Math.max(root.scrollHeight - height, 1);
+      compact = reduced.matches || (height <= 600 && width > height);
       const rect = threshold.getBoundingClientRect();
       const top = rect.top + scrollY;
       const thresholdRange = Math.max(rect.height - height, 1);
       const runway = compact ? 0 : Math.min(height * .58, thresholdRange * .34);
       start = top - runway;
       end = top + thresholdRange + runway;
-      const ratio = innerWidth <= 600 && innerHeight > innerWidth ? 844 / 390 : innerWidth <= 820 && innerHeight > innerWidth ? 11 / 8 : 9 / 16;
-      const anchorHeight = Math.max(height, (plate?.clientWidth ?? innerWidth) * ratio);
+      const ratio = width <= 600 && height > width ? 844 / 390 : width <= 820 && height > width ? 11 / 8 : 9 / 16;
+      const anchorHeight = Math.max(height, (plate?.clientWidth ?? width) * ratio);
       plateStart = Math.max(anchorHeight - height, 0) * .24;
       plateTravel = Math.max((plate?.clientHeight ?? height) - anchorHeight - plateStart, 0);
       depthTravel = depthPlates.map((image) => Math.max((image?.clientHeight ?? height) - height, 0));
@@ -100,7 +104,7 @@ export function JourneyMotion() {
         const dwell = Math.max((bounds?.height ?? height) - height, height * .35);
         const anchor = (bounds?.top ?? 0) + scrollY + dwell * (index === 3 ? .72 : .5);
         return {
-          at: Math.min(range, index === 0 ? Math.max(anchor, transitionEnd + height * .9) : anchor),
+          at: Math.min(sceneRange, index === 0 ? Math.max(anchor, transitionEnd + height * .9) : anchor),
           progress: [.22, .48, .74, 1][index],
           x: [.058, -.064, .072, 0][index],
         };
@@ -117,13 +121,16 @@ export function JourneyMotion() {
       const cameraTarget = Math.min(range, Math.max(0, scrollY));
       const elapsed = Math.min(50, Math.max(1, time - lastFrameTime));
       lastFrameTime = time;
-      // Restore the original time-based follow. Native scrolling stays instant;
-      // only the painted camera eases and continues rendering until settled.
-      cameraY = reduced.matches ? cameraTarget : cameraY + (cameraTarget - cameraY) * (1 - Math.exp(-elapsed / 72));
+      // Touch already has native momentum. Follow it in the same frame instead
+      // of adding a second easing tail; retain the desktop wheel-camera feel.
+      const easeCamera = finePointer.matches && !reduced.matches;
+      cameraY = easeCamera ? cameraY + (cameraTarget - cameraY) * (1 - Math.exp(-elapsed / 72)) : cameraTarget;
       if (Math.abs(cameraTarget - cameraY) <= .12) cameraY = cameraTarget;
       const y = cameraY;
-      write(root, "--page-progress", clamp(cameraTarget / range).toFixed(4));
-      const motion = reduced.matches ? 0 : (innerWidth <= 720 ? .52 : innerWidth <= 980 ? .74 : 1) * (height <= 650 ? .72 : 1);
+      // This value has one consumer. Keep it off <html> so scroll does not
+      // invalidate an inherited custom property throughout the content tree.
+      write(progressBar, "--page-progress", clamp(cameraTarget / range).toFixed(4));
+      const motion = reduced.matches ? 0 : (width <= 720 ? .52 : width <= 980 ? .74 : 1) * (height <= 650 ? .72 : 1);
       const progress = clamp(y / Math.max(start, 1));
       // Carry blue-hour lighting across the stitched cave entrance, then let
       // it fall away underground instead of flashing back to daylight.
@@ -132,8 +139,8 @@ export function JourneyMotion() {
       write(surface, "--surface-stars", (dusk * .85).toFixed(4));
       write(continuum, "--continuum-dusk", (dusk * .76 * (1 - smooth(start + (end - start) * .18, start + (end - start) * .7, y))).toFixed(4));
       const lookBlend = 1 - Math.exp(-elapsed / 188);
-      lookX += (targetX - lookX) * lookBlend;
-      lookY += (targetY - lookY) * lookBlend;
+      lookX = easeCamera ? lookX + (targetX - lookX) * lookBlend : 0;
+      lookY = easeCamera ? lookY + (targetY - lookY) * lookBlend : 0;
       const lookStrength = motion * (1 - smooth(start - height, start, y));
       write(world, "--look-x", `${(lookX * lookStrength).toFixed(2)}px`);
       write(world, "--look-y", `${(lookY * lookStrength).toFixed(2)}px`);
@@ -177,7 +184,7 @@ export function JourneyMotion() {
       const depthPulse = Math.sin(depthProgress * Math.PI * 3.5) * Math.sin(depthProgress * Math.PI) ** 2 * height * .045 * motion;
       planes.forEach((plane, index) => {
         const factor = [.18, .34, .68, 1][index];
-        write(depth, `--depth-${plane}-x`, `${(-depthX * innerWidth * factor * motion).toFixed(2)}px`);
+        write(depth, `--depth-${plane}-x`, `${(-depthX * width * factor * motion).toFixed(2)}px`);
         write(depth, `--depth-${plane}-y`, `${(-depthTravel[index] * depthProgress - depthPulse * factor).toFixed(2)}px`);
       });
       write(depth, "--core-heat", clamp((depthProgress - .5) * 2).toFixed(4));
@@ -185,6 +192,16 @@ export function JourneyMotion() {
     };
     const schedule = () => { if (!frame) frame = requestAnimationFrame(render); };
     const invalidate = () => { dirty = true; schedule(); };
+    const onResize = () => {
+      if (finePointer.matches || innerWidth !== width || world.clientHeight !== height) {
+        invalidate();
+      } else {
+        // The mobile artwork uses a stable large viewport. Browser toolbars
+        // change the scroll range, but not its plate sizes or scene anchors.
+        range = Math.max(root.scrollHeight - innerHeight, 1);
+        schedule();
+      }
+    };
     const onPointer = (event: PointerEvent) => {
       if (reduced.matches || !finePointer.matches || event.pointerType !== "mouse" || scrollY >= start) return;
       targetX = (event.clientX / innerWidth - .5) * -22;
@@ -200,20 +217,22 @@ export function JourneyMotion() {
     const images = Array.from(world.querySelectorAll("img"));
     images.forEach((image) => image.addEventListener("load", invalidate));
     addEventListener("scroll", schedule, { passive: true });
-    addEventListener("resize", invalidate);
+    addEventListener("resize", onResize);
     addEventListener("pointermove", onPointer, { passive: true });
     document.addEventListener("pointerleave", resetPointer);
     reduced.addEventListener("change", motionChanged);
+    finePointer.addEventListener("change", motionChanged);
     render();
     return () => {
       cancelAnimationFrame(frame);
       observer.disconnect();
       images.forEach((image) => image.removeEventListener("load", invalidate));
       removeEventListener("scroll", schedule);
-      removeEventListener("resize", invalidate);
+      removeEventListener("resize", onResize);
       removeEventListener("pointermove", onPointer);
       document.removeEventListener("pointerleave", resetPointer);
       reduced.removeEventListener("change", motionChanged);
+      finePointer.removeEventListener("change", motionChanged);
       written.forEach((properties, element) => properties.forEach((_value, name) => element.style.removeProperty(name)));
     };
   }, []);

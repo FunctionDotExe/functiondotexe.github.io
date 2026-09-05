@@ -15,8 +15,8 @@ Code and exported-markup review of the active mountain-to-core portfolio. This i
 | Project text and image buttons | Open the same project gallery | Zoom-in icon and visible “View gallery” affordance. Native buttons share one labelled dialog and its ID. Image and text activation must restore focus to their own opener. |
 | Gallery close; previous/next; thumbnails | Close, step through images, or select an image directly | X; left/right arrows; image thumbnails with individual labels and pressed state. Arrow direction matches stepping. Native controls remain available alongside swipe. |
 | Gallery image and video actions | Inspect the selected image; open the existing YouTube demo/walkthrough | Loading/error status and image alternative text. Play means video; the external destination and new tab are identified. New openings start at the first image and top of the dialog. |
-| Six skill fields | Expand tool descriptions and select the crystal variation | Chevron rotates to match native open state; decorative colored stone accompanies the text label. Multiple fields can remain open. |
-| Crystal sculpture and reset | Drag or use left/right keys to rotate; reset the view | Rotation instructions and Rotate-left reset icon. Static fallback remains available. Vertical touch scrolling and reduced motion are preserved. |
+| Six skill fields and stone navigation | Scroll through six readable articles; jump directly to a field | Named stone links point to focusable articles, with current-step feedback. Native sticky positioning keeps the crystal above the reading area. The progress line tracks the sequence. |
+| Crystal sculpture and reset | Scroll to rotate and change the specimen; drag or use left/right keys to explore; reset manual rotation | Rotation instructions and Rotate-left reset icon. Static fallback remains available. Vertical touch scrolling, reverse travel, reduced motion, and complete printed text are preserved. |
 | Research, experience, and background disclosures | Reveal project evidence, role details, awards, or community information | Native summary/chevron controls. Hover is a preview; click pins, Escape dismisses, and focus prevents premature closure. Dialog-local Escape does not affect background previews. |
 | Three résumé links | Open the existing résumé PDF | FileText, “View résumé,” and screen-reader PDF/new-tab text. File icon stays still; this is not a download action. |
 | Three certificate links | Open the corresponding certificate image | FileBadge and explicit view-certificate/new-tab text. Document icon stays still. |
@@ -27,7 +27,7 @@ Code and exported-markup review of the active mountain-to-core portfolio. This i
 
 ## Declared touch targets and remaining visual checks
 
-Icon controls are 44px; text links at least 44px; copy email 44px; contact email 48px; skill summaries 64px; disclosure summaries at least 72px; gallery thumbnails 64×60px or 56×52px on mobile. Actual rendered geometry remains unverified.
+Icon controls are 44px; text links at least 44px; copy email 44px; contact email 48px; skill navigation uses six evenly spaced 44px-high links; disclosure summaries at least 72px; gallery thumbnails 64×60px or 56×52px on mobile. Actual rendered geometry remains unverified.
 
 The CSS follow-ups are implemented: the mobile trail marker has a 44px minimum hit height, project-index down arrows move downward, and route/mobile-menu close headers stay visible while their dialogs scroll. Header spacing is tighter on smaller desktops; the duplicate email CTA is hidden at 761–900px while the Contact link remains available. The gallery image and caption use one shared labelled dialog. Live checks of header fit, controls near the route instrument, and short-viewport dialogs remain necessary.
 

@@ -3,6 +3,7 @@ import "./globals.css";
 import "./artwork.css";
 import "./expedition.css";
 import "./arrival.css";
+import "./mobile-motion.css";
 import "./print.css";
 import { JourneyMotion } from "./JourneyMotion";
 import { ARRIVAL_BOOTSTRAP } from "@/lib/arrival";
