@@ -3,14 +3,15 @@ import { SUMMIT_CONTENT } from "@/lib/summit-content";
 import { RESUME } from "@/lib/constants";
 import { ProjectViewer } from "./ProjectViewer";
 import { ResearchNotes } from "./ResearchNotes";
+import { ArtifactMotion } from "./ArtifactMotion";
 
 export function Landmarks() {
   return (
     <section className="climb" id="work" tabIndex={-1} aria-labelledby="climb-title">
       <div className="shell">
         <header className="section-heading">
-          <div><p className="section-label">Selected projects</p><h2 id="climb-title">A few things<br />I’ve built.</h2></div>
-          <p>Games to play, tools to use, and experiments to learn from.<br />Here’s what went into them.</p>
+          <div><p className="section-label">Selected explorations</p><h2 id="climb-title">Ideas, out<br />in the world.</h2></div>
+          <p>From a first experiment to something people can use.<br />Four projects. Four different kinds of challenge.</p>
         </header>
         <div className="climb__waypoints">
           {SUMMIT_CONTENT.landmarks.map((project, index) => (
@@ -25,7 +26,9 @@ export function Landmarks() {
                 <ul className="tag-list" aria-label="Tools and disciplines">{project.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul>
                 <div className="project-actions"><ProjectViewer landmark={project} />{project.visual === "signal" && <a className="text-link" href={RESUME.youtubeUrl} target="_blank" rel="noreferrer">Watch demo <ArrowUpRight size={16} aria-hidden="true" /></a>}</div>
               </div>
+              <ArtifactMotion kind={project.visual}>
               <figure className={`project-media project-media--${project.visual}`}>
+                <div className="artifact__annotation" aria-hidden="true"><span>{["Made for the daily ritual", "Signal from the noise", "Teaching machines to see", "From a sketch to a step"][index]}</span><i /></div>
                 <div className="project-media__canvas">
                   {project.visual === "phones" ? (
                     <div className="phone-composition">
@@ -35,8 +38,9 @@ export function Landmarks() {
                     </div>
                   ) : <img src={project.image.src} width={project.image.width} height={project.image.height} alt={project.image.alt} loading="lazy" decoding="async" />}
                 </div>
-                <figcaption><span>{project.kicker}</span><span>{project.status}</span></figcaption>
+                <figcaption><span>{project.kicker}</span><strong>{project.status}</strong></figcaption>
               </figure>
+              </ArtifactMotion>
               </div>
             </article>
           ))}

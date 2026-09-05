@@ -1,0 +1,303 @@
+/* The expedition's instruments, typography and tangible artifacts. */
+@font-face { font-family: "Bodoni Moda"; src: url("/fonts/bodoni-moda.ttf") format("truetype"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "DM Sans"; src: url("/fonts/dm-sans-regular.ttf") format("truetype"); font-weight: 400 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "DM Sans"; src: url("/fonts/dm-sans-semibold.ttf") format("truetype"); font-weight: 600 800; font-style: normal; font-display: swap; }
+:root { --font-display: "Bodoni Moda", Georgia, serif; --font-body: "DM Sans", "Segoe UI", sans-serif; }
+body { font-size: 1rem; }
+h1, h2, h3 { font-optical-sizing: auto; }
+.section-label { font-weight: 400; font-size: .85rem; letter-spacing: .025em; }
+.journey-nav { min-height: 94px; }
+.journey-nav__brand { font-family: var(--font-body); font-size: .94rem; font-weight: 600; }
+.journey-nav__brand svg { width: 30px; height: 30px; }
+.journey-nav__links a { font-size: .88rem; }
+.journey-nav__hello { padding: .2rem 1.15rem; border: 1px solid #ffe2a754; border-radius: 30px; }
+.journey-nav__hello:hover { background: #ffe2a712; }
+.journey-nav--scrolled { min-height: 76px; background: linear-gradient(#171139e8, #171139ad 72%, #17113900); }
+.journey-button { min-height: 54px; padding: .85rem 1.5rem .85rem 1.8rem; gap: 1.6rem; border-color: #ffedc6; background: #ffe2a7; box-shadow: 0 2px 2px #ffffff20 inset, 0 10px 35px #150d3533; }
+.journey-button svg { width: 25px; height: 25px; padding: 3px; border: 1px solid #17113938; border-radius: 50%; }
+.text-link { border-color: #fff4db55; }
+
+/* Letterforms occupy the valley; the peak remains the second focal point. */
+.journey-hero { min-height: 120svh; }
+.journey-hero__stage { min-height: max(740px, 100svh); padding-block: 8rem 9rem; }
+.journey-hero__content { max-width: 54rem; padding-left: 1%; }
+.journey-hero__content::before { inset: -15% -8% -20% -45%; background: radial-gradient(ellipse, #20143faf, #27144266 43%, transparent 73%); }
+.journey-hero h1 { font-size: clamp(6.5rem, 12.6vw, 13rem); font-weight: 500; letter-spacing: -.062em; line-height: .82; text-shadow: 0 4px 40px #24143936; }
+.journey-hero h1 span:first-child { margin-bottom: .18em; font-size: .73em; letter-spacing: -.045em; }
+.journey-hero__eyebrow { margin-bottom: 2rem; font-size: .88rem; gap: .85rem; }
+.hero-rule { width: 36px; height: 1px; background: var(--sun); }
+.journey-hero__intro { max-width: 30rem; margin-top: 2.4rem; font-size: 1.05rem; line-height: 1.8; }
+.hero-actions { margin-top: 1.7rem; gap: 2rem; }
+.journey-hero__footer { font-size: .77rem; bottom: 2rem; }
+.journey-hero__footer > span { display: inline-flex; align-items: center; gap: .35rem; }
+.location-dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--sun); box-shadow: 0 0 12px #ffe2a770; margin-right: .3rem; }
+.scroll-cue { display: grid; place-items: center; width: 27px; height: 39px; border: 1px solid #fff4db6b; border-radius: 20px; }
+.summit-marker { position: absolute; top: 28%; right: 5%; display: flex; align-items: start; gap: .75rem; font-size: .87rem; text-shadow: 0 2px 12px #171139; }
+.summit-marker > span:last-child { padding-top: 2px; }
+.summit-marker small { display: block; margin-top: .2rem; font-size: .69rem; }
+.summit-marker__point { position: relative; display: block; width: 24px; height: 24px; border: 1px solid #fff4db99; border-radius: 50%; box-shadow: 0 0 0 7px #fff4db12; }
+.summit-marker__point::before { position: absolute; inset: 9px; border-radius: 50%; background: var(--cream); content: ""; }
+.summit-marker__point::after { position: absolute; top: 27px; left: 10px; width: 1px; height: 55px; transform: rotate(28deg); transform-origin: top; background: linear-gradient(#fff4db70, transparent); content: ""; }
+.summit-marker:hover .summit-marker__point, .summit-marker:focus-visible .summit-marker__point { box-shadow: 0 0 0 10px #fff4db1f, 0 0 30px #ffe2a745; }
+.hero-side-note { position: absolute; right: -1.75rem; top: 52%; writing-mode: vertical-rl; font-size: .69rem; letter-spacing: .02em; color: #fff4dba8; }
+
+.basecamp-scene { min-height: 100svh; }
+.basecamp-scene__content { min-height: 95svh; padding-block: 7rem 5rem; gap: 3.5rem 7rem; }
+.basecamp-scene h2 { font-size: clamp(3.8rem, 6.8vw, 7.5rem); }
+.basecamp-scene__note { padding-top: 2rem; }
+.basecamp-scene__note .basecamp-lead { color: var(--cream); font-size: 1.27rem; line-height: 1.6; margin-bottom: 1.3rem; }
+.basecamp-scene__note > p:not(.basecamp-lead) { color: #e3d9ef; font-size: .95rem; }
+.project-index { padding-block: 1.5rem; row-gap: 1.8rem; }
+.project-index a { transition: color 180ms ease; min-width: 0; }
+.project-index a > span:last-child { font-size: 1.1rem; }
+.project-index a svg { transition: transform 250ms var(--ease-out); }
+.project-index a:hover svg { transform: translate(4px, 4px); }
+.project-index__type { opacity: .78; font-size: .75rem; }
+.climb .section-heading { min-height: 60svh; padding-block: 5rem; gap: 1.5rem; }
+.climb .section-heading h2 { font-size: clamp(4.5rem, 8.7vw, 9rem); line-height: .95; }
+.climb .section-heading > p { font-size: .97rem; }
+.waypoint, .waypoint:nth-child(even) { min-height: 130svh; }
+.waypoint__stage { gap: clamp(3rem, 6vw, 7rem); padding-block: 8rem 7rem; }
+.waypoint:nth-child(even) .artifact { grid-column: 1; grid-row: 1; }
+.waypoint h3 { font-weight: 500; font-size: clamp(3.5rem, 5.5vw, 6.5rem); line-height: 1.03; }
+.waypoint--console h3 { font-size: clamp(3rem, 4.7vw, 5.6rem); }
+.waypoint__landmark { top: 4.8rem; font-size: .76rem; color: #fff4dbcf; }
+.waypoint__description { font-size: 1.05rem; line-height: 1.75; }
+.waypoint__detail { font-size: .91rem; line-height: 1.75; color: #e7e0f1; }
+.project-kind { margin-bottom: 1rem; font-size: .85rem; }
+.waypoint .tag-list { gap: .35rem; }
+.waypoint .tag-list li { border-radius: 4px; font-size: .72rem; background: #17113963; }
+.project-actions { margin-top: 1.7rem; }
+.project-open { gap: 1rem; }
+
+/* Object light follows the pointer; their base orientation is scene-specific. */
+.artifact { min-width: 0; width: 100%; perspective: 1400px; --artifact-x: 0deg; --artifact-y: 0deg; --artifact-light: 50%; }
+.artifact__object { transform: rotateY(var(--artifact-x)) rotateX(var(--artifact-y)); transition: transform 650ms cubic-bezier(.2,.75,.3,1); transform-style: preserve-3d; }
+.artifact__annotation { display: flex; align-items: center; justify-content: flex-end; gap: .9rem; margin-bottom: 2rem; color: #fff4dbba; font-size: .7rem; }
+.artifact__annotation i { width: 44px; height: 1px; background: #fff4db66; }
+.artifact--phones .project-media::before { background: radial-gradient(ellipse at var(--artifact-light) 45%, #c09bf350, transparent 64%); }
+.phone-composition { perspective: 1200px; }
+.phone-composition img { border: 3px solid #312c4b; outline: 1px solid #c5a4f196; border-radius: 17px; box-shadow: 4px 5px 0 #0c0927, 9px 20px 24px #0c082444; }
+.phone-composition img:first-child { transform: translate(3%, 9%) rotateY(12deg) rotate(-12deg); }
+.phone-composition img:nth-child(2) { transform: translateY(-6%) rotateY(-7deg) rotate(3deg); }
+.phone-composition img:last-child { transform: translate(-3%, 12%) rotateY(-12deg) rotate(14deg); }
+.project-media--console { transform: perspective(1500px) rotateY(-9deg) rotateZ(3deg); }
+.project-media--console .project-media__canvas { padding: .65rem .65rem 1.6rem; border-radius: 14px; border: 1px solid #b2deef8a; background: linear-gradient(135deg, #a4e8ff25, #121429); box-shadow: 0 0 0 4px #111327, 0 0 0 5px #a4e8ff35, 8px 12px 0 #111226, 0 30px 90px #08082180; }
+.project-media--console .project-media__canvas > img { border-radius: 7px; max-height: 490px; }
+.project-media--signal { transform: perspective(1400px) rotateY(7deg) rotateZ(-2deg); }
+.project-media--signal .project-media__canvas { padding: .75rem; border-radius: 3px; box-shadow: 0 0 0 6px #a4e8ff08, 12px 20px 0 #0f173566, 0 30px 60px #080a2e55; }
+.project-media--workshop { transform: rotate(-5deg); }
+.project-media--workshop .project-media__canvas { padding: .85rem .85rem 2.25rem; background: linear-gradient(135deg, #fff0d3, #c2b2c7); box-shadow: 1px 1px 0 #fff7db, 0 35px 90px #0e09277a; }
+.project-media--workshop::after { content: ""; position: absolute; width: 31%; height: 26px; top: 2.7rem; left: 35%; transform: rotate(4deg); background: #eadbd678; backdrop-filter: blur(2px); box-shadow: 0 1px 3px #17113913; pointer-events: none; }
+.project-media figcaption { display: block; padding-top: 1.1rem; font-size: .78rem; line-height: 1.6; }
+.project-media figcaption strong { display: block; margin-top: .35rem; font-size: .82rem; font-weight: 500; color: var(--sun); }
+
+/* The gallery is an inspection desk with persistent context and thumbnails. */
+.project-dialog { width: min(1200px, calc(100vw - 3rem)); border: 1px solid #c9b6dd55; border-radius: 18px; background: #17132e; box-shadow: 0 40px 140px #060419a6; }
+.project-dialog__surface { background: radial-gradient(ellipse at 10% 0, #373152, transparent 60%), #17132e; }
+.project-dialog__header h2 { font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3.7rem); line-height: 1.1; }
+.project-dialog__header p { font-size: .8rem; color: var(--sun); }
+.project-dialog__media { background: radial-gradient(ellipse, #32304c, #100e22); border-block: 1px solid #fff4db12; }
+.project-thumbnails { display: flex; align-items: center; gap: .65rem; padding: 0 2rem 1.6rem; }
+.project-thumbnails button { width: 64px; height: 60px; padding: 4px; border: 1px solid #c9b6dd38; border-radius: 6px; background: #ffffff05; opacity: .65; transition: opacity 180ms ease, border-color 180ms ease; }
+.project-thumbnails button[aria-pressed="true"], .project-thumbnails button:hover { opacity: 1; border-color: var(--sun); }
+.project-thumbnails img { width: 100%; height: 100%; object-fit: contain; }
+.project-dialog__description { padding-top: 1.5rem; border-top: 1px solid #fff4db18; }
+
+/* A mineral cabinet inside the cavern: real geometry, readable native fields. */
+.descent-crust .depth-grid { grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 5rem; }
+.depth-intro h2 { font-size: clamp(3.5rem, 5.3vw, 6rem); line-height: 1.02; }
+.depth-intro > p:not(.section-label) { font-size: 1.03rem; line-height: 1.8; }
+.terrain-note { font-size: .8rem; line-height: 1.8; }
+.skill-cabinet { position: relative; min-width: 0; }
+.skill-cabinet__specimen { position: relative; isolation: isolate; }
+.skill-cabinet__specimen::before { position: absolute; inset: 0 -15%; z-index: -1; background: radial-gradient(ellipse, #111333a8, transparent 70%); content: ""; }
+.specimen-caption { display: flex; justify-content: space-between; align-items: center; gap: 1rem; color: #e5dff1; font-size: .74rem; border-top: 1px solid #b6dafa47; padding-top: 1rem; text-shadow: 0 2px 15px #11082b; }
+.specimen-caption > span:last-child { color: var(--cyan); }
+.specimen-caption--bottom { border-top: 0; padding-block: .75rem 1.5rem; }
+.specimen-caption--bottom > span:last-child { color: #e5dff1b8; font-size: .7rem; }
+.crystal-scene { height: clamp(330px, 34vw, 490px); }
+.crystal-scene__hint { color: #e5dff1; font-size: .75rem; text-shadow: 0 1px 10px #11082b; }
+.crystal-scene__reset { background: #171139a6; }
+.skill-cabinet__fields { position: relative; isolation: isolate; }
+.skill-cabinet__fields::before { position: absolute; z-index: -1; inset: -3rem -4rem; content: ""; background: radial-gradient(ellipse, #120929e6, #1209297a 50%, transparent 74%); }
+.skill-field { border-top: 1px solid #b6dafa33; }
+.skill-field:last-child { border-bottom: 1px solid #b6dafa33; }
+.skill-field summary { display: flex; align-items: center; gap: 1rem; list-style: none; padding: 1.1rem .25rem; min-height: 64px; cursor: pointer; font-size: 1rem; }
+.skill-field summary::-webkit-details-marker { display: none; }
+.skill-field summary > svg { margin-left: auto; transition: transform 200ms ease; }
+.skill-field[open] summary > svg { transform: rotate(180deg); }
+.skill-field--active summary { color: var(--cyan); }
+.skill-field__stone { --stone-light: #9dc5f3; --stone-dark: #4b698e; width: 14px; height: 22px; flex-shrink: 0; background: linear-gradient(115deg, #f3e8da 20%, var(--stone-dark) 21% 55%, var(--stone-light) 56% 80%, var(--stone-dark) 81%); clip-path: polygon(50% 0, 100% 27%, 86% 81%, 50% 100%, 8% 75%, 0 28%); transform: rotate(-12deg); }
+.skill-field__stone--1 { --stone-light: #c6a4ef; --stone-dark: #77618f; transform: rotate(8deg); }
+.skill-field__stone--2 { --stone-light: #9cdfd9; --stone-dark: #548c8c; transform: rotate(-4deg); }
+.skill-field__stone--3 { --stone-light: #edb094; --stone-dark: #a17369; transform: rotate(10deg); }
+.skill-field__stone--4 { --stone-light: #c5eaff; --stone-dark: #6d9bbd; transform: rotate(-8deg); }
+.skill-field__stone--5 { --stone-light: #cbbbf1; --stone-dark: #84799e; transform: rotate(4deg); }
+.skill-field__body { padding: 0 .25rem 1.5rem 2.1rem; color: #e8e0ef; font-size: .91rem; line-height: 1.75; }
+.skill-field__body .tag-list { gap: .4rem; margin-top: 1rem; }
+.skill-field__body .tag-list li { font-size: .73rem; background: #17113980; border-radius: 4px; }
+.experience-entry summary strong { font-family: var(--font-display); font-size: 2rem; font-weight: 500; }
+.experience-entry summary small { font-size: .78rem; }
+.experience-role { font-size: .89rem; }
+.experience-entry .disclosure__body { font-size: .94rem; }
+.research-notes h3 { font-family: var(--font-display); }
+.research-metrics dd { font-family: var(--font-display); }
+.about-portrait { padding: .85rem .85rem 1.15rem; }
+.about-portrait figcaption { font-size: .73rem; }
+.about-scene h2 { line-height: 1.04; }
+.contact-scene { padding-bottom: 7rem; }
+.contact-scene h2 { font-size: clamp(4.3rem, 8.5vw, 9.8rem); letter-spacing: -.045em; line-height: 1; }
+.contact-scene__content > p:not(.section-label) { margin-top: 2rem; font-size: 1.05rem; line-height: 1.8; }
+.contact-email { font-size: clamp(1.2rem, 2vw, 2rem); }
+.contact-scene__footer { font-size: .8rem; }
+
+/* Navigation is a field instrument. The full map remains a native dialog. */
+.route-instrument { position: fixed; z-index: 90; right: max(1.5rem, calc((100vw - 1440px) / 2)); bottom: 1.5rem; display: flex; align-items: center; gap: .8rem; min-height: 68px; padding: .65rem 1.3rem .65rem .7rem; border: 1px solid #fff4db38; border-radius: 44px; background: #171139c9; backdrop-filter: blur(18px); box-shadow: 0 8px 40px #0e092738, 0 1px 0 #fff4db10 inset; text-align: left; transition: border-color 200ms ease, background 200ms ease; }
+.route-instrument:hover { background: #282047ed; border-color: #ffe2a7a0; }
+.route-instrument > span:last-child { display: flex; flex-direction: column; min-width: 105px; }
+.route-instrument small { color: #e2d8e5; font-size: .65rem; line-height: 1.5; }
+.route-instrument strong { font-size: .82rem; font-weight: 500; line-height: 1.5; }
+.route-instrument__dial { position: relative; display: grid; place-items: center; width: 44px; height: 44px; color: var(--sun); }
+.route-instrument__dial > svg:first-child { position: absolute; inset: 0; width: 100%; height: 100%; fill: none; stroke: #fff4db26; stroke-width: 1; transform: rotate(-90deg); }
+.route-instrument__dial .route-instrument__progress { stroke: var(--sun); stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--page-progress, 0)); }
+.route-map { width: min(1000px, calc(100vw - 3rem)); max-height: calc(100dvh - 3rem); padding: 0; margin: auto; border: 1px solid #fff4db4a; border-radius: 15px; overflow: auto; color: var(--cream); background: #17132d; box-shadow: 0 45px 180px #050316aa; }
+.route-map[open] { animation: map-arrive 350ms var(--ease-out); }
+.route-map::backdrop { background: #0d0929b5; backdrop-filter: blur(14px); }
+.route-map__surface { padding: 1.5rem 2.5rem 1.8rem; background: radial-gradient(ellipse at 20% 60%, #42314d88, transparent 60%); }
+.route-map header, .route-map footer { display: flex; justify-content: space-between; align-items: center; gap: 1rem; font-size: .74rem; color: #e0d5e7; }
+.route-map header { padding-bottom: 1rem; border-bottom: 1px solid #fff4db21; }
+.route-map footer { padding-top: 1rem; border-top: 1px solid #fff4db21; }
+.route-map__layout { display: grid; grid-template-columns: .9fr 1.1fr; gap: 2.5rem; padding-block: 2rem; align-items: center; }
+.route-map h2 { font-size: clamp(2.8rem, 5vw, 4.5rem); line-height: 1; }
+.route-map__intro { margin-top: 1.25rem; font-size: .88rem; color: #d6cde0; max-width: 30ch; }
+.route-map__art { position: relative; }
+.route-map__art svg { width: 100%; max-height: 530px; }
+.route-map__art p { text-align: center; font-size: .76rem; color: var(--sun); margin-top: .5rem; }
+.route-map nav { margin-top: 1.6rem; }
+.route-map nav a { display: flex; gap: .9rem; align-items: center; padding: .75rem 0; border-top: 1px solid #fff4db18; }
+.route-map nav a > span:nth-child(2) { display: flex; flex-direction: column; flex: 1; }
+.route-map nav strong { font-size: 1rem; font-weight: 500; }
+.route-map nav small { font-size: .72rem; color: #d6cde0; margin-top: .1rem; }
+.route-map nav a > svg { opacity: .6; transition: transform 200ms ease; }
+.route-map nav a:hover > svg { transform: translate(3px,3px); opacity: 1; }
+.route-map nav a[aria-current] strong { color: var(--sun); }
+.route-map__dot { width: 6px; height: 6px; border: 1px solid #fff4db88; border-radius: 50%; }
+.route-map nav a[aria-current] .route-map__dot { background: var(--sun); border-color: var(--sun); box-shadow: 0 0 15px #ffe2a770; }
+@keyframes map-arrive { from { opacity: 0; transform: translateY(18px) scale(.985); } to { opacity: 1; transform: none; } }
+
+@media (min-width: 1600px) { .route-instrument { bottom: 2rem; } .hero-side-note { right: -3rem; } }
+@media (max-width: 1100px) {
+  .summit-marker { right: 0; top: 26%; }
+  .summit-marker small { max-width: 14ch; }
+  .hero-side-note { display: none; }
+  .descent-crust .depth-grid { gap: 3rem; }
+  .waypoint__stage { gap: 3rem; }
+  .project-index a > span:last-child { font-size: 1rem; }
+}
+@media (max-width: 760px) {
+  .journey-nav { min-height: 76px; }
+  .journey-nav__brand { font-size: .83rem; }
+  .journey-nav__brand svg { width: 25px; height: 25px; }
+  .journey-hero { min-height: 110svh; }
+  .journey-hero__stage { min-height: max(740px, 100svh); padding-block: 9rem 8rem; align-items: center; }
+  .journey-hero__content { padding-left: 0; width: 100%; }
+  .journey-hero h1 { font-size: clamp(5.2rem, 18vw, 8.5rem); line-height: .88; letter-spacing: -.065em; }
+  .journey-hero h1 span:first-child { font-size: .79em; margin-bottom: .1em; }
+  .journey-hero__eyebrow { font-size: .72rem; margin-bottom: 1.8rem; gap: .65rem; }
+  .hero-rule { width: 24px; }
+  .journey-hero__intro { max-width: 29ch; font-size: .96rem; margin-top: 1.9rem; }
+  .hero-actions { gap: 1rem 1.4rem; margin-top: 1.6rem; flex-direction: row; align-items: center; }
+  .hero-actions .journey-button { padding: .75rem 1rem .75rem 1.2rem; gap: .8rem; font-size: .84rem; }
+  .hero-actions .text-link { font-size: .83rem; }
+  .summit-marker { top: 17%; right: 3%; font-size: .72rem; gap: .6rem; }
+  .summit-marker small { display: none; }
+  .summit-marker__point { width: 18px; height: 18px; box-shadow: 0 0 0 5px #fff4db12; }
+  .summit-marker__point::before { inset: 6px; }
+  .summit-marker__point::after { left: 8px; top: 20px; height: 30px; }
+  .journey-hero__footer { bottom: 1.5rem; font-size: .72rem; padding-right: 1rem; gap: .5rem; }
+  .journey-hero__footer a { order: 3; flex-basis: 100%; margin-top: .6rem; }
+  .journey-hero__footer .arrival-replay { font-size: .68rem; }
+  .basecamp-scene__content { min-height: auto; padding-block: 6rem 3rem; gap: 2rem; }
+  .basecamp-scene { min-height: auto; }
+  .basecamp-scene h2 { font-size: clamp(3.7rem, 12.5vw, 6rem); }
+  .basecamp-scene__note { padding-top: 0; }
+  .basecamp-scene__note .basecamp-lead { font-size: 1.15rem; }
+  .project-index { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+  .project-index a:nth-child(n) { border: 0; padding: 0; }
+  .project-index a > span:last-child { font-size: .96rem; gap: .4rem; line-height: 1.5; }
+  .project-index__type { font-size: .68rem; }
+  .climb .section-heading { min-height: 60svh; padding-block: 5rem 3rem; }
+  .climb .section-heading h2 { font-size: clamp(4rem, 14vw, 6.3rem); }
+  .climb .section-heading > p { font-size: .87rem; }
+  .waypoint, .waypoint:nth-child(even) { min-height: auto; }
+  .waypoint__stage, .waypoint:nth-child(even) .waypoint__stage { position: relative; min-height: auto; grid-template-columns: 1fr; padding-block: 6rem 5rem; gap: 3.5rem; }
+  .waypoint:nth-child(even) .artifact { grid-column: auto; grid-row: auto; }
+  .waypoint__landmark { top: 2.8rem; font-size: .72rem; }
+  .waypoint h3, .waypoint--console h3 { font-size: clamp(3rem, 10.6vw, 5rem); }
+  .waypoint--console h3 { font-size: clamp(2.45rem, 9.7vw, 4.5rem); }
+  .waypoint__description { font-size: 1rem; }
+  .waypoint__detail { font-size: .9rem; }
+  .artifact { width: 93%; justify-self: center; }
+  .waypoint .project-media { width: 100%; }
+  .artifact__annotation { margin-bottom: 1.6rem; font-size: .7rem; }
+  .project-media figcaption { font-size: .75rem; }
+  .project-media figcaption strong { font-size: .79rem; }
+  .phone-composition img { border-width: 2px; border-radius: 11px; }
+  .project-media--console { transform: perspective(1000px) rotateY(-4deg) rotateZ(2deg); }
+  .project-media--signal { transform: perspective(1000px) rotateY(4deg) rotateZ(-2deg); }
+  .project-media--workshop { transform: rotate(-3deg); }
+  .descent-crust .depth-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .depth-intro h2 { font-size: clamp(3rem, 11.5vw, 5rem); }
+  .crystal-scene { height: clamp(340px, 95vw, 490px); }
+  .specimen-caption { font-size: .73rem; }
+  .skill-field summary { font-size: 1rem; }
+  .skill-field__body { font-size: .9rem; }
+  .experience-entry summary strong { font-size: 1.7rem; }
+  .experience-entry .disclosure__body { font-size: .91rem; }
+  .contact-scene h2 { font-size: clamp(3.4rem, 11.6vw, 6rem); }
+  .contact-scene__content > p:not(.section-label) { font-size: .95rem; }
+  .contact-scene__footer { font-size: .76rem; margin-top: 5rem; }
+  .contact-scene { padding-bottom: 6rem; }
+  .route-instrument { bottom: 1rem; right: 1rem; min-height: 56px; padding: .4rem .95rem .4rem .45rem; gap: .55rem; }
+  .route-instrument__dial { width: 38px; height: 38px; }
+  .route-instrument > span:last-child { min-width: 90px; }
+  .route-instrument small { font-size: .61rem; }
+  .route-instrument strong { font-size: .75rem; }
+  .route-map { width: calc(100vw - 1.25rem); max-height: calc(100dvh - 1.25rem); border-radius: 12px; }
+  .route-map__surface { padding: 1rem 1.4rem; }
+  .route-map__layout { display: block; padding-block: 1.5rem; }
+  .route-map__art { display: none; }
+  .route-map h2 { font-size: 3.3rem; }
+  .route-map__intro { max-width: 34ch; font-size: .84rem; }
+  .route-map nav { margin-top: 1.3rem; }
+  .route-map nav a { padding-block: .72rem; }
+  .route-map footer { font-size: .68rem; align-items: flex-start; }
+  .route-map footer span { max-width: 17ch; }
+  .project-dialog { width: calc(100vw - 1rem); border-radius: 10px; }
+  .project-thumbnails { padding-inline: 1rem; padding-bottom: 1rem; }
+  .project-thumbnails button { width: 56px; height: 52px; }
+}
+@media (max-width: 370px) {
+  .journey-hero__stage { min-height: 800px; }
+  .journey-hero__eyebrow { font-size: .66rem; gap: .45rem; }
+  .journey-hero h1 { font-size: 18vw; }
+  .hero-actions { gap: .65rem; }
+  .hero-actions .journey-button { font-size: .78rem; padding-inline: 1rem; }
+  .hero-actions .text-link { font-size: .77rem; }
+  .project-index { grid-template-columns: 1fr; }
+  .route-instrument > span:last-child { display: none; }
+  .route-instrument { padding: .4rem; }
+}
+@media (max-height: 760px) and (min-width: 761px) {
+  .journey-hero { min-height: auto; }
+  .journey-hero__stage { position: relative; min-height: 780px; }
+  .waypoint, .waypoint:nth-child(even) { min-height: auto; }
+  .waypoint__stage { position: relative; min-height: 850px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .journey-hero, .waypoint, .waypoint:nth-child(even) { min-height: auto; }
+  .journey-hero__stage, .waypoint__stage { position: relative; }
+  .artifact__object { transform: none; transition: none; }
+  .route-map[open] { animation: none; }
+}

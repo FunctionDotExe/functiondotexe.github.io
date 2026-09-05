@@ -1,9 +1,10 @@
 import { ArrowDown, ArrowUp, ArrowUpRight, ChevronDown } from "lucide-react";
 import { SUMMIT_CONTENT } from "@/lib/summit-content";
-import { CERTIFICATES, EXPERIENCE, SKILLS } from "@/lib/constants";
+import { CERTIFICATES, EXPERIENCE } from "@/lib/constants";
 import { ContactActions } from "./ContactActions";
 import { InteractiveDisclosures } from "./InteractiveDisclosures";
 import { BackgroundNotes } from "./BackgroundNotes";
+import { SkillCabinet } from "./SkillCabinet";
 
 export function EarthJourney() {
   const { about, identity } = SUMMIT_CONTENT;
@@ -14,24 +15,17 @@ export function EarthJourney() {
         <div className="threshold-stage">
           <div className="threshold-copy">
             <p className="section-label">Beneath the surface</p>
-            <h2 id="descent-title">Behind<br />the projects.</h2>
+            <h2 id="descent-title">Good work<br />runs deep.</h2>
             <p>The tools I use, the teams I’ve worked with,<br />and a little about the person writing the code.</p>
             <a className="text-link" href="#crust">Skills & experience <ArrowDown size={18} aria-hidden="true" /></a>
           </div>
         </div>
       </section>
 
-      <section className="depth-section descent-crust" id="crust" aria-labelledby="skills-title">
+      <section className="depth-section descent-crust" id="crust" tabIndex={-1} aria-labelledby="skills-title">
         <div className="shell depth-grid">
-          <div className="depth-intro"><p className="section-label">Technical skills</p><h2 id="skills-title">What I<br />work with.</h2><p>From Python and C++ to databases and model training. Open a category to see the tools I use and where I’ve used them.</p><span className="terrain-note">Software · Machine learning · Robotics</span></div>
-          <div className="capability-list">
-            {SKILLS.map((skill, index) => (
-              <details className={`disclosure mineral mineral--${index}`} key={skill.category} data-hover-disclosure>
-                <summary><svg className="mineral__crystal" viewBox="0 0 80 120" aria-hidden="true"><path d="M40 3 69 29 76 85 40 117 5 88 12 30Z" /><path d="m40 3 15 34-3 50-12 30-14-32 1-47Z" /><path d="m12 30 15 8 28-1 14-8M5 88l21-3 26 2 24-2" /></svg><span>{skill.category}</span><ChevronDown size={19} aria-hidden="true" /></summary>
-                <div className="disclosure__panel"><div className="disclosure__body"><p>{skill.description}</p><ul className="tag-list">{skill.tools.map((tool) => <li key={tool}>{tool}</li>)}</ul></div></div>
-              </details>
-            ))}
-          </div>
+          <div className="depth-intro"><p className="section-label">Technical foundations</p><h2 id="skills-title">Many facets.<br />One mindset.</h2><p>The interesting problems rarely fit inside one discipline. These are the tools I bring together to solve them.</p><span className="terrain-note">Explore a field. Turn the specimen.<br />See what sits beneath the surface.</span></div>
+          <SkillCabinet />
         </div>
       </section>
 
@@ -60,7 +54,7 @@ export function EarthJourney() {
 
       <section className="contact-scene" id="contact" tabIndex={-1} aria-labelledby="contact-title">
         <div className="shell">
-          <div className="contact-scene__content"><p className="section-label">Get in touch</p><h2 id="contact-title">Let’s make<br />something.</h2><p>Hiring for your team, working on an idea, or curious about a project?<br />I’d love to hear from you.</p><ContactActions /></div>
+          <div className="contact-scene__content"><p className="section-label">Every ending is a trailhead</p><h2 id="contact-title">What’s our<br />next adventure?</h2><p>A team to join. An idea to build. A question worth following.<br />I’d love to hear what you’re thinking.</p><ContactActions /></div>
           <footer className="contact-scene__footer"><p>© {new Date().getFullYear()} Ruben Maxwell</p><div>{identity.social.map((link) => <a href={link.href} target="_blank" rel="noreferrer" key={link.label}>{link.label}<ArrowUpRight size={15} aria-hidden="true" /></a>)}</div><a href="#entry">Back to top <ArrowUp size={16} aria-hidden="true" /></a></footer>
         </div>
       </section>

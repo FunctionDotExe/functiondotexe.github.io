@@ -30,7 +30,7 @@ function mount(initialY = 9000, reduceMotion = false) {
     removeEventListener: (name) => listeners.delete(name),
     ResizeObserver: class { observe() {} disconnect() {} },
     matchMedia: (query) => {
-      const value = { matches: query.includes("reduced-motion") && reduceMotion, addEventListener() {}, removeEventListener() {} };
+      const value = { matches: query.includes("reduced-motion") ? reduceMotion : true, addEventListener() {}, removeEventListener() {} };
       media.set(query, value);
       return value;
     },
@@ -78,6 +78,7 @@ function mount(initialY = 9000, reduceMotion = false) {
   return {
     value: (node, property) => Number.parseFloat(styles.get(node).get(property) ?? "0"),
     scroll: (y) => { context.scrollY = y; listeners.get("scroll")?.(); },
+    pointer: (x, y) => listeners.get("pointermove")?.({ pointerType: "mouse", clientX: x, clientY: y }),
     frame: (elapsed = 1000 / 60) => {
       time += elapsed;
       const callbacks = [...frames.values()];
@@ -123,6 +124,18 @@ const atRate = (rate) => {
 };
 assert(Math.abs(atRate(60) - atRate(120)) < .1, "Camera smoothing must be refresh-rate independent");
 
+const lookAtRate = (rate) => {
+  const engine = mount(0);
+  engine.pointer(1440, 900);
+  for (let i = 0; i < rate / 5; i++) engine.frame(1000 / rate);
+  const position = engine.value("world", "--look-x");
+  engine.settle();
+  assert.equal(engine.value("world", "--look-x").toFixed(1), "-11.0", "Pointer motion must approach the requested position");
+  engine.unmount();
+  return position;
+};
+assert(Math.abs(lookAtRate(60) - lookAtRate(120)) <= .02, "Mouse parallax must move equally far after the same time at 60 and 120 Hz");
+
 const positionAt = (y) => {
   const engine = mount(y);
   const position = engine.value("continuum", "--continuum-y");
@@ -158,4 +171,4 @@ reduced.frame();
 assert.equal(reduced.pending(), 0, "Reduced motion must not schedule camera settling");
 reduced.unmount();
 
-console.log("PASS: eased scroll, reverse travel, 60/120 Hz consistency, steady cave glide, opaque handoff, lateral depth, reduced motion, and frame cleanup.");
+console.log("PASS: eased scroll, reverse travel, 60/120 Hz scroll and mouse consistency, steady cave glide, opaque handoff, lateral depth, reduced motion, and frame cleanup.");

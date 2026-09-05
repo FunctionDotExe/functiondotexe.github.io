@@ -7,11 +7,12 @@ export function Basecamp() {
     <section className="basecamp-scene" id="basecamp" aria-labelledby="basecamp-title">
       <div className="basecamp-scene__content shell">
         <div>
-          <p className="section-label">What I do</p>
-          <h2 id="basecamp-title">I learn<br />by building.</h2>
+          <p className="section-label">A little context</p>
+          <h2 id="basecamp-title">Follow the<br />curiosity.</h2>
         </div>
         <div className="basecamp-scene__note">
-          <p>My work ranges from backend services at 4D to MRI research, mobile games, and robots. I like getting into the details: why a request is slow, where a model gets things wrong, and what makes an app worth coming back to.</p>
+          <p className="basecamp-lead">I study Mathematics & Computer Science at the University of Toronto. Most of my learning starts with a question I can’t leave alone.</p>
+          <p>Why is this request slow? Where does a model get things wrong? What makes a game worth coming back to? From backend services at 4D to MRI research and dancing robots, I build my way toward an answer.</p>
           <a className="text-link" href="#experience">See my experience <ArrowDownRight size={18} aria-hidden="true" /></a>
         </div>
         <nav className="project-index" aria-label="Jump to a project">

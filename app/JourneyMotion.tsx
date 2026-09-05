@@ -131,8 +131,9 @@ export function JourneyMotion() {
       write(surface, "--surface-dusk", (dusk * .76).toFixed(4));
       write(surface, "--surface-stars", (dusk * .85).toFixed(4));
       write(continuum, "--continuum-dusk", (dusk * .76 * (1 - smooth(start + (end - start) * .18, start + (end - start) * .7, y))).toFixed(4));
-      lookX += (targetX - lookX) * .085;
-      lookY += (targetY - lookY) * .085;
+      const lookBlend = 1 - Math.exp(-elapsed / 188);
+      lookX += (targetX - lookX) * lookBlend;
+      lookY += (targetY - lookY) * lookBlend;
       const lookStrength = motion * (1 - smooth(start - height, start, y));
       write(world, "--look-x", `${(lookX * lookStrength).toFixed(2)}px`);
       write(world, "--look-y", `${(lookY * lookStrength).toFixed(2)}px`);

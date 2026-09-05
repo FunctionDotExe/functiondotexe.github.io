@@ -21,6 +21,7 @@ const mimeTypes = new Map([
   [".pdf", "application/pdf"],
   [".svg", "image/svg+xml"],
   [".txt", "text/plain; charset=utf-8"],
+  [".ttf", "font/ttf"],
   [".wasm", "application/wasm"],
   [".webp", "image/webp"],
   [".woff", "font/woff"],

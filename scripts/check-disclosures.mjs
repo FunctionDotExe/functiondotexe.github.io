@@ -7,12 +7,13 @@ const source = ts.transpileModule(readFileSync(new URL("../components/summit/Int
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 },
 }).outputText;
 
-function harness({ open = false, hoverable = true, reduced = false } = {}) {
+function harness({ open = false, hoverable = true, reduced = false, hash = "" } = {}) {
   let time = 0;
   let serial = 0;
   let cleanup;
   let activeAnimation;
   const timers = new Map();
+  const frames = new Map();
   const properties = new Map();
   const starts = [];
   const makeEvents = () => {
@@ -24,6 +25,7 @@ function harness({ open = false, hoverable = true, reduced = false } = {}) {
     };
   };
   const document = { ...makeEvents(), activeElement: null };
+  const window = { ...makeEvents(), location: { hash } };
   const summary = { ...makeEvents(), focus: () => { document.activeElement = summary; } };
   const contentLink = {};
   const height = () => {
@@ -56,7 +58,7 @@ function harness({ open = false, hoverable = true, reduced = false } = {}) {
     },
   };
   const details = {
-    ...makeEvents(), open, dataset: {},
+    ...makeEvents(), id: "project-research", open, dataset: {},
     querySelector: (selector) => selector === "summary" ? summary : panel,
     contains: (target) => target === summary || target === contentLink,
   };
@@ -64,12 +66,14 @@ function harness({ open = false, hoverable = true, reduced = false } = {}) {
   const hover = { ...makeEvents(), matches: hoverable };
   const motion = { ...makeEvents(), matches: reduced };
   const context = {
-    exports: {}, document,
+    exports: {}, document, window,
     require: () => ({ useEffect: (effect) => { cleanup = effect(); } }),
     matchMedia: (query) => query.includes("reduced-motion") ? motion : hover,
     getComputedStyle: () => ({ opacity: "1" }),
     setTimeout: (callback, delay) => { timers.set(++serial, { at: time + delay, callback }); return serial; },
     clearTimeout: (id) => timers.delete(id),
+    requestAnimationFrame: (callback) => { frames.set(++serial, callback); return serial; },
+    cancelAnimationFrame: (id) => frames.delete(id),
   };
   vm.runInNewContext(source, context);
   context.exports.InteractiveDisclosures();
@@ -78,10 +82,19 @@ function harness({ open = false, hoverable = true, reduced = false } = {}) {
     enter: (pointerType = "mouse") => details.fire("pointerenter", { pointerType }),
     leave: (pointerType = "mouse") => details.fire("pointerleave", { pointerType }),
     click: () => summary.fire("click"),
-    escape: () => document.fire("keydown", { key: "Escape" }),
+    escape: (data = {}) => document.fire("keydown", { key: "Escape", ...data }),
     focusBody: () => { document.activeElement = contentLink; details.fire("focusin"); },
     blur: () => { document.activeElement = null; details.fire("focusout"); },
     reduce: () => { motion.matches = true; motion.fire("change"); },
+    hash: (value) => { window.location.hash = value; window.fire("hashchange"); },
+    follow: (value, data = {}) => document.fire("click", {
+      button: 0,
+      target: { closest: () => ({ getAttribute: () => value }) },
+      ...data,
+    }),
+    print: () => window.fire("beforeprint"),
+    afterPrint: () => window.fire("afterprint"),
+    frame: () => { const pending = [...frames.values()]; frames.clear(); pending.forEach((callback) => callback()); },
     advance: (elapsed) => {
       const until = time + elapsed;
       while (true) {
@@ -93,7 +106,11 @@ function harness({ open = false, hoverable = true, reduced = false } = {}) {
       }
       time = until;
     },
-    unmount: () => { cleanup(); assert.equal(timers.size, 0, "Unmount must clear pending animation and hover timers"); },
+    unmount: () => {
+      cleanup();
+      assert.equal(timers.size, 0, "Unmount must clear pending animation and hover timers");
+      assert.equal(frames.size, 0, "Unmount must cancel pending focus callbacks");
+    },
   };
 }
 
@@ -182,4 +199,72 @@ assert.equal(briefHover.details.open, false);
 briefHover.enter();
 briefHover.unmount();
 
-console.log("PASS: hover intent, delayed close, pin/unpin, focus persistence, Escape, touch, animation reversal, reduced motion, initial state, and timer cleanup.");
+const modal = harness();
+modal.enter();
+modal.advance(380);
+let prevented = false;
+modal.escape({ target: { closest: () => ({ open: true }) }, preventDefault: () => { prevented = true; } });
+assert.equal(prevented, false, "An underlying hover preview must not prevent native dialog Escape dismissal");
+assert.equal(modal.details.dataset.expanded, "true", "Dialog-local input must leave background disclosures untouched");
+modal.escape({ defaultPrevented: true });
+assert.equal(modal.details.dataset.expanded, "true", "Previously handled keyboard events must be respected");
+modal.escape();
+modal.advance(200);
+assert.equal(modal.details.open, false, "Escape must still dismiss a preview outside dialogs");
+modal.unmount();
+
+const linked = harness({ hash: "#project-research" });
+assert.equal(linked.details.open, true, "A direct research URL must reveal its content immediately");
+linked.frame();
+assert.equal(linked.document.activeElement, linked.summary, "Deep links must place keyboard focus on the revealed summary");
+linked.leave();
+linked.blur();
+linked.advance(1000);
+assert.equal(linked.details.open, true, "Hash navigation must pin content after the pointer and focus leave");
+linked.click();
+linked.advance(200);
+assert.equal(linked.details.open, false, "A linked project must still close on the first explicit click");
+linked.follow("#project-research");
+assert.equal(linked.details.open, true, "Following the same hash again must reopen a closed project");
+linked.unmount();
+
+const changed = harness();
+changed.hash("#unrelated");
+changed.hash("#%E0%A4%A");
+assert.equal(changed.details.open, false, "Unrelated and malformed hashes must be ignored safely");
+changed.follow("#project-research", { ctrlKey: true });
+assert.equal(changed.details.open, false, "Modified link activation must preserve browser new-tab behavior");
+changed.hash("#project%2Dresearch");
+assert.equal(changed.details.open, true, "Hash changes must decode and open the addressed disclosure");
+changed.unmount();
+
+const printClosed = harness();
+printClosed.print();
+assert.equal(printClosed.details.open, true, "Printing must include closed disclosure content");
+printClosed.print();
+printClosed.afterPrint();
+assert.equal(printClosed.details.open, false, "Repeated print events must preserve the original closed state");
+printClosed.click();
+printClosed.advance(80);
+printClosed.print();
+assert.equal(printClosed.details.open, true, "Printing must settle an opening animation");
+printClosed.afterPrint();
+assert.equal(printClosed.details.open, true, "Printing must restore the requested open state");
+printClosed.click();
+printClosed.advance(80);
+printClosed.print();
+assert.equal(printClosed.details.open, true);
+printClosed.afterPrint();
+assert.equal(printClosed.details.open, false, "Printing during a closing animation must restore closed content");
+printClosed.unmount();
+
+const printOpen = harness({ open: true });
+printOpen.print();
+printOpen.afterPrint();
+assert.equal(printOpen.details.open, true, "Initially open content must remain open after printing");
+printOpen.click();
+printOpen.advance(200);
+assert.equal(printOpen.details.open, false, "Printing must preserve pin state for the next explicit toggle");
+printOpen.unmount();
+
+console.log("PASS: hover, pinning, keyboard, modal Escape, touch, animation reversal, reduced motion, deep links, repeat links, print restoration, and cleanup.");

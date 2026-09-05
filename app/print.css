@@ -1,0 +1,92 @@
+/* Readable, complete portfolio output. Disclosure state is restored after print. */
+@media print {
+  :root {
+    color-scheme: light;
+    --cream: #111;
+    --muted: #333;
+    --sun: #222;
+    --cyan: #222;
+    --line: #bbb;
+  }
+
+  html, body, .journey { background: white !important; color: #111 !important; }
+  body { font-size: 10.5pt; line-height: 1.45; }
+  .journey { overflow: visible !important; }
+  .journey__story *, .journey__story *::before, .journey__story *::after {
+    color: #111 !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+    filter: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+  .journey__story *::before, .journey__story *::after { display: none !important; }
+  .journey-world, .journey-nav, .scroll-progress, .skip-link, .arrival,
+  .arrival-replay, .project-index, .descent-threshold, .waypoint__landmark,
+  .mineral__crystal, .project-open, .copy-email, .copy-status, dialog,
+  .route-instrument, .summit-marker, .hero-side-note, .skill-cabinet__specimen,
+  .artifact__annotation, .skill-field__stone {
+    display: none !important;
+  }
+  .shell { width: 100%; }
+  .journey-hero, .basecamp-scene, .climb, .waypoint, .depth-section,
+  .contact-scene, .climb .section-heading {
+    min-height: 0 !important;
+    background: none !important;
+    padding-block: 1rem !important;
+  }
+  .journey-hero__stage, .basecamp-scene__content, .waypoint__stage,
+  .depth-intro, .journey-hero__footer {
+    position: static !important;
+    min-height: 0 !important;
+    padding-block: 0 !important;
+  }
+  .journey-hero__stage, .basecamp-scene__content, .waypoint__stage,
+  .depth-grid, .about-grid, .research-notes, .background-notes, .capability-list {
+    display: block !important;
+  }
+  .research-notes, .background-notes { padding-block: 1rem; margin-top: 1rem; }
+  .journey-hero__content { padding-left: 0; }
+  .journey-hero h1 { font-size: 40pt; line-height: 1; }
+  .journey__story h2 { font-size: 24pt; line-height: 1.15; }
+  .journey__story h3 { font-size: 17pt; line-height: 1.2; }
+  h1, h2, h3, summary { break-after: avoid; }
+  p, li { orphans: 3; widows: 3; }
+  .waypoint { break-inside: auto; }
+  .waypoint__copy, .depth-intro { margin-bottom: 1rem; }
+  .hero-actions, .about-links { gap: 1rem; margin-top: 1rem; }
+  .text-link, .journey-button, .tag-list li { background: none !important; border-color: #999 !important; }
+  .journey-button { box-shadow: none; padding: .25rem .5rem; min-height: 0; }
+  .tag-list { margin-block: .5rem; }
+
+  /* Also reveal native content in engines supporting ::details-content. */
+  details::details-content { content-visibility: visible !important; display: block !important; }
+  .disclosure { break-inside: avoid; margin: 0; text-align: left; }
+  .disclosure summary { min-height: 0 !important; padding-block: .5rem !important; }
+  .disclosure summary > svg { display: none; }
+  .mineral summary { display: block; }
+  .mineral:nth-child(even) { margin-top: 0; }
+  .disclosure__panel { display: block !important; height: auto !important; overflow: visible !important; opacity: 1 !important; }
+  .disclosure__body { padding-bottom: .8rem; }
+  .experience-entry { padding-left: 0; border-left: 0; }
+  .research-metrics { margin-block: .75rem; padding-block: .5rem; border-color: #aaa; }
+  .research-metrics dd { font-size: 15pt; }
+
+  .project-media, .about-portrait { transform: none !important; break-inside: avoid; }
+  .artifact, .artifact__object { transform: none !important; width: 100%; perspective: none; }
+  .skill-field { break-inside: avoid; border-color: #aaa; }
+  .skill-field summary { min-height: 0; padding-block: .5rem; }
+  .skill-field summary > svg { display: none; }
+  .skill-field__body { padding: 0 0 .75rem; }
+  .project-media { max-width: 30rem; margin-block: 1rem; }
+  .project-media__canvas { aspect-ratio: auto !important; max-height: 16rem; padding: 0 !important; background: none !important; overflow: hidden !important; }
+  .project-media__canvas > img { width: auto; height: auto; max-height: 15rem; object-fit: contain; }
+  .phone-composition { height: 15rem; padding: 0; }
+  .phone-composition img { max-height: 14rem !important; transform: none !important; }
+  .project-media figcaption { margin-top: .25rem; }
+  .about-portrait { width: 9rem; padding: .3rem; }
+  .credentials { clear: both; margin-top: 1rem; padding-top: .5rem; }
+  .credentials a { background: none; padding: .35rem 0; }
+  .contact-scene__footer { margin-top: 1rem !important; }
+  .contact-actions { margin-top: .5rem; }
+}

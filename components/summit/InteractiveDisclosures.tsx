@@ -9,6 +9,9 @@ export function InteractiveDisclosures() {
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
     const dismissers: (() => boolean)[] = [];
     const settle: (() => void)[] = [];
+    const revealers = new Map<string, () => void>();
+    const printHandlers: { before: () => void; after: () => void }[] = [];
+    let focusFrame = 0;
     const cleanups = Array.from(document.querySelectorAll<HTMLDetailsElement>("[data-hover-disclosure]")).map((details) => {
       const summary = details.querySelector("summary");
       const panel = details.querySelector<HTMLElement>(".disclosure__panel");
@@ -17,6 +20,7 @@ export function InteractiveDisclosures() {
       let hovered = false;
       let suppressed = false;
       let target = details.open;
+      let printTarget: boolean | null = null;
       let animation: Animation | null = null;
       let openTimer: ReturnType<typeof setTimeout> | undefined;
       let closeTimer: ReturnType<typeof setTimeout> | undefined;
@@ -94,6 +98,32 @@ export function InteractiveDisclosures() {
         clearTimers();
         closePreview();
       };
+      if (details.id) revealers.set(details.id, () => {
+        clearTimers();
+        pinned = true;
+        suppressed = false;
+        target = true;
+        finish();
+        // Wait until native fragment navigation has finished assigning focus.
+        cancelAnimationFrame(focusFrame);
+        focusFrame = requestAnimationFrame(() => summary.focus({ preventScroll: true }));
+      });
+      printHandlers.push({
+        before: () => {
+          if (printTarget !== null) return;
+          clearTimers();
+          printTarget = target;
+          target = true;
+          finish();
+        },
+        after: () => {
+          if (printTarget === null) return;
+          target = printTarget;
+          printTarget = null;
+          finish();
+          if (target && !pinned && !hovered && !details.contains(document.activeElement)) closePreview();
+        },
+      });
       details.dataset.expanded = String(target);
       details.addEventListener("pointerenter", enter);
       details.addEventListener("pointerleave", leave);
@@ -118,16 +148,42 @@ export function InteractiveDisclosures() {
       };
     });
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
+      if (event.key !== "Escape" || event.defaultPrevented || (event.target as Element | null)?.closest?.("dialog[open]")) return;
       const dismissed = dismissers.map((dismiss) => dismiss()).some(Boolean);
       if (dismissed) event.preventDefault();
     };
     const onReducedMotion = () => { if (reduced.matches) settle.forEach((finish) => finish()); };
+    const revealHash = (hash: string) => {
+      if (!hash.startsWith("#")) return;
+      let id: string;
+      try { id = decodeURIComponent(hash.slice(1)); }
+      catch { return; }
+      revealers.get(id)?.();
+    };
+    const onHashChange = () => revealHash(window.location.hash);
+    const onLink = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const link = (event.target as Element | null)?.closest?.("a[href^='#']");
+      const hash = link?.getAttribute("href");
+      if (hash) revealHash(hash);
+    };
+    const beforePrint = () => printHandlers.forEach((handler) => handler.before());
+    const afterPrint = () => printHandlers.forEach((handler) => handler.after());
     document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("click", onLink);
+    window.addEventListener("hashchange", onHashChange);
+    window.addEventListener("beforeprint", beforePrint);
+    window.addEventListener("afterprint", afterPrint);
     reduced.addEventListener("change", onReducedMotion);
+    onHashChange();
     return () => {
+      cancelAnimationFrame(focusFrame);
       cleanups.forEach((cleanup) => cleanup());
       document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("click", onLink);
+      window.removeEventListener("hashchange", onHashChange);
+      window.removeEventListener("beforeprint", beforePrint);
+      window.removeEventListener("afterprint", afterPrint);
       reduced.removeEventListener("change", onReducedMotion);
     };
   }, []);

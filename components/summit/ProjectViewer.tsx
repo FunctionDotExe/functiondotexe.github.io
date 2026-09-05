@@ -26,7 +26,7 @@ export function ProjectViewer({ landmark }: { landmark: Landmark }) {
 
   return (
     <>
-      <button type="button" className="project-open text-link" aria-haspopup="dialog" onClick={() => { setIndex(0); dialog.current?.showModal(); setOpen(true); }}>
+      <button type="button" className="project-open text-link" aria-haspopup="dialog" onClick={() => { setIndex(0); dialog.current?.showModal(); if (dialog.current) dialog.current.scrollTop = 0; setOpen(true); }}>
         Take a closer look <Expand size={16} aria-hidden="true" /><span className="sr-only"> at {landmark.title}</span>
       </button>
       <dialog ref={dialog} className="project-dialog" aria-labelledby={`viewer-${landmark.visual}`} onClose={() => setOpen(false)} onClick={(event) => { if (event.target === event.currentTarget) dialog.current?.close(); }} onKeyDown={(event) => {
@@ -46,6 +46,7 @@ export function ProjectViewer({ landmark }: { landmark: Landmark }) {
             <p aria-live="polite" aria-atomic="true">{index + 1} / {images.length}<span>{selected.alt}</span></p>
             {images.length > 1 && <div><button type="button" className="icon-button" aria-label="Previous image" onClick={() => step(-1)}><ArrowLeft size={19} aria-hidden="true" /></button><button type="button" className="icon-button" aria-label="Next image" onClick={() => step(1)}><ArrowRight size={19} aria-hidden="true" /></button></div>}
           </div>
+          {open && images.length > 1 && <div className="project-thumbnails" role="group" aria-label="Choose a project image">{images.map((image, imageIndex) => <button key={image.src} type="button" aria-label={`Show image ${imageIndex + 1}: ${image.alt}`} aria-pressed={imageIndex === index} onClick={() => setIndex(imageIndex)}><img src={image.src} width={image.width} height={image.height} alt="" loading="lazy" decoding="async" /></button>)}</div>}
           <div className="project-dialog__description"><p>{landmark.description}</p><p>{landmark.detail}</p><ul className="tag-list" aria-label="Project technologies">{landmark.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul>
             {landmark.visual === "signal" && <a className="text-link" href={RESUME.youtubeUrl} target="_blank" rel="noreferrer">Watch project walkthrough <ArrowUpRight size={17} aria-hidden="true" /></a>}
           </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { ArrowUpRight, Menu, Mountain, X } from "lucide-react";
 import { SUMMIT_CONTENT } from "@/lib/summit-content";
 
@@ -16,6 +16,7 @@ export function SummitNav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
+  const navigationFrame = useRef(0);
   const { identity } = SUMMIT_CONTENT;
 
   useEffect(() => {
@@ -36,6 +37,7 @@ export function SummitNav() {
     window.addEventListener("resize", schedule);
     return () => {
       cancelAnimationFrame(frame);
+      cancelAnimationFrame(navigationFrame.current);
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
     };
@@ -53,9 +55,11 @@ export function SummitNav() {
     };
   }, [open]);
 
-  const followLink = (href: string) => {
+  const followLink = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     dialog.current?.close();
-    requestAnimationFrame(() => document.querySelector<HTMLElement>(href)?.focus({ preventScroll: true }));
+    cancelAnimationFrame(navigationFrame.current);
+    navigationFrame.current = requestAnimationFrame(() => document.querySelector<HTMLElement>(href)?.focus({ preventScroll: true }));
   };
 
   return (
@@ -72,7 +76,7 @@ export function SummitNav() {
       <dialog ref={dialog} className="journey-menu" id="journey-menu" aria-labelledby="menu-title" onClose={() => setOpen(false)}>
         <div className="journey-menu__heading"><p id="menu-title">Take a look around.</p><button className="icon-button" type="button" aria-label="Close navigation" onClick={() => dialog.current?.close()}><X size={22} aria-hidden="true" /></button></div>
         <nav aria-label="Mobile navigation">
-          {navigation.map(({ label, href }) => <a key={href} href={href} aria-current={active === href ? "location" : undefined} onClick={() => followLink(href)}>{label}<ArrowUpRight size={24} aria-hidden="true" /></a>)}
+          {navigation.map(({ label, href }) => <a key={href} href={href} aria-current={active === href ? "location" : undefined} onClick={(event) => followLink(event, href)}>{label}<ArrowUpRight size={24} aria-hidden="true" /></a>)}
         </nav>
         <a className="text-link journey-menu__email" href={`mailto:${identity.email}`}>{identity.email}<ArrowUpRight size={16} aria-hidden="true" /></a>
         <p className="journey-menu__location">{identity.location}</p>
