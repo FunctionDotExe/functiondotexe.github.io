@@ -1,0 +1,41 @@
+/* A project is placed in the landscape, then its gallery invitation catches
+ * the light once. All media, copy and controls stay visible throughout. */
+@media (prefers-reduced-motion: no-preference) {
+  .artifact[data-project-arrival="arriving"] {
+    --project-settle-offset: 20px;
+    animation: project-artifact-settle 820ms cubic-bezier(.18, .75, .26, 1);
+  }
+
+  .artifact[data-project-arrival="arriving"] .project-image-button__hint {
+    animation: project-gallery-invitation 1100ms ease 380ms;
+  }
+
+  .artifact[data-project-arrival="arriving"] .project-image-button:is(:hover, :focus-visible) .project-image-button__hint {
+    animation: none;
+  }
+
+  @media (hover: none), (pointer: coarse) {
+    .artifact[data-project-arrival="arriving"] {
+      --project-settle-offset: 10px;
+      animation-duration: 660ms;
+    }
+  }
+
+  @media (max-height: 680px) {
+    .artifact[data-project-arrival="arriving"] { animation: none; }
+  }
+}
+
+@keyframes project-artifact-settle {
+  from { transform: translate3d(0, var(--project-settle-offset), 0) scale(.99); }
+  to { transform: none; }
+}
+
+@keyframes project-gallery-invitation {
+  0%, 100% { border-color: #fff4db66; box-shadow: 0 4px 18px #10092f40; }
+  35%, 60% { border-color: #ffe2a7; box-shadow: 0 0 0 3px #ffe2a730, 0 4px 22px #10092f40; }
+}
+
+@media print {
+  .artifact[data-project-arrival], .artifact[data-project-arrival] .project-image-button__hint { animation: none !important; }
+}

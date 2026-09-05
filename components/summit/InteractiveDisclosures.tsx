@@ -32,8 +32,10 @@ export function InteractiveDisclosures() {
         details.open = target;
         panel.style.removeProperty("height");
         details.dataset.expanded = String(target);
+        details.dataset.pinned = String(pinned);
       };
       const expand = (next: boolean) => {
+        details.dataset.pinned = String(pinned);
         if (target === next && details.open === next && !animation) return;
         const from = details.open ? panel.getBoundingClientRect().height : 0;
         const opacity = details.open ? getComputedStyle(panel).opacity : "0";
@@ -125,6 +127,7 @@ export function InteractiveDisclosures() {
         },
       });
       details.dataset.expanded = String(target);
+      details.dataset.pinned = String(pinned);
       details.addEventListener("pointerenter", enter);
       details.addEventListener("pointerleave", leave);
       details.addEventListener("focusin", focus);
@@ -139,6 +142,7 @@ export function InteractiveDisclosures() {
         details.open = pinned;
         panel.style.removeProperty("height");
         delete details.dataset.expanded;
+        delete details.dataset.pinned;
         details.removeEventListener("pointerenter", enter);
         details.removeEventListener("pointerleave", leave);
         details.removeEventListener("focusin", focus);

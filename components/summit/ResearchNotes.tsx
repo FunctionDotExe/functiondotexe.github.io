@@ -8,7 +8,7 @@ export function ResearchNotes() {
       <div className="research-notes__list">
         {RESEARCH_PROJECTS.map((project, index) => (
           <details className="disclosure research-note" id={`project-${project.id}`} key={project.id} data-hover-disclosure open={index === 0}>
-            <summary><span><small>{project.context}</small><strong>{project.title}</strong></span><ChevronDown size={20} aria-hidden="true" /></summary>
+            <summary><span><small>{project.context}</small><strong>{project.title}</strong><small className="disclosure-cue-label" aria-hidden="true"><span className="disclosure-cue-label__closed">Open the study</span><span className="disclosure-cue-label__open">Close the study</span><span className="disclosure-cue-label__preview">Keep this open</span></small></span><ChevronDown size={20} aria-hidden="true" /></summary>
             <div className="disclosure__panel"><div className="disclosure__body">
               <p>{project.description}</p>
               <dl className="research-metrics">{project.metrics.map((metric) => <div key={metric.label}><dt>{metric.label}</dt><dd>{metric.value}</dd></div>)}</dl>

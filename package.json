@@ -5,7 +5,7 @@
     "build": "next build",
     "start": "node scripts/serve-export.mjs",
     "typecheck": "tsc --noEmit",
-    "check:interactions": "node scripts/check-arrival.mjs && node scripts/check-disclosures.mjs && node scripts/check-journey-motion.mjs && node scripts/check-crystal.mjs && node scripts/check-instruments.mjs && node scripts/check-skill-cabinet.mjs && node scripts/check-gallery.mjs",
+    "check:interactions": "node scripts/check-arrival.mjs && node scripts/check-disclosures.mjs && node scripts/check-journey-motion.mjs && node scripts/check-crystal.mjs && node scripts/check-instruments.mjs && node scripts/check-skill-cabinet.mjs && node scripts/check-gallery.mjs && node scripts/check-project-arrival.mjs && node scripts/check-discovery-cues.mjs",
     "check:export": "node scripts/check-export.mjs",
     "check": "pnpm typecheck && pnpm check:interactions",
     "deps:install": "pnpm install --ignore-scripts",

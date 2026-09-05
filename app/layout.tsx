@@ -4,6 +4,8 @@ import "./artwork.css";
 import "./expedition.css";
 import "./arrival.css";
 import "./mobile-motion.css";
+import "./project-arrival.css";
+import "./discovery-cues.css";
 import "./print.css";
 import { JourneyMotion } from "./JourneyMotion";
 import { ARRIVAL_BOOTSTRAP } from "@/lib/arrival";

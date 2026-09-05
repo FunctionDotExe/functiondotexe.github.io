@@ -24,7 +24,7 @@ export function EarthJourney() {
 
       <section className="depth-section descent-crust" id="crust" tabIndex={-1} aria-labelledby="skills-title">
         <div className="shell depth-grid">
-          <div className="depth-intro"><p className="section-label">Technical foundations</p><h2 id="skills-title">Many facets.<br />One mindset.</h2><p>The interesting problems rarely fit inside one discipline. These are the tools I bring together to solve them.</p><span className="terrain-note">Six fields, six facets.<br />Scroll to turn the specimen and explore each one.</span></div>
+          <div className="depth-intro"><p className="section-label">Technical foundations</p><h2 id="skills-title">Many facets.<br />One mindset.</h2><p>The interesting problems rarely fit inside one discipline. These are the tools I bring together to solve them.</p><span className="terrain-note">Six fields, six facets.<br />Scroll to turn each gem and unfold its skills.</span></div>
           <SkillCabinet />
         </div>
       </section>
@@ -35,7 +35,7 @@ export function EarthJourney() {
           <div className="experience-list">
             {EXPERIENCE.map((item, index) => (
               <details className="disclosure experience-entry" key={item.company} open={index === 0} data-hover-disclosure>
-                <summary><span><small>{item.dates}</small><strong>{item.company}</strong><span className="experience-role">{item.role}</span></span><ChevronDown size={19} aria-hidden="true" /></summary>
+                <summary><span><small>{item.dates}</small><strong>{item.company}</strong><span className="experience-role">{item.role}</span><small className="disclosure-cue-label" aria-hidden="true"><span className="disclosure-cue-label__closed">Open role details</span><span className="disclosure-cue-label__open">Close role details</span><span className="disclosure-cue-label__preview">Keep this open</span></small></span><ChevronDown size={19} aria-hidden="true" /></summary>
                 <div className="disclosure__panel"><div className="disclosure__body"><p className="experience-meta">{item.type} · {item.location}</p><ul>{item.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}</ul></div></div>
               </details>
             ))}
@@ -48,7 +48,7 @@ export function EarthJourney() {
           <figure className="about-portrait"><img src={about.image.src} width={about.image.width} height={about.image.height} alt={about.image.alt} loading="lazy" decoding="async" /><figcaption><span>Ruben Maxwell</span><span>Toronto, Canada</span></figcaption></figure>
           <div className="about-scene__content"><p className="section-label">About me</p><h2 id="about-title">Hi, I’m<br />Ruben.</h2><p className="about-lead">{about.statement}</p><p>{about.body}</p><ul className="tag-list" aria-label="Areas I work in">{about.disciplines.map((discipline) => <li key={discipline}>{discipline}</li>)}</ul><div className="about-links"><a className="text-link" href={identity.resume} target="_blank" rel="noreferrer">View résumé <FileText size={17} aria-hidden="true" /><span className="sr-only"> (PDF, opens in a new tab)</span></a><a className="text-link" href={identity.social[0].href} target="_blank" rel="noreferrer">Find me on GitHub <ArrowUpRight size={17} aria-hidden="true" /><span className="sr-only"> (opens in a new tab)</span></a></div></div>
           <BackgroundNotes />
-          <div className="credentials"><p className="section-label">Certifications</p><div>{CERTIFICATES.map((certificate) => <a href={certificate.image.src} target="_blank" rel="noreferrer" key={certificate.title}><span><strong>{certificate.title}</strong><small>{certificate.issuer}</small></span><FileBadge size={18} aria-hidden="true" /><span className="sr-only"> — view certificate (opens in a new tab)</span></a>)}</div></div>
+          <div className="credentials"><p className="section-label">Certifications</p><div>{CERTIFICATES.map((certificate) => <a href={certificate.image.src} target="_blank" rel="noreferrer" key={certificate.title}><span><strong>{certificate.title}</strong><small>{certificate.issuer}</small><span className="certificate-action">View certificate</span></span><FileBadge size={18} aria-hidden="true" /><span className="sr-only"> (opens in a new tab)</span></a>)}</div></div>
         </div>
       </section>
 

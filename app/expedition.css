@@ -148,6 +148,15 @@ h1, h2, h3 { font-optical-sizing: auto; }
 .skill-field__number { margin-bottom: .7rem; font-size: .8125rem; color: #e5dff1b8; font-variant-numeric: tabular-nums; }
 .skill-field h3 { max-width: 20ch; font-family: var(--font-display); font-size: clamp(1.9rem, 3vw, 2.8rem); line-height: 1.1; font-weight: 500; color: var(--cream); }
 .skill-field--active h3 { color: var(--cyan); }
+.skill-field__toggle { display: flex; align-items: center; justify-content: space-between; gap: 1rem; width: 100%; min-height: 44px; border: 0; padding: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.skill-field__toggle > svg { flex-shrink: 0; transition: transform 320ms var(--ease-out); }
+.skill-field__toggle[aria-expanded="true"] > svg { transform: rotate(180deg); }
+/* Keep the chapter's full footprint while unfolding its content. The next
+   gemstone's scroll boundary never moves during the reveal. */
+.skill-field__panel { opacity: 1; clip-path: inset(0); transform: translateY(0); transition: clip-path 540ms var(--ease-out), opacity 300ms ease, transform 540ms var(--ease-out), visibility 0s; }
+.skill-field__panel[data-open="false"] { visibility: hidden; opacity: 0; clip-path: inset(0 0 100%); transform: translateY(-8px); transition: clip-path 280ms ease, opacity 180ms ease, transform 280ms ease, visibility 0s 280ms; }
+.skill-field__panel .tag-list li { transition: opacity 300ms ease, transform 420ms var(--ease-out); transition-delay: calc(var(--skill-tool-index, 0) * 24ms); }
+.skill-field__panel[data-open="false"] .tag-list li { opacity: 0; transform: translateY(5px); transition-delay: 0s; }
 .skill-field__stone { --stone-light: #9dc5f3; --stone-dark: #4b698e; width: 14px; height: 22px; flex-shrink: 0; background: linear-gradient(115deg, #f3e8da 20%, var(--stone-dark) 21% 55%, var(--stone-light) 56% 80%, var(--stone-dark) 81%); clip-path: polygon(50% 0, 100% 27%, 86% 81%, 50% 100%, 8% 75%, 0 28%); transform: rotate(-12deg); }
 .skill-field__stone--1 { --stone-light: #c6a4ef; --stone-dark: #77618f; transform: rotate(8deg); }
 .skill-field__stone--2 { --stone-light: #9cdfd9; --stone-dark: #548c8c; transform: rotate(-4deg); }
@@ -341,6 +350,7 @@ h1, h2, h3 { font-optical-sizing: auto; }
   .skill-field { min-height: 0; padding-bottom: 2.5rem; scroll-margin-top: calc(99px - var(--skill-scroll-padding)); }
 }
 @media (prefers-reduced-motion: reduce) {
+  .skill-field__panel, .skill-field__panel .tag-list li, .skill-field__toggle > svg { transition: none; transform: none; }
   .skill-cabinet__specimen { position: relative; top: auto; }
   .skill-field { min-height: 0; padding-bottom: 2.5rem; scroll-margin-top: calc(99px - var(--skill-scroll-padding)); }
   .journey-hero, .waypoint, .waypoint:nth-child(even) { min-height: auto; }
