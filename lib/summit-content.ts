@@ -1,3 +1,5 @@
+import { PERSONAL, PROJECTS, RESUME } from "./constants";
+
 export type SummitImage = {
   src: string;
   width: number;
@@ -12,8 +14,7 @@ export type Landmark = {
   title: string;
   kicker: string;
   description: string;
-  year: string;
-  role: string;
+  detail: string;
   tags: string[];
   status: string;
   visual: "phones" | "console" | "signal" | "workshop";
@@ -32,15 +33,15 @@ export const SUMMIT_CONTENT = {
     initials: "RM",
     location: "Toronto, Canada",
     coordinates: "43.6532 N / 79.3832 W",
-    email: "rubenbmaxwell@gmail.com",
+    email: PERSONAL.email,
     social: [
-      { label: "GitHub", href: "https://github.com/functiondotexe" },
-      { label: "LinkedIn", href: "https://linkedin.com/in/ruben-maxwell" },
+      { label: "GitHub", href: PERSONAL.github },
+      { label: "LinkedIn", href: PERSONAL.linkedin },
     ],
-    resume: "/media/RUBEN_RESUME_V.3.0.docx.pdf",
+    resume: RESUME.pdf,
   },
   navigation: [
-    { number: "01", label: "Work", href: "#work" },
+    { number: "01", label: "Projects", href: "#work" },
     { number: "02", label: "About", href: "#about" },
     { number: "03", label: "Contact", href: "#contact" },
   ],
@@ -62,10 +63,10 @@ export const SUMMIT_CONTENT = {
     },
   },
   hero: {
-    eyebrow: "Ruben Maxwell / Selected work",
-    title: ["The", "Summit"],
+    eyebrow: "Software engineer · AI & robotics",
+    title: ["Ruben", "Maxwell"],
     introduction:
-      "A digital climb through systems, experiments, and work in progress.",
+      "I build software, train models, and make robots move.",
     image: {
       src: "/media/summit-parallax-master-v2.webp",
       width: 1536,
@@ -91,13 +92,12 @@ export const SUMMIT_CONTENT = {
       stage: "Basecamp",
       altitude: "620 M",
       title: "Decyp3r",
-      kicker: "A daily microgame system",
+      kicker: "Six games. A fresh challenge every day.",
       description:
-        "A React Native microgame with authentication, score submissions, daily attempts, streaks, and live rankings.",
-      year: "Year / to add",
-      role: "Role / to add",
+        PROJECTS[0].description,
+      detail: "I built the daily challenges, streak tracking, and live Firestore rankings, with transactional score submissions to prevent spam. The app achieved 95%+ crash-free sessions.",
       tags: ["React Native", "Expo", "TypeScript", "Firebase"],
-      status: "Case study details to come",
+      status: "95%+ crash-free sessions",
       visual: "phones",
       image: {
         src: "/media/work/decyphergamehomepage.webp",
@@ -125,13 +125,12 @@ export const SUMMIT_CONTENT = {
       stage: "Ridgeline",
       altitude: "1,680 M",
       title: "ForgeFountain",
-      kicker: "Market signals, made legible",
+      kicker: "Less price-checking. Better-informed trades.",
       description:
-        "A market-intelligence interface that ranks live game-economy opportunities by return, liquidity, and execution time.",
-      year: "Year / to add",
-      role: "Role / to add",
+        PROJECTS[1].description,
+      detail: "I added caching, fallbacks, and retries to handle API rate limits. Internal testing cut decision time by over 70%, with up to 60% higher per-trade margins in favorable market windows.",
       tags: ["React", "APIs", "Data modeling", "Caching"],
-      status: "Case study details to come",
+      status: "Live prices & recipe analysis",
       visual: "console",
       image: {
         src: "/media/work/marketopportunityanalyzer.webp",
@@ -139,17 +138,20 @@ export const SUMMIT_CONTENT = {
         height: 1097,
         alt: "ForgeFountain market intelligence dashboard showing live opportunity analysis.",
       },
+      gallery: [
+        { src: "/media/work/marketopportunityanalyzer2.webp", width: 560, height: 482, alt: "ForgeFountain opportunity analysis detail." },
+        { src: "/media/work/marketopportunityanalyzer3.webp", width: 560, height: 534, alt: "ForgeFountain market comparison detail." },
+      ],
     },
     {
       number: "03.3",
       stage: "High alpine",
       altitude: "2,740 M",
       title: "AI Object Detection",
-      kicker: "Signal inside the noise",
+      kicker: "Recognizing objects as they move",
       description:
-        "A CNN-based computer-vision project with real-time detection, data collection, and visualization.",
-      year: "Year / to add",
-      role: "Role / to add",
+        PROJECTS[2].description,
+      detail: "I worked in a team of five to build and test the CNN model, which reached 97% accuracy. We used real-time data collection and visualization to check its detections.",
       tags: ["Python", "TensorFlow", "Computer vision", "CNNs"],
       status: "97% model accuracy",
       visual: "signal",
@@ -165,13 +167,12 @@ export const SUMMIT_CONTENT = {
       stage: "Above the clouds",
       altitude: "3,420 M",
       title: "Arduino Dancing Robot",
-      kicker: "A physical system in motion",
+      kicker: "Designed, printed, and taught to dance",
       description:
-        "A 3D-printed, motor-controlled robot designed in Fusion 360 and programmed with Arduino.",
-      year: "Year / to add",
-      role: "Role / to add",
+        PROJECTS[3].description,
+      detail: "I put together the mechanics, electronics, and dance routines. It took first place among 50 competitors at the 2019 Exceed Robotics Competition.",
       tags: ["Arduino", "Fusion 360", "Robotics", "Prototyping"],
-      status: "Case study details to come",
+      status: "1st place · Exceed Robotics 2019",
       visual: "workshop",
       image: {
         src: "/media/work/arduinorrobot.webp",
@@ -231,10 +232,10 @@ export const SUMMIT_CONTENT = {
     },
   },
   about: {
-    label: "About the climber",
-    statement: "I like turning rough ideas into useful, polished systems.",
+    label: "About me",
+    statement: PERSONAL.bio,
     body:
-      "I am a University of Toronto computer science student focused on web development, AI systems, and quantum computing. My work moves between hands-on prototypes, production-minded interfaces, and research-driven experiments.",
+      PERSONAL.bioShort,
     image: {
       src: "/media/portrait.jpg",
       width: 1338,
@@ -250,11 +251,11 @@ export const SUMMIT_CONTENT = {
     ],
   },
   finale: {
-    label: "The Summit",
-    title: ["The summit", "isn't the end."],
-    closing: "It is the next view.",
+    label: "Get in touch",
+    title: ["Let’s make", "something."],
+    closing: "I’d love to hear from you.",
     invitation:
-      "Have a project, problem, or strange idea worth climbing toward?",
+      "Hiring for your team, working on an idea, or curious about a project?",
     image: {
       src: "/media/summit-parallax-master-v2.webp",
       width: 1536,

@@ -1,0 +1,71 @@
+/* One opening shot. All transforms belong to image children so the restored
+   scroll camera retains exclusive ownership of the scenery's parent layers. */
+.arrival { display: none; pointer-events: none; }
+.journey-hero__content { animation: none; }
+html[data-arrival] .arrival { display: block; }
+.arrival__veil { position: fixed; z-index: 160; inset: 0; display: grid; place-items: center; background: radial-gradient(ellipse at 62% 42%, #302344, #171139 65%); }
+.arrival__signature { display: flex; flex-direction: column; align-items: center; gap: 1.8rem; color: var(--sun); }
+.arrival__signature svg { width: clamp(140px, 18vw, 220px); overflow: visible; }
+.arrival__ridge { stroke: var(--sun); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: arrival-draw 850ms cubic-bezier(.25, .1, .3, 1) both; }
+.arrival__ridge--detail { stroke-width: .5; opacity: .6; animation-delay: 180ms; }
+.arrival__signature > span { font-size: .75rem; letter-spacing: .06em; color: #e2d4e9; animation: arrival-signature 900ms 180ms both; }
+.arrival__light { position: fixed; z-index: 80; inset: 0; opacity: 0; mix-blend-mode: screen; background: radial-gradient(ellipse at 68% 28%, #ffd59980, #ffb89e19 35%, transparent 65%); }
+.arrival-replay { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; padding: .4rem 0; border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; opacity: .8; transition: opacity 180ms ease; }
+.arrival-replay:hover { opacity: 1; }
+.arrival-replay svg { transition: rotate 350ms var(--ease-out); }
+.arrival-replay:hover svg { rotate: -35deg; }
+
+@media (prefers-reduced-motion: no-preference) {
+  html[data-arrival] .journey-hero__content { animation: none; }
+  html:is([data-arrival="boot"], [data-arrival="waiting"]) :is(.journey-hero__eyebrow, .journey-hero h1, .journey-hero__intro, .hero-actions, .journey-nav, .journey-hero__footer) { opacity: 0; }
+
+  html[data-arrival="playing"] .arrival__veil { animation: arrival-unveil 1250ms var(--ease-out) both; }
+  html[data-arrival="playing"] .arrival__signature { animation: arrival-mark-depart 1000ms ease-in both; }
+  html[data-arrival="playing"] .arrival__light { animation: arrival-sunlight 2700ms ease-out both; }
+
+  html[data-arrival="playing"] .journey-world__layer img {
+    animation: arrival-landscape 2800ms var(--ease-out) both;
+    transform-origin: 65% 40%;
+  }
+  html[data-arrival="playing"] .journey-world__layer--sky img { --arrival-scale: 1.025; --arrival-rise: 0%; }
+  html[data-arrival="playing"] .journey-world__layer--clouds img { --arrival-scale: 1.05; --arrival-rise: 1%; }
+  html[data-arrival="playing"] .journey-world__layer--valley img { --arrival-scale: 1.075; --arrival-rise: 2%; }
+  html[data-arrival="playing"] .journey-world__layer--trail img { --arrival-scale: 1.1; --arrival-rise: 3%; }
+  html[data-arrival="playing"] .journey-world__layer--foreground img { --arrival-scale: 1.14; --arrival-rise: 5%; }
+
+  html[data-arrival="playing"] .journey-hero h1 { animation: arrival-title 1600ms 450ms var(--ease-out) both; }
+  html[data-arrival="playing"] .journey-hero__eyebrow { animation: arrival-copy 1000ms 800ms var(--ease-out) both; }
+  html[data-arrival="playing"] .journey-hero__intro { animation: arrival-copy 1100ms 1100ms var(--ease-out) both; }
+  html[data-arrival="playing"] .hero-actions { animation: arrival-copy 1000ms 1350ms var(--ease-out) both; }
+  html[data-arrival="playing"] .journey-nav { animation: arrival-navigation 1000ms 1450ms var(--ease-out) both; }
+  html[data-arrival="playing"] .journey-hero__footer { animation: arrival-copy 900ms 1650ms var(--ease-out) both; }
+}
+
+@keyframes arrival-draw { to { stroke-dashoffset: 0; } }
+@keyframes arrival-signature { from { opacity: 0; translate: 0 5px; } to { opacity: 1; translate: 0 0; } }
+@keyframes arrival-mark-depart { to { opacity: 0; translate: 0 -12px; } }
+@keyframes arrival-unveil { 0%, 10% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
+@keyframes arrival-sunlight { 0% { opacity: 0; } 35% { opacity: .5; } 100% { opacity: 0; } }
+@keyframes arrival-landscape {
+  from { scale: var(--arrival-scale, 1.05); translate: 0 var(--arrival-rise, 0%); }
+  to { scale: 1; translate: 0 0; }
+}
+@keyframes arrival-title {
+  from { opacity: 0; translate: 0 30px; clip-path: inset(-12% -10% 110% -10%); }
+  to { opacity: 1; translate: 0 0; clip-path: inset(-12% -10% -25% -10%); }
+}
+@keyframes arrival-copy { from { opacity: 0; translate: 0 10px; } to { opacity: 1; translate: 0 0; } }
+@keyframes arrival-navigation { from { opacity: 0; translate: 0 -8px; } to { opacity: 1; translate: 0 0; } }
+
+@media (max-width: 760px) {
+  .journey-hero__footer .arrival-replay { font-size: .68rem; }
+  html[data-arrival="playing"] .journey-world__layer img { transform-origin: 62% 40%; }
+  html[data-arrival="playing"] .journey-world__layer--foreground img { --arrival-scale: 1.075; --arrival-rise: 3%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-arrival] .arrival, .arrival-replay { display: none; }
+}
+@media print {
+  html[data-arrival] .arrival, .arrival-replay { display: none; }
+  html[data-arrival] :is(.journey-hero__eyebrow, .journey-hero h1, .journey-hero__intro, .hero-actions, .journey-nav, .journey-hero__footer) { opacity: 1; animation: none; }
+}

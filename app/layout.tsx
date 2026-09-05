@@ -1,16 +1,18 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "./artwork.css";
+import "./arrival.css";
 import { JourneyMotion } from "./JourneyMotion";
-import { RevealObserver } from "./RevealObserver";
+import { ARRIVAL_BOOTSTRAP } from "@/lib/arrival";
 
 export const metadata: Metadata = {
-  title: "Ruben Maxwell — The Summit",
+  title: "Ruben Maxwell | Software Engineering, AI & Robotics",
   description:
-    "A digital expedition through selected systems, experiments, and work by Ruben Maxwell.",
+    "I'm Ruben, a software engineer studying Mathematics & Computer Science at the University of Toronto. See my projects in backend engineering, machine learning, and robotics.",
   openGraph: {
-    title: "Ruben Maxwell — The Summit",
+    title: "Ruben Maxwell | Software Engineering, AI & Robotics",
     description:
-      "A digital expedition through selected systems, experiments, and work by Ruben Maxwell.",
+      "I'm Ruben, a software engineer studying Mathematics & Computer Science at the University of Toronto. See my projects in backend engineering, machine learning, and robotics.",
     type: "website",
   },
 };
@@ -28,10 +30,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head><script dangerouslySetInnerHTML={{ __html: ARRIVAL_BOOTSTRAP }} /></head>
       <body>
         <div className="scroll-progress" aria-hidden="true" />
         <JourneyMotion />
-        <RevealObserver />
         {children}
       </body>
     </html>

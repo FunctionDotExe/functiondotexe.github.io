@@ -4,13 +4,13 @@ export const PERSONAL = {
   role: "\"If you're going through hell, keep going.\"",
   roleAttribution: "Winston Churchill",
   city: "Toronto, ON",
-  year: "2025",
+  year: "2026",
   email: "rubenbmaxwell@gmail.com",
   linkedin: "https://linkedin.com/in/ruben-maxwell",
   github: "https://github.com/functiondotexe",
-  bio: "I like turning rough ideas into useful, polished systems.",
+  bio: "I like understanding how something works, then trying to build it myself.",
   bioShort:
-    "I'm a University of Toronto Computer Science student focused on web development, AI systems, and quantum computing. My work moves between hands-on prototypes, production-minded interfaces, and research-driven experiments.",
+    "I'm studying Mathematics & Computer Science at the University of Toronto. My projects have taken me from a dancing robot to mobile games and medical-image research. I also enjoy helping other people get started with code, through teaching and volunteering.",
 };
 
 export const PRINCIPLES = [
@@ -33,47 +33,48 @@ export const STATS = [
 
 export const SKILLS = [
   {
-    category: "Frontend Engineering",
-    tools: ["React.js", "TypeScript", "Next.js", "Tailwind CSS", "Framer Motion"],
-    description: "Responsive, polished interfaces built with modern React tooling.",
+    category: "Languages & Interfaces",
+    tools: ["Python", "C++", "C#", "C", "Java", "JavaScript", "TypeScript", "SQL", "Bash", "React Native", "Expo", "HTML", "CSS", "Tailwind CSS"],
+    description: "I use these to build websites, mobile games, and the code that runs on a robot.",
   },
   {
-    category: "Backend & APIs",
-    tools: ["Node.js", "Python", "Firebase", "PostgreSQL", "REST APIs"],
-    description: "APIs, data flows, and service layers for practical products.",
+    category: "Backend & Systems",
+    tools: ["Docker", "RabbitMQ", "REST APIs", "Linux", "AWS", "Git / GitHub", "CI/CD", "PostgreSQL", "MongoDB", "MySQL", "Firebase"],
+    description: "At 4D, I work on APIs, Docker services, RabbitMQ messaging, and database queries that keep requests moving.",
   },
   {
     category: "AI & Machine Learning",
-    tools: ["Python", "TensorFlow", "PyTorch", "scikit-learn", "LLMs"],
-    description: "Model building, evaluation, and applied AI experiments.",
+    tools: ["PyTorch", "TensorFlow", "Keras", "CUDA / GPU", "NumPy", "Pandas", "Matplotlib", "scikit-learn", "Fairlearn", "Computer vision"],
+    description: "I train and evaluate models, then look closely at their mistakes. My work includes object detection, skin-image classification, and fairness testing.",
+  },
+  {
+    category: "AI Agents & Retrieval",
+    tools: ["LLMs", "LangGraph", "LlamaIndex", "CrewAI", "RAG pipelines", "Qdrant", "Chroma", "Weaviate", "Claude Code", "Aider", "Codex CLI"],
+    description: "Tools I use for LLM applications, document retrieval, and AI-assisted development.",
   },
   {
     category: "Quantum Computing",
     tools: ["Qiskit", "PennyLane", "Cirq", "VQE", "Quantum Neural Networks"],
-    description: "Hybrid quantum-classical workflows and algorithm research.",
+    description: "At QMorphix, I compared quantum and classical methods for reconstructing MRI images and reducing noise.",
   },
   {
-    category: "Robotics & IoT",
-    tools: ["Arduino", "LEGO Mindstorms", "Python", "C#", "Java"],
-    description: "Hands-on robotics, embedded systems, and automation projects.",
-  },
-  {
-    category: "Data Science",
-    tools: ["NumPy", "Pandas", "Matplotlib", "Jupyter", "Computer Vision"],
-    description: "Analysis, visualization, and computer vision workflows.",
+    category: "Robotics & Embedded",
+    tools: ["VEX Robotics", "Arduino", "Raspberry Pi", "Embedded C++", "Sensor integration", "Motor control", "Fusion 360", "Unity / C#"],
+    description: "I build and program robots, connecting sensor readings to motor control so they can respond on their own or to a driver.",
   },
 ];
 
 export const EXPERIENCE = [
   {
     company: "Fourth Dimension (4D)",
-    role: "Software Engineer",
+    role: "Software Engineer · Innovation Lab",
     type: "Internship",
     dates: "May 2026 - Present",
     location: "Toronto, Ontario, Canada",
     bullets: [
-      "Building and maintaining production software features",
-      "Collaborating across product, design, and engineering workflows",
+      "Built and deployed Docker microservices so backend services ran in consistent environments and were easier to release.",
+      "Built real-time workflows with RabbitMQ and tuned MongoDB queries and indexes to serve requests faster.",
+      "Developed REST APIs and helped ship 4+ production releases. Used Claude Code and Aider for implementation and refactoring.",
     ],
   },
   {
@@ -83,9 +84,9 @@ export const EXPERIENCE = [
     dates: "Jul 2025 - Sep 2025",
     location: "Toronto, Ontario, Canada",
     bullets: [
-      "Researched quantum machine learning methods including VQE, QNNs, and quantum kernels",
-      "Built and simulated quantum circuits with Qiskit, PennyLane, and Cirq",
-      "Explored hybrid quantum-classical pipelines for classification and regression",
+      "Compared VQE, quantum neural networks, and quantum-kernel methods for reconstructing MRI images and removing noise.",
+      "Built Python simulation pipelines with Qiskit, PennyLane, and Cirq, testing their accuracy and training time.",
+      "Ran controlled experiments across 100+ datasets and coordinated the project’s deliverables, improving image reconstruction and noise reduction.",
     ],
   },
   {
@@ -93,23 +94,21 @@ export const EXPERIENCE = [
     role: "Frontend Developer",
     type: "Contract",
     dates: "Jul 2025 - Aug 2025",
-    location: "Remote",
+    location: "Mississauga, Ontario, Canada",
     bullets: [
-      "Developed a responsive website with dynamic front-end components",
-      "Integrated Firebase hosting, APIs, and newsletter subscriptions",
-      "Built workflows for workshop content and user data management",
+      "Redesigned the company website with HTML, CSS, JavaScript, and Tailwind CSS to work better across phones, tablets, and desktops.",
+      "Reorganized the site to make content updates faster and deployed it with Firebase.",
     ],
   },
   {
     company: "Inspirit AI",
-    role: "Ambassador",
+    role: "AI Ambassador",
     type: "Volunteer",
     dates: "Sep 2023 - Jul 2025",
     location: "Remote",
     bullets: [
-      "Selected for an AI Ambassador program led by Stanford and MIT graduates",
-      "Created a CNN object detection project that reached 97% accuracy",
-      "Built real-time data collection and visualization tools for model testing",
+      "Served as a student ambassador for an AI program mentored by Stanford and MIT graduates.",
+      "Helped peers learn Python and get started with machine learning.",
     ],
   },
   {
@@ -119,9 +118,9 @@ export const EXPERIENCE = [
     dates: "Mar 2024",
     location: "Remote",
     bullets: [
-      "Taught robotics and programming to 70+ students aged 9-14",
-      "Created lessons for Arduino, LEGO Mindstorms, and block-based coding",
-      "Led collaborative classroom projects with students and peers",
+      "Taught robotics and programming to 70+ students aged 9–14.",
+      "Created lessons using Arduino, LEGO Mindstorms, and block-based coding.",
+      "Helped students build projects together and work through problems as a team.",
     ],
   },
   {
@@ -131,8 +130,8 @@ export const EXPERIENCE = [
     dates: "Jul 2023 - Aug 2023",
     location: "Remote",
     bullets: [
-      "Instructed students in Python, Java, and C# through hands-on projects",
-      "Guided group activities, debugging, and iterative development",
+      "Taught Python, Java, and C# through hands-on projects.",
+      "Helped students debug their code, test changes, and build together.",
     ],
   },
 ];
@@ -162,7 +161,7 @@ export const PROJECTS: Project[] = [
   {
     title: "Decyp3r: Microgame App",
     description:
-      "React Native microgame with Firebase auth, score submissions, daily limits, streaks, and live rankings.",
+      "A daily game app with six mini-games, streaks, and live leaderboards. Built for iOS, Android, and web with React Native and Firebase.",
     stack: ["React Native", "Expo", "TypeScript", "Firebase"],
     image: { src: "/media/work/decyphergamehomepage.webp", width: 348, height: 730 },
     gallery: [
@@ -171,14 +170,14 @@ export const PROJECTS: Project[] = [
       { src: "/media/work/decyphergame3.webp", width: 325, height: 640 },
     ],
     mediaFit: "contain",
-    metric: "Live rankings + daily attempts",
+    metric: "95%+ crash-free sessions",
     link: "",
     visual: "gradient",
   },
   {
     title: "ForgeFountain",
     description:
-      "Market intelligence app that ranks live game-economy opportunities by return, liquidity, and execution time.",
+      "A tool that helps players find worthwhile trades in a live game economy. It compares prices and crafting recipes, then ranks opportunities by profit, demand, and time to complete.",
     stack: ["React", "APIs", "Data Modeling", "Caching"],
     image: { src: "/media/work/marketopportunityanalyzer.webp", width: 1168, height: 1097 },
     gallery: [
@@ -186,14 +185,14 @@ export const PROJECTS: Project[] = [
       { src: "/media/work/marketopportunityanalyzer3.webp", width: 560, height: 534 },
     ],
     mediaFit: "contain",
-    metric: "70% faster decisions, up to 60% better margins",
+    metric: "Internal testing: over 70% less decision time; up to 60% higher margins in favorable market windows",
     link: "",
     visual: "wireframe",
   },
   {
     title: "AI Object Detection",
     description:
-      "CNN-based computer vision project with real-time detection, data collection, and visualization.",
+      "A computer-vision project that detects cars, people, and other objects in real time, with a live view of what the model sees.",
     stack: ["Python", "TensorFlow", "Computer Vision", "CNNs"],
     metric: "97% model accuracy",
     link: "",
@@ -202,7 +201,7 @@ export const PROJECTS: Project[] = [
   {
     title: "Arduino Dancing Robot",
     description:
-      "3D-printed motor-controlled robot designed in Fusion 360 and programmed with Arduino.",
+      "A small robot with its own dance routine. I designed the 3D-printed body in Fusion 360 and programmed its motors with Arduino.",
     stack: ["Arduino", "Fusion 360", "Robotics", "Prototyping"],
     image: { src: "/media/work/arduinorrobot.webp", width: 1168, height: 879 },
     link: "",
@@ -211,7 +210,7 @@ export const PROJECTS: Project[] = [
 ];
 
 export const RESUME = {
-  pdf: "/media/RUBEN_RESUME_V.3.0.docx.pdf",
+  pdf: "/media/ruben-resume.pdf",
   youtubeUrl: "https://youtu.be/Y57MlI380UM",
   youtubeId: "Y57MlI380UM",
   videoThumb: { src: "/media/work/video-thumb.webp", width: 1168, height: 657 },
@@ -234,3 +233,49 @@ export const CERTIFICATES = [
     image: { src: "/media/work/certificate-version-control.webp", width: 810, height: 424 },
   },
 ];
+
+export const EDUCATION = {
+  school: "University of Toronto",
+  degree: "Honours Bachelor of Science",
+  subject: "Mathematics & Computer Science",
+  dates: "2025–2029",
+  location: "Toronto, ON",
+};
+
+export const RESEARCH_PROJECTS = [
+  {
+    id: "skin-cancer",
+    title: "Skin Cancer Detection",
+    context: "URSA Case Competition · Computer vision",
+    description: "Built a GPU-accelerated CNN pipeline for melanoma-versus-nevus classification using the HAM10000 dataset of 10,015 images.",
+    detail: "The model reached approximately 0.90 AUC and 89–91% validation accuracy. I also checked who it performed worse for: a Fairlearn audit found a 4.45% accuracy gap and a difference in false-negative rates by sex.",
+    tools: ["Python", "TensorFlow / Keras", "GPU acceleration", "Fairlearn"],
+    metrics: [{ value: "10,015", label: "Dataset images" }, { value: "~0.90", label: "AUC" }, { value: "89–91%", label: "Validation accuracy" }],
+  },
+  {
+    id: "embedded-robotics",
+    title: "Robotics & Embedded Systems",
+    context: "VEX & Arduino · Physical hardware",
+    description: "Designed, built, and programmed VEX robots and Arduino microcontrollers in C++, connecting code to motion on physical hardware.",
+    detail: "I used sensor feedback and closed-loop motor control to make the robots respond in real time, with both autonomous and driver-controlled routines. Earlier VEX competition work qualified for provincials.",
+    tools: ["C++", "VEX Robotics", "Arduino", "Embedded systems"],
+    metrics: [{ value: "Sense", label: "Real-time feedback" }, { value: "Control", label: "Closed-loop motors" }, { value: "Move", label: "Autonomous routines" }],
+  },
+];
+
+export const HONORS = [
+  { title: "3× hackathon winner", detail: "Across hackathon competitions" },
+  { title: "Top 500 worldwide", detail: "Sir Isaac Newton Physics Exam · 3,808 participants · Waterloo, 2025" },
+  { title: "Top 5 · NASA SpaceHacks", detail: "2019" },
+  { title: "Global nominee · NASA SpaceHacks", detail: "2022 · Unity game inspired by the James Webb Space Telescope" },
+  { title: "1st place · Exceed Robotics", detail: "2019 · Dancing robot · 50 competitors" },
+];
+
+export const COMMUNITY = [
+  { role: "Recreational program volunteer", organization: "Ontario Science Centre", dates: "Since July 2023" },
+  { role: "Observatory volunteer", organization: "David Dunlap Observatory", dates: "Since May 2023" },
+  { role: "Technology specialist", organization: "L’Arche Daybreak", dates: "May 2025" },
+  { role: "School event technology support", organization: "York Catholic District School Board", dates: "September 2024–June 2025" },
+];
+
+export const LANGUAGES = ["English · Native", "French · Working", "Tamil · Professional"];

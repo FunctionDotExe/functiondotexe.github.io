@@ -27,6 +27,12 @@ export function JourneyWorld() {
             decoding="async"
           />
         </div>
+        <span className="journey-world__dusk" />
+        <svg className="journey-world__stars" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+          {Array.from({ length: 48 }, (_, index) => (
+            <circle key={index} cx={(index * 173 + 59) % 1440} cy={(index * 67 + 23) % 350} r={index % 7 === 0 ? 1.5 : .75} opacity={.25 + (index % 5) * .13} />
+          ))}
+        </svg>
       </div>
 
       <div className="journey-world__realm journey-world__realm--depth">
@@ -34,6 +40,7 @@ export function JourneyWorld() {
           <img
             className="journey-world__depth-plate"
             src={world.depth.back}
+            fetchPriority="low"
             width="1536"
             height="2304"
             alt=""
@@ -44,6 +51,7 @@ export function JourneyWorld() {
           <img
             className="journey-world__depth-plate"
             src={world.depth.atmosphere}
+            fetchPriority="low"
             width="1536"
             height="2304"
             alt=""
@@ -54,6 +62,7 @@ export function JourneyWorld() {
           <img
             className="journey-world__depth-plate"
             src={world.depth.mid}
+            fetchPriority="low"
             width="1536"
             height="2304"
             alt=""
@@ -64,6 +73,7 @@ export function JourneyWorld() {
           <img
             className="journey-world__depth-plate"
             src={world.depth.near}
+            fetchPriority="low"
             width="1536"
             height="2304"
             alt=""
@@ -71,6 +81,7 @@ export function JourneyWorld() {
           />
         </div>
         <span className="journey-world__depth-shade" />
+        <span className="journey-world__core-light" />
       </div>
 
       <div className="journey-world__realm journey-world__realm--continuum">
@@ -90,12 +101,14 @@ export function JourneyWorld() {
           <img
             className="journey-world__continuum-plate"
             src={world.depth.continuum}
+            fetchPriority="low"
             width="1536"
             height="2904"
             alt=""
             decoding="async"
           />
         </picture>
+        <span className="journey-world__continuum-dusk" />
       </div>
 
       <span className="journey-world__grade" />

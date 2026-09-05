@@ -1,142 +1,82 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { ArrowUpRight, Menu, Mountain, X } from "lucide-react";
 import { SUMMIT_CONTENT } from "@/lib/summit-content";
 
-export function SummitNav() {
-  const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [onLightScene, setOnLightScene] = useState(false);
-  const menuButtonRef = useRef<HTMLButtonElement>(null);
-  const { identity, navigation } = SUMMIT_CONTENT;
+const navigation = [
+  { label: "Projects", href: "#work" },
+  { label: "Experience", href: "#experience" },
+  { label: "About", href: "#about" },
+  { label: "Contact", href: "#contact" },
+];
 
-  const closeMenu = () => {
-    setOpen(false);
-    window.requestAnimationFrame(() => menuButtonRef.current?.focus());
-  };
+export function SummitNav() {
+  const [active, setActive] = useState("");
+  const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
+  const dialog = useRef<HTMLDialogElement>(null);
+  const { identity } = SUMMIT_CONTENT;
 
   useEffect(() => {
-    const themedScenes = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-nav-theme]"),
-    );
-    let animationFrame = 0;
-
-    const updateNavigation = () => {
-      const viewportCenter = window.innerHeight * 0.5;
-      let activeScene: HTMLElement | null = null;
-      let activeDistance = Number.POSITIVE_INFINITY;
-
-      for (const scene of themedScenes) {
-        const rect = scene.getBoundingClientRect();
-        if (rect.bottom <= 0 || rect.top >= window.innerHeight) continue;
-        const distance = Math.abs(rect.top + rect.height * 0.5 - viewportCenter);
-        if (distance < activeDistance) {
-          activeDistance = distance;
-          activeScene = scene;
-        }
-      }
-
-      setScrolled(window.scrollY > 32);
-      setOnLightScene(activeScene?.dataset.navTheme === "light");
-      animationFrame = 0;
+    let frame = 0;
+    const sections = navigation.map(({ href }) => document.querySelector(href));
+    const update = () => {
+      frame = 0;
+      setScrolled(window.scrollY > 24);
+      let current = "";
+      sections.forEach((section, i) => {
+        if (section && section.getBoundingClientRect().top <= window.innerHeight * 0.4) current = navigation[i].href;
+      });
+      setActive(current);
     };
-
-    const onScroll = () => {
-      if (!animationFrame) animationFrame = window.requestAnimationFrame(updateNavigation);
-    };
-
-    updateNavigation();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      if (animationFrame) window.cancelAnimationFrame(animationFrame);
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
     };
   }, []);
 
   useEffect(() => {
     if (!open) return;
-    const previousOverflow = document.body.style.overflow;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") closeMenu();
-    };
-    const onResize = () => {
-      if (window.innerWidth > 720) setOpen(false);
-    };
+    const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", onKeyDown);
+    const onResize = () => { if (window.innerWidth > 760) dialog.current?.close(); };
     window.addEventListener("resize", onResize);
-
     return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = previous;
       window.removeEventListener("resize", onResize);
     };
   }, [open]);
 
+  const followLink = (href: string) => {
+    dialog.current?.close();
+    requestAnimationFrame(() => document.querySelector<HTMLElement>(href)?.focus({ preventScroll: true }));
+  };
+
   return (
     <>
-      <a className="skip-link" href="#main-content">
-        Skip to content
-      </a>
-      <header
-        className={`journey-nav${scrolled ? " journey-nav--scrolled" : ""}${
-          onLightScene ? " journey-nav--on-light" : ""
-        }${open ? " journey-nav--open" : ""}`}
-      >
-        <a className="journey-nav__brand" href="#entry" aria-label={`${identity.name}, back to top`}>
-          <span>{identity.initials}</span>
-          <small>{identity.name}</small>
-        </a>
-
+      <a className="skip-link" href="#main-content">Skip to content</a>
+      <header className={`journey-nav${scrolled ? " journey-nav--scrolled" : ""}`}>
+        <a className="journey-nav__brand" href="#entry" aria-label="Ruben Maxwell, back to top"><Mountain size={24} strokeWidth={1.5} aria-hidden="true" /><span>Ruben Maxwell</span></a>
         <nav className="journey-nav__links" aria-label="Primary navigation">
-          {navigation.map((item) => (
-            <a href={item.href} key={item.href}>
-              {item.label}
-            </a>
-          ))}
+          {navigation.map(({ label, href }) => <a key={href} href={href} aria-current={active === href ? "location" : undefined}>{label}</a>)}
         </nav>
-
-        <a className="journey-nav__hello" href={`mailto:${identity.email}`}>
-          Say hello
-          <span aria-hidden="true">↗</span>
-        </a>
-
-        <button
-          ref={menuButtonRef}
-          className="journey-nav__menu-button"
-          type="button"
-          aria-expanded={open}
-          aria-controls="journey-menu"
-          aria-label={open ? "Close menu" : "Open menu"}
-          onClick={() => setOpen((value) => !value)}
-        >
-          <span />
-          <span />
-        </button>
+        <a className="journey-nav__hello" href={`mailto:${identity.email}`}>Let’s talk <ArrowUpRight size={16} aria-hidden="true" /></a>
+        <button className="journey-nav__menu-button icon-button" type="button" aria-label="Open navigation" aria-haspopup="dialog" aria-expanded={open} aria-controls="journey-menu" onClick={() => { dialog.current?.showModal(); setOpen(true); }}><Menu size={22} aria-hidden="true" /></button>
       </header>
-
-      <div className={`journey-menu${open ? " journey-menu--open" : ""}`} id="journey-menu" aria-hidden={!open}>
-        <span className="journey-menu__sun" aria-hidden="true" />
+      <dialog ref={dialog} className="journey-menu" id="journey-menu" aria-labelledby="menu-title" onClose={() => setOpen(false)}>
+        <div className="journey-menu__heading"><p id="menu-title">Take a look around.</p><button className="icon-button" type="button" aria-label="Close navigation" onClick={() => dialog.current?.close()}><X size={22} aria-hidden="true" /></button></div>
         <nav aria-label="Mobile navigation">
-          {navigation.map((item) => (
-            <a href={item.href} key={item.href} tabIndex={open ? 0 : -1} onClick={closeMenu}>
-              <span>{item.number}</span>
-              {item.label}
-            </a>
-          ))}
+          {navigation.map(({ label, href }) => <a key={href} href={href} aria-current={active === href ? "location" : undefined} onClick={() => followLink(href)}>{label}<ArrowUpRight size={24} aria-hidden="true" /></a>)}
         </nav>
-        <a
-          className="journey-menu__email"
-          href={`mailto:${identity.email}`}
-          tabIndex={open ? 0 : -1}
-          onClick={closeMenu}
-        >
-          {identity.email}
-        </a>
-      </div>
+        <a className="text-link journey-menu__email" href={`mailto:${identity.email}`}>{identity.email}<ArrowUpRight size={16} aria-hidden="true" /></a>
+        <p className="journey-menu__location">{identity.location}</p>
+      </dialog>
     </>
   );
 }

@@ -1,146 +1,47 @@
-import type { Landmark } from "@/lib/summit-content";
+import { ArrowUpRight } from "lucide-react";
 import { SUMMIT_CONTENT } from "@/lib/summit-content";
-
-function ProjectArtifact({ landmark }: { landmark: Landmark }) {
-  if (landmark.visual === "phones" && landmark.image) {
-    return (
-      <figure className="waypoint-artifact waypoint-artifact--phones" data-reveal>
-        {landmark.gallery?.[0] ? (
-          <img
-            className="waypoint-phone waypoint-phone--left"
-            src={landmark.gallery[0].src}
-            width={landmark.gallery[0].width}
-            height={landmark.gallery[0].height}
-            alt={landmark.gallery[0].alt}
-            loading="lazy"
-            decoding="async"
-          />
-        ) : null}
-        <img
-          className="waypoint-phone waypoint-phone--main"
-          src={landmark.image.src}
-          width={landmark.image.width}
-          height={landmark.image.height}
-          alt={landmark.image.alt}
-          loading="lazy"
-          decoding="async"
-        />
-        {landmark.gallery?.[1] ? (
-          <img
-            className="waypoint-phone waypoint-phone--right"
-            src={landmark.gallery[1].src}
-            width={landmark.gallery[1].width}
-            height={landmark.gallery[1].height}
-            alt={landmark.gallery[1].alt}
-            loading="lazy"
-            decoding="async"
-          />
-        ) : null}
-        <figcaption>Mobile product / interface study</figcaption>
-      </figure>
-    );
-  }
-
-  if (landmark.image) {
-    return (
-      <figure className={`waypoint-artifact waypoint-artifact--${landmark.visual}`} data-reveal>
-        <span className="waypoint-artifact__glow" aria-hidden="true" />
-        <img
-          src={landmark.image.src}
-          width={landmark.image.width}
-          height={landmark.image.height}
-          alt={landmark.image.alt}
-          loading="lazy"
-          decoding="async"
-        />
-        <figcaption>{landmark.kicker}</figcaption>
-      </figure>
-    );
-  }
-
-  return null;
-}
-
-function Waypoint({ landmark, index }: { landmark: Landmark; index: number }) {
-  const headingId = `waypoint-${index + 1}`;
-  const side = index % 2 === 0 ? "left" : "right";
-  const titleLines: Record<Landmark["visual"], string[]> = {
-    phones: ["Decyp3r"],
-    console: ["Forge", "Fountain"],
-    signal: ["AI Object", "Detection"],
-    workshop: ["Arduino", "Robot"],
-  };
-
-  return (
-    <article
-      className={`waypoint waypoint--${side} waypoint--${landmark.visual}`}
-      aria-labelledby={headingId}
-      data-journey-scene
-      data-nav-theme="dark"
-    >
-      <div className="waypoint__stage" data-journey-stage>
-        <div className="waypoint__inner">
-          <div className="waypoint__copy" data-reveal>
-            <p className="scene-kicker scene-kicker--light">
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              {landmark.stage}
-            </p>
-            <h3 id={headingId} aria-label={landmark.title}>
-              {titleLines[landmark.visual].map((line) => (
-                <span key={line}>{line}</span>
-              ))}
-            </h3>
-            <p className="waypoint__description">{landmark.description}</p>
-            <ul aria-label="Tools and disciplines">
-              {landmark.tags.slice(0, 4).map((tag) => (
-                <li key={tag}>{tag}</li>
-              ))}
-            </ul>
-            <p className="waypoint__status">
-              <i aria-hidden="true" />
-              {landmark.status}
-            </p>
-          </div>
-          <ProjectArtifact landmark={landmark} />
-        </div>
-      </div>
-    </article>
-  );
-}
+import { RESUME } from "@/lib/constants";
+import { ProjectViewer } from "./ProjectViewer";
+import { ResearchNotes } from "./ResearchNotes";
 
 export function Landmarks() {
-  const { landmarks } = SUMMIT_CONTENT;
-
   return (
-    <section className="climb" id="work" aria-labelledby="climb-title">
-      <div className="climb__hud" aria-hidden="true">
-        <div className="climb__progress">
-          <span>Base</span>
-          <i><b /></i>
-          <span>Peak</span>
-        </div>
-      </div>
-
-      <div className="climb__waypoints">
-        <header className="climb-intro" data-journey-scene data-nav-theme="dark">
-          <div className="climb-intro__stage" data-journey-stage>
-            <div className="climb-intro__content" data-reveal>
-              <p className="scene-kicker scene-kicker--light">
-                <span>02</span>
-                Selected work
-              </p>
-              <h2 id="climb-title">
-                Landmarks
-                <span>along the climb.</span>
-              </h2>
-              <p>Four projects. Four different pieces of terrain.</p>
-            </div>
-          </div>
+    <section className="climb" id="work" tabIndex={-1} aria-labelledby="climb-title">
+      <div className="shell">
+        <header className="section-heading">
+          <div><p className="section-label">Selected projects</p><h2 id="climb-title">A few things<br />I’ve built.</h2></div>
+          <p>Games to play, tools to use, and experiments to learn from.<br />Here’s what went into them.</p>
         </header>
-
-        {landmarks.map((landmark, index) => (
-          <Waypoint landmark={landmark} index={index} key={landmark.title} />
-        ))}
+        <div className="climb__waypoints">
+          {SUMMIT_CONTENT.landmarks.map((project, index) => (
+            <article className={`waypoint waypoint--${project.visual}`} id={`project-${project.visual}`} aria-labelledby={`title-${project.visual}`} key={project.title}>
+              <div className="waypoint__stage">
+              <div className="waypoint__landmark" aria-hidden="true"><span>{project.altitude}</span><i /><span>{project.stage}</span></div>
+              <div className="waypoint__copy">
+                <p className="project-kind">{["Mobile product", "Market intelligence", "Computer vision", "Physical computing"][index]}</p>
+                <h3 id={`title-${project.visual}`}>{project.title}</h3>
+                <p className="waypoint__description">{project.description}</p>
+                <p className="waypoint__detail">{project.detail}</p>
+                <ul className="tag-list" aria-label="Tools and disciplines">{project.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul>
+                <div className="project-actions"><ProjectViewer landmark={project} />{project.visual === "signal" && <a className="text-link" href={RESUME.youtubeUrl} target="_blank" rel="noreferrer">Watch demo <ArrowUpRight size={16} aria-hidden="true" /></a>}</div>
+              </div>
+              <figure className={`project-media project-media--${project.visual}`}>
+                <div className="project-media__canvas">
+                  {project.visual === "phones" ? (
+                    <div className="phone-composition">
+                      <img src={project.gallery![0].src} width={project.gallery![0].width} height={project.gallery![0].height} alt={project.gallery![0].alt} loading="lazy" decoding="async" />
+                      <img src={project.image.src} width={project.image.width} height={project.image.height} alt={project.image.alt} loading="lazy" decoding="async" />
+                      <img src={project.gallery![1].src} width={project.gallery![1].width} height={project.gallery![1].height} alt={project.gallery![1].alt} loading="lazy" decoding="async" />
+                    </div>
+                  ) : <img src={project.image.src} width={project.image.width} height={project.image.height} alt={project.image.alt} loading="lazy" decoding="async" />}
+                </div>
+                <figcaption><span>{project.kicker}</span><span>{project.status}</span></figcaption>
+              </figure>
+              </div>
+            </article>
+          ))}
+        </div>
+        <ResearchNotes />
       </div>
     </section>
   );
