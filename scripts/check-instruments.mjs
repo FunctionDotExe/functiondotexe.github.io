@@ -7,9 +7,9 @@ function events() {
   const listeners = new Map();
   return {
     listeners,
-    addEventListener: (name, callback) => listeners.set(name, callback),
-    removeEventListener: (name) => listeners.delete(name),
-    fire: (name, data = {}) => listeners.get(name)?.(data),
+    addEventListener: (name, callback) => { if (!listeners.has(name)) listeners.set(name, new Set()); listeners.get(name).add(callback); },
+    removeEventListener: (name, callback) => { listeners.get(name)?.delete(callback); if (!listeners.get(name)?.size) listeners.delete(name); },
+    fire: (name, data = {}) => [...(listeners.get(name) ?? [])].forEach((callback) => callback(data)),
   };
 }
 
@@ -40,7 +40,7 @@ function harness(name) {
     focus() { document.activeElement = this; },
   }]));
   document.getElementById = (id) => sections.get(id);
-  document.querySelector = () => ({});
+  document.querySelector = (selector) => selector.startsWith("#") ? sections.get(selector.slice(1)) : {};
   const jsx = (type, props) => {
     if (props?.ref) props.ref.current = type === "dialog" ? dialog : type === "button" ? trigger : artifact;
     return { type, props: props ?? {} };
@@ -62,7 +62,7 @@ function harness(name) {
     },
   };
   const context = {
-    exports: {}, document, scrollY: 0, innerHeight: 900, ...browser,
+    exports: {}, document, scrollY: 0, innerHeight: 900, innerWidth: 640, ...browser,
     requestAnimationFrame: (callback) => { frames.set(++serial, callback); return serial; },
     cancelAnimationFrame: (id) => frames.delete(id),
     matchMedia: (query) => query.includes("reduced-motion") ? preference : pointer,
@@ -74,7 +74,8 @@ function harness(name) {
     require: (module) => {
       if (module === "react") return react;
       if (module === "react/jsx-runtime") return { jsx, jsxs: jsx, Fragment: "fragment" };
-      if (module === "lucide-react") return { ArrowDownRight: "icon", Compass: "icon", X: "icon" };
+      if (module === "lucide-react") return new Proxy({}, { get: (_target, key) => String(key) });
+      if (module === "@/lib/summit-content") return { SUMMIT_CONTENT: { identity: { email: "rubenbmaxwell@gmail.com", location: "Toronto, Canada" } } };
       throw new Error(module);
     },
   };
@@ -102,12 +103,15 @@ function harness(name) {
     document, artifact, dialog, properties,
     frame: () => { const pending = [...frames.values()]; frames.clear(); pending.forEach((callback) => callback()); if (dirty) render(); },
     pending: () => frames.size,
-    open: () => { find((node) => node.props.className === "route-instrument").props.onClick(); render(); },
+    open: () => { find((node) => node.props.className === "route-instrument" || node.props.className?.includes("journey-nav__menu-button")).props.onClick(); render(); },
     navigate: (id, event = {}) => {
-      find((node) => node.props.href === `#${id}`).props.onClick({ button: 0, ...event });
+      find((node) => node.props.href === `#${id}` && typeof node.props.onClick === "function").props.onClick({ button: 0, ...event });
       if (dirty) render();
     },
     current: () => find((node) => node.props.className === "route-instrument").props["aria-label"],
+    active: (id) => find((node) => node.props.href === `#${id}`)?.props["aria-current"],
+    backdrop: () => { find((node) => node.type === "dialog").props.onClick({ target: dialog, currentTarget: dialog }); if (dirty) render(); },
+    viewport: (width) => { context.innerWidth = width; browser.fire("resize"); if (dirty) render(); },
     scroll: (y) => { context.scrollY = y; browser.fire("scroll"); },
     resize: (id, top) => { sections.get(id).top = top; resizeObserver.callback(); },
     section: (id) => sections.get(id),
@@ -148,6 +152,26 @@ assert(route.pending() > 0);
 route.unmount();
 assert.equal(route.document.body.style.overflow, "auto");
 
+const navigation = harness("SummitNav");
+navigation.open();
+navigation.navigate("crust", { metaKey: true });
+assert.equal(navigation.dialog.open, true);
+navigation.navigate("crust");
+navigation.frame();
+assert.equal(navigation.document.activeElement, navigation.section("crust"), "Mobile Skills navigation must focus the skills section");
+navigation.scroll(1700);
+navigation.frame();
+assert.equal(navigation.active("crust"), "location", "Skills must be represented in the active main navigation");
+navigation.open();
+navigation.backdrop();
+assert.equal(navigation.dialog.open, false, "The mobile menu must dismiss on a backdrop click like the other dialogs");
+navigation.open();
+navigation.viewport(1100);
+assert.equal(navigation.dialog.open, false, "Desktop resizing must close the mobile menu and release scroll lock");
+navigation.frame();
+navigation.unmount();
+assert.equal(navigation.document.body.style.overflow, "auto");
+
 const touch = harness("ArtifactMotion");
 touch.move("touch");
 touch.frame();
@@ -179,4 +203,63 @@ motion.frame();
 assert.equal(motion.properties.get("--artifact-x"), "0.00deg", "Reduced motion must settle immediately at rest");
 motion.unmount();
 
-console.log("PASS: route focus, modified links, resize tracking, scroll lock, touch/pointer capability, tilt bounds, cancellation, reduced motion, and cleanup.");
+function contactHarness() {
+  let status = "idle", cleanup, serial = 0;
+  const timers = new Map();
+  const requests = [];
+  const context = {
+    exports: {},
+    navigator: { clipboard: { writeText: (text) => new Promise((resolve, reject) => requests.push({ text, resolve, reject })) } },
+    setTimeout: (callback) => { timers.set(++serial, callback); return serial; },
+    clearTimeout: (id) => timers.delete(id),
+    require: (module) => {
+      if (module === "react") return {
+        useRef: (value) => ({ current: value }),
+        useState: (initial) => [initial, (value) => { status = value; }],
+        useEffect: (effect) => { cleanup = effect(); },
+      };
+      if (module === "react/jsx-runtime") return { jsx: (type, props) => ({ type, props }), jsxs: (type, props) => ({ type, props }) };
+      if (module === "lucide-react") return new Proxy({}, { get: (_target, key) => String(key) });
+      if (module === "@/lib/summit-content") return { SUMMIT_CONTENT: { identity: { email: "rubenbmaxwell@gmail.com" } } };
+      throw new Error(module);
+    },
+  };
+  const source = ts.transpileModule(readFileSync(new URL("../components/summit/ContactActions.tsx", import.meta.url), "utf8"), {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, jsx: ts.JsxEmit.ReactJSX },
+  }).outputText;
+  vm.runInNewContext(source, context);
+  const tree = context.exports.ContactActions();
+  return {
+    copy: tree.props.children.find((node) => node.type === "button").props.onClick,
+    requests,
+    status: () => status,
+    expire: () => { const callbacks = [...timers.values()]; timers.clear(); callbacks.forEach((callback) => callback()); },
+    pending: () => timers.size,
+    unmount: () => { cleanup(); assert.equal(timers.size, 0); },
+  };
+}
+
+const contact = contactHarness();
+const olderCopy = contact.copy();
+const newerCopy = contact.copy();
+assert.equal(contact.requests[1].text, "rubenbmaxwell@gmail.com", "Copy must use the displayed contact address");
+contact.requests[1].resolve();
+await newerCopy;
+assert.equal(contact.status(), "copied");
+contact.requests[0].reject(new Error("Older permission request denied"));
+await olderCopy;
+assert.equal(contact.status(), "copied", "A stale clipboard failure must not replace newer success feedback");
+contact.expire();
+assert.equal(contact.status(), "idle", "Success feedback must return to the idle control");
+const deniedCopy = contact.copy();
+contact.requests[2].reject(new Error("Clipboard unavailable"));
+await deniedCopy;
+assert.equal(contact.status(), "failed", "Clipboard errors must show the existing accessible fallback message");
+const lateCopy = contact.copy();
+contact.unmount();
+contact.requests[3].resolve();
+await lateCopy;
+assert.equal(contact.pending(), 0, "A clipboard result after unmount must not create a new feedback timer");
+assert.equal(contact.status(), "failed", "A clipboard result after unmount must not update detached content");
+
+console.log("PASS: route/mobile navigation, focus, resize, scroll lock, pointer capabilities, bounded tilt, reduced motion, clipboard races/fallback, and cleanup.");

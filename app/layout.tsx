@@ -8,7 +8,7 @@ import { JourneyMotion } from "./JourneyMotion";
 import { ARRIVAL_BOOTSTRAP } from "@/lib/arrival";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://functiondotexe.github.io"),
+  metadataBase: new URL("https://rubenm.me"),
   title: "Ruben Maxwell | Software Engineering, AI & Robotics",
   description:
     "I'm Ruben, a software engineer studying Mathematics & Computer Science at the University of Toronto. See my projects in backend engineering, machine learning, and robotics.",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     description:
       "I'm Ruben, a software engineer studying Mathematics & Computer Science at the University of Toronto. See my projects in backend engineering, machine learning, and robotics.",
     type: "website",
-    url: "https://functiondotexe.github.io",
+    url: "https://rubenm.me",
     images: [{ url: "/media/summit-parallax-master-v2.webp", width: 1536, height: 1024, alt: "Ruben Maxwell — an illustrated journey from the summit to the core" }],
   },
   alternates: { canonical: "/" },

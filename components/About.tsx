@@ -18,9 +18,9 @@ export function About() {
         <figure className="profile-portrait" data-reveal>
           <div className="profile-portrait__frame">
             <img
-              src="/media/portrait.jpg"
-              width="1370"
-              height="1530"
+              src="/media/ruben-profile.png"
+              width="800"
+              height="800"
               loading="lazy"
               decoding="async"
               alt="Portrait of Ruben Maxwell"

@@ -237,10 +237,10 @@ export const SUMMIT_CONTENT = {
     body:
       PERSONAL.bioShort,
     image: {
-      src: "/media/portrait.jpg",
-      width: 1338,
-      height: 1514,
-      alt: "Portrait of Ruben Maxwell.",
+      src: "/media/ruben-profile.png",
+      width: 800,
+      height: 800,
+      alt: "Ruben Maxwell outdoors, with glasses and headphones around his neck.",
     },
     disciplines: [
       "Web engineering",

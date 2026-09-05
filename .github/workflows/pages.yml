@@ -36,6 +36,11 @@ jobs:
       - name: Build static site
         run: pnpm build
 
+      - name: Check interactions and exported links
+        run: |
+          pnpm check
+          pnpm check:export
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:

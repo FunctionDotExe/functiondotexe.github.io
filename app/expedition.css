@@ -16,6 +16,13 @@ h1, h2, h3 { font-optical-sizing: auto; }
 .journey-button { min-height: 54px; padding: .85rem 1.5rem .85rem 1.8rem; gap: 1.6rem; border-color: #ffedc6; background: #ffe2a7; box-shadow: 0 2px 2px #ffffff20 inset, 0 10px 35px #150d3533; }
 .journey-button svg { width: 25px; height: 25px; padding: 3px; border: 1px solid #17113938; border-radius: 50%; }
 .text-link { border-color: #fff4db55; }
+/* The icon's motion follows the action; document and mail icons stay anchored. */
+:is(.text-link, .journey-button, .journey-nav__hello):hover svg { transform: none; }
+:is(.text-link, .journey-button):hover .lucide-arrow-down { transform: translateY(3px); }
+:is(.text-link, .journey-button):hover .lucide-arrow-down-right { transform: translate(2px, 2px); }
+.text-link:hover .lucide-arrow-up { transform: translateY(-3px); }
+.text-link:hover .lucide-arrow-up-right { transform: translate(2px, -2px); }
+.project-open:hover .lucide-zoom-in { transform: scale(1.08); }
 
 /* Letterforms occupy the valley; the peak remains the second focal point. */
 .journey-hero { min-height: 120svh; }
@@ -32,7 +39,7 @@ h1, h2, h3 { font-optical-sizing: auto; }
 .journey-hero__footer > span { display: inline-flex; align-items: center; gap: .35rem; }
 .location-dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--sun); box-shadow: 0 0 12px #ffe2a770; margin-right: .3rem; }
 .scroll-cue { display: grid; place-items: center; width: 27px; height: 39px; border: 1px solid #fff4db6b; border-radius: 20px; }
-.summit-marker { position: absolute; top: 28%; right: 5%; display: flex; align-items: start; gap: .75rem; font-size: .87rem; text-shadow: 0 2px 12px #171139; }
+.summit-marker { position: absolute; top: 28%; right: 5%; display: flex; align-items: start; gap: .75rem; min-height: 44px; padding-block: .35rem; font-size: .87rem; text-shadow: 0 2px 12px #171139; }
 .summit-marker > span:last-child { padding-top: 2px; }
 .summit-marker small { display: block; margin-top: .2rem; font-size: .69rem; }
 .summit-marker__point { position: relative; display: block; width: 24px; height: 24px; border: 1px solid #fff4db99; border-radius: 50%; box-shadow: 0 0 0 7px #fff4db12; }
@@ -51,7 +58,7 @@ h1, h2, h3 { font-optical-sizing: auto; }
 .project-index a { transition: color 180ms ease; min-width: 0; }
 .project-index a > span:last-child { font-size: 1.1rem; }
 .project-index a svg { transition: transform 250ms var(--ease-out); }
-.project-index a:hover svg { transform: translate(4px, 4px); }
+.project-index a:hover svg { transform: translateY(4px); }
 .project-index__type { opacity: .78; font-size: .75rem; }
 .climb .section-heading { min-height: 60svh; padding-block: 5rem; gap: 1.5rem; }
 .climb .section-heading h2 { font-size: clamp(4.5rem, 8.7vw, 9rem); line-height: .95; }
@@ -69,6 +76,11 @@ h1, h2, h3 { font-optical-sizing: auto; }
 .waypoint .tag-list li { border-radius: 4px; font-size: .72rem; background: #17113963; }
 .project-actions { margin-top: 1.7rem; }
 .project-open { gap: 1rem; }
+.project-image-button { position: relative; display: block; width: 100%; min-height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; text-align: inherit; }
+.project-image-button__hint { position: absolute; z-index: 2; bottom: 1rem; right: .8rem; display: inline-flex; align-items: center; gap: .55rem; min-height: 44px; padding: .55rem .9rem; border: 1px solid #fff4db66; border-radius: 25px; color: var(--cream); background: #171139eb; font-size: .75rem; box-shadow: 0 4px 18px #10092f40; transition: color 180ms ease, background 180ms ease, box-shadow 180ms ease; }
+.project-image-button:is(:hover, :focus-visible) .project-image-button__hint { color: var(--plum-950); background: var(--sun); box-shadow: 0 4px 24px #ffe2a724; }
+.project-image-button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 10px; }
+.project-image-button:active .project-image-button__hint { box-shadow: none; }
 
 /* Object light follows the pointer; their base orientation is scene-specific. */
 .artifact { min-width: 0; width: 100%; perspective: 1400px; --artifact-x: 0deg; --artifact-y: 0deg; --artifact-light: 50%; }
@@ -97,7 +109,10 @@ h1, h2, h3 { font-optical-sizing: auto; }
 .project-dialog__surface { background: radial-gradient(ellipse at 10% 0, #373152, transparent 60%), #17132e; }
 .project-dialog__header h2 { font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3.7rem); line-height: 1.1; }
 .project-dialog__header p { font-size: .8rem; color: var(--sun); }
-.project-dialog__media { background: radial-gradient(ellipse, #32304c, #100e22); border-block: 1px solid #fff4db12; }
+.project-dialog__media { background: radial-gradient(ellipse, #32304c, #100e22); border-block: 1px solid #fff4db12; touch-action: pan-y pinch-zoom; }
+.project-dialog__media .gallery-image { opacity: 0; }
+.project-dialog__media .gallery-image--ready { opacity: 1; animation: gallery-image-in 260ms ease-out; }
+@keyframes gallery-image-in { from { opacity: 0; scale: .985; } to { opacity: 1; scale: 1; } }
 .project-thumbnails { display: flex; align-items: center; gap: .65rem; padding: 0 2rem 1.6rem; }
 .project-thumbnails button { width: 64px; height: 60px; padding: 4px; border: 1px solid #c9b6dd38; border-radius: 6px; background: #ffffff05; opacity: .65; transition: opacity 180ms ease, border-color 180ms ease; }
 .project-thumbnails button[aria-pressed="true"], .project-thumbnails button:hover { opacity: 1; border-color: var(--sun); }
@@ -144,6 +159,7 @@ h1, h2, h3 { font-optical-sizing: auto; }
 .research-notes h3 { font-family: var(--font-display); }
 .research-metrics dd { font-family: var(--font-display); }
 .about-portrait { padding: .85rem .85rem 1.15rem; }
+.about-portrait img { aspect-ratio: 1; object-fit: cover; object-position: center; }
 .about-portrait figcaption { font-size: .73rem; }
 .about-scene h2 { line-height: 1.04; }
 .contact-scene { padding-bottom: 7rem; }
@@ -151,6 +167,12 @@ h1, h2, h3 { font-optical-sizing: auto; }
 .contact-scene__content > p:not(.section-label) { margin-top: 2rem; font-size: 1.05rem; line-height: 1.8; }
 .contact-email { font-size: clamp(1.2rem, 2vw, 2rem); }
 .contact-scene__footer { font-size: .8rem; }
+.contact-scene__footer a svg { transition: transform 200ms var(--ease-out); }
+.contact-scene__footer a:hover .lucide-arrow-up { transform: translateY(-3px); }
+.contact-scene__footer a:hover .lucide-arrow-up-right { transform: translate(2px, -2px); }
+.journey-menu__heading { position: sticky; top: 0; z-index: 2; padding-block: .5rem; background: var(--plum-950); }
+.journey-menu nav a svg { transition: transform 200ms var(--ease-out); }
+.journey-menu nav a:hover svg { transform: translateX(3px); }
 
 /* Navigation is a field instrument. The full map remains a native dialog. */
 .route-instrument { position: fixed; z-index: 90; right: max(1.5rem, calc((100vw - 1440px) / 2)); bottom: 1.5rem; display: flex; align-items: center; gap: .8rem; min-height: 68px; padding: .65rem 1.3rem .65rem .7rem; border: 1px solid #fff4db38; border-radius: 44px; background: #171139c9; backdrop-filter: blur(18px); box-shadow: 0 8px 40px #0e092738, 0 1px 0 #fff4db10 inset; text-align: left; transition: border-color 200ms ease, background 200ms ease; }
@@ -166,7 +188,7 @@ h1, h2, h3 { font-optical-sizing: auto; }
 .route-map::backdrop { background: #0d0929b5; backdrop-filter: blur(14px); }
 .route-map__surface { padding: 1.5rem 2.5rem 1.8rem; background: radial-gradient(ellipse at 20% 60%, #42314d88, transparent 60%); }
 .route-map header, .route-map footer { display: flex; justify-content: space-between; align-items: center; gap: 1rem; font-size: .74rem; color: #e0d5e7; }
-.route-map header { padding-bottom: 1rem; border-bottom: 1px solid #fff4db21; }
+.route-map header { position: sticky; top: 0; z-index: 3; padding-block: .5rem 1rem; border-bottom: 1px solid #fff4db21; background: #17132d; }
 .route-map footer { padding-top: 1rem; border-top: 1px solid #fff4db21; }
 .route-map__layout { display: grid; grid-template-columns: .9fr 1.1fr; gap: 2.5rem; padding-block: 2rem; align-items: center; }
 .route-map h2 { font-size: clamp(2.8rem, 5vw, 4.5rem); line-height: 1; }
@@ -180,7 +202,7 @@ h1, h2, h3 { font-optical-sizing: auto; }
 .route-map nav strong { font-size: 1rem; font-weight: 500; }
 .route-map nav small { font-size: .72rem; color: #d6cde0; margin-top: .1rem; }
 .route-map nav a > svg { opacity: .6; transition: transform 200ms ease; }
-.route-map nav a:hover > svg { transform: translate(3px,3px); opacity: 1; }
+.route-map nav a:hover > svg { transform: translateX(3px); opacity: 1; }
 .route-map nav a[aria-current] strong { color: var(--sun); }
 .route-map__dot { width: 6px; height: 6px; border: 1px solid #fff4db88; border-radius: 50%; }
 .route-map nav a[aria-current] .route-map__dot { background: var(--sun); border-color: var(--sun); box-shadow: 0 0 15px #ffe2a770; }
@@ -188,12 +210,18 @@ h1, h2, h3 { font-optical-sizing: auto; }
 
 @media (min-width: 1600px) { .route-instrument { bottom: 2rem; } .hero-side-note { right: -3rem; } }
 @media (max-width: 1100px) {
+  .journey-nav { gap: 1rem; }
+  .journey-nav__links { gap: 1.2rem; }
   .summit-marker { right: 0; top: 26%; }
   .summit-marker small { max-width: 14ch; }
   .hero-side-note { display: none; }
   .descent-crust .depth-grid { gap: 3rem; }
   .waypoint__stage { gap: 3rem; }
   .project-index a > span:last-child { font-size: 1rem; }
+}
+@media (min-width: 761px) and (max-width: 900px) {
+  .journey-nav__hello { display: none; }
+  .journey-nav__links { gap: 1.25rem; }
 }
 @media (max-width: 760px) {
   .journey-nav { min-height: 76px; }
@@ -243,6 +271,7 @@ h1, h2, h3 { font-optical-sizing: auto; }
   .artifact__annotation { margin-bottom: 1.6rem; font-size: .7rem; }
   .project-media figcaption { font-size: .75rem; }
   .project-media figcaption strong { font-size: .79rem; }
+  .project-image-button__hint { right: .5rem; bottom: .65rem; min-height: 44px; padding-inline: .75rem; font-size: .72rem; }
   .phone-composition img { border-width: 2px; border-radius: 11px; }
   .project-media--console { transform: perspective(1000px) rotateY(-4deg) rotateZ(2deg); }
   .project-media--signal { transform: perspective(1000px) rotateY(4deg) rotateZ(-2deg); }
@@ -300,4 +329,6 @@ h1, h2, h3 { font-optical-sizing: auto; }
   .journey-hero__stage, .waypoint__stage { position: relative; }
   .artifact__object { transform: none; transition: none; }
   .route-map[open] { animation: none; }
+  .project-dialog__media .gallery-image--ready { animation: none; }
+  :is(.text-link, .journey-button, .project-index a, .route-map nav a, .journey-menu nav a, .contact-scene__footer a):hover svg { transform: none; }
 }

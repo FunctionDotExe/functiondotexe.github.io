@@ -90,6 +90,7 @@ const nodes = elements(html);
 const ids = new Map();
 const fragments = new Set();
 const referenceAttributes = ["aria-labelledby", "aria-describedby", "aria-controls", "aria-owns", "aria-activedescendant", "aria-details", "aria-errormessage", "aria-flowto", "for"];
+let controlCount = 0;
 
 for (const node of nodes) {
   if (!node.attrs.has("id")) continue;
@@ -128,6 +129,25 @@ for (const { tag, attrs } of nodes) {
   }
 }
 
+// A focused static control check. Runtime-only controls are covered by the
+// interaction suites; this does not claim a full accessible-name computation.
+const markup = html.replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, "");
+for (const match of markup.matchAll(/<(button|a|summary)\b((?:[^>"']|"[^"]*"|'[^']*')*)>([\s\S]*?)<\/\1>/gi)) {
+  const [, tag, attributes, body] = match;
+  const attrs = elements(`<${tag}${attributes}>`)[0].attrs;
+  const text = decodeEntities(body.replace(/<svg\b[^>]*>[\s\S]*?<\/svg>/gi, "").replace(/<[^>]*>/g, "")).trim();
+  controlCount++;
+  if (!attrs.get("aria-label")?.trim() && !attrs.get("aria-labelledby")?.trim() && !text) fail(`Unnamed <${tag}> control`);
+  if (tag === "button" && attrs.get("type") !== "button") fail(`Button lacks explicit type=button: ${attrs.get("aria-label") ?? text}`);
+  if (tag === "a" && !attrs.get("href")) fail(`Link has no destination: ${text}`);
+  if (tag !== "summary" && /<(?:button|a|input|select|textarea)\b/i.test(body)) fail(`Nested interactive element inside <${tag}>: ${attrs.get("aria-label") ?? text}`);
+  if (tag === "button" && /<(?:div|figure|section|article)\b/i.test(body)) fail(`Non-phrasing content inside button: ${attrs.get("aria-label") ?? text}`);
+  if (attrs.get("aria-haspopup") === "dialog") {
+    const target = attrs.get("aria-controls");
+    if (!target || ids.get(target)?.tag !== "dialog") fail(`Dialog trigger lacks a valid dialog target: ${attrs.get("aria-label") ?? text}`);
+  }
+}
+
 for (const { path, url } of cssQueue) {
   const css = readFileSync(path, "utf8");
   for (const match of css.matchAll(/url\(\s*(?:"([^"]*)"|'([^']*)'|([^\s)]*))\s*\)/g)) {
@@ -150,6 +170,12 @@ if (nodes.filter(({ tag }) => tag === "main").length !== 1) fail("The page must 
 if (nodes.filter(({ tag }) => tag === "h1").length !== 1) fail("The page must have exactly one primary heading");
 const meta = (key) => nodes.find(({ tag, attrs }) => tag === "meta" && (attrs.get("name") === key || attrs.get("property") === key))?.attrs.get("content");
 for (const key of ["description", "og:title", "og:description", "og:type"]) if (!meta(key)?.trim()) fail(`Missing metadata: ${key}`);
+const cnamePath = resolve(root, "CNAME");
+if (existsSync(cnamePath)) {
+  const expected = `https://${readFileSync(cnamePath, "utf8").trim()}`;
+  const canonical = nodes.find(({ tag, attrs }) => tag === "link" && attrs.get("rel") === "canonical")?.attrs.get("href");
+  if (canonical?.replace(/\/$/, "") !== expected || meta("og:url")?.replace(/\/$/, "") !== expected) fail("Canonical and Open Graph URLs must match the configured CNAME");
+}
 if (!/width\s*=\s*device-width/i.test(meta("viewport") ?? "")) fail("Responsive viewport metadata is missing");
 if (!nodes.some(({ tag, attrs }) => tag === "meta" && attrs.get("charset")?.toLowerCase() === "utf-8")) fail("UTF-8 charset metadata is missing");
 if (!nodes.some(({ tag, attrs }) => tag === "a" && /^mailto:[^@?]+@[^@?]+/i.test(attrs.get("href") ?? ""))) fail("The contact email link is missing");
@@ -187,5 +213,5 @@ if (errors.size) {
   console.error(`FAIL: ${errors.size} export issue(s):\n${[...errors].map((message) => `- ${message}`).join("\n")}`);
   process.exitCode = 1;
 } else {
-  console.log(`PASS: export has ${ids.size} unique IDs, ${fragments.size} fragment destinations, valid accessibility references, all six projects, required anchors and metadata, ${assetPaths.size} local export files, and ${sourceAssets.size} source assets.`);
+  console.log(`PASS: export has ${ids.size} unique IDs, ${fragments.size} fragment destinations, ${controlCount} named controls, valid accessibility references, all six projects, required anchors and domain metadata, ${assetPaths.size} local export files, and ${sourceAssets.size} source assets.`);
 }

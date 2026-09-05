@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState, type MouseEvent } from "react";
-import { ArrowUpRight, Menu, Mountain, X } from "lucide-react";
+import { ArrowRight, Mail, Menu, Mountain, X } from "lucide-react";
 import { SUMMIT_CONTENT } from "@/lib/summit-content";
 
 const navigation = [
   { label: "Projects", href: "#work" },
+  { label: "Skills", href: "#crust" },
   { label: "Experience", href: "#experience" },
   { label: "About", href: "#about" },
   { label: "Contact", href: "#contact" },
@@ -70,15 +71,15 @@ export function SummitNav() {
         <nav className="journey-nav__links" aria-label="Primary navigation">
           {navigation.map(({ label, href }) => <a key={href} href={href} aria-current={active === href ? "location" : undefined}>{label}</a>)}
         </nav>
-        <a className="journey-nav__hello" href={`mailto:${identity.email}`}>Let’s talk <ArrowUpRight size={16} aria-hidden="true" /></a>
-        <button className="journey-nav__menu-button icon-button" type="button" aria-label="Open navigation" aria-haspopup="dialog" aria-expanded={open} aria-controls="journey-menu" onClick={() => { dialog.current?.showModal(); setOpen(true); }}><Menu size={22} aria-hidden="true" /></button>
+        <a className="journey-nav__hello" href={`mailto:${identity.email}`}>Email me <Mail size={16} aria-hidden="true" /></a>
+        <button className="journey-nav__menu-button icon-button" type="button" aria-label="Open navigation" aria-haspopup="dialog" aria-expanded={open} aria-controls="journey-menu" onClick={() => { dialog.current?.showModal(); if (dialog.current) dialog.current.scrollTop = 0; setOpen(true); }}><Menu size={22} aria-hidden="true" /></button>
       </header>
-      <dialog ref={dialog} className="journey-menu" id="journey-menu" aria-labelledby="menu-title" onClose={() => setOpen(false)}>
+      <dialog ref={dialog} className="journey-menu" id="journey-menu" aria-labelledby="menu-title" onClose={() => setOpen(false)} onClick={(event) => { if (event.target === event.currentTarget) dialog.current?.close(); }}>
         <div className="journey-menu__heading"><p id="menu-title">Take a look around.</p><button className="icon-button" type="button" aria-label="Close navigation" onClick={() => dialog.current?.close()}><X size={22} aria-hidden="true" /></button></div>
         <nav aria-label="Mobile navigation">
-          {navigation.map(({ label, href }) => <a key={href} href={href} aria-current={active === href ? "location" : undefined} onClick={(event) => followLink(event, href)}>{label}<ArrowUpRight size={24} aria-hidden="true" /></a>)}
+          {navigation.map(({ label, href }) => <a key={href} href={href} aria-current={active === href ? "location" : undefined} onClick={(event) => followLink(event, href)}>{label}<ArrowRight size={24} aria-hidden="true" /></a>)}
         </nav>
-        <a className="text-link journey-menu__email" href={`mailto:${identity.email}`}>{identity.email}<ArrowUpRight size={16} aria-hidden="true" /></a>
+        <a className="text-link journey-menu__email" href={`mailto:${identity.email}`} aria-label={`Email Ruben at ${identity.email}`} onClick={(event) => { if (!event.defaultPrevented && event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) dialog.current?.close(); }}>{identity.email}<Mail size={16} aria-hidden="true" /></a>
         <p className="journey-menu__location">{identity.location}</p>
       </dialog>
     </>

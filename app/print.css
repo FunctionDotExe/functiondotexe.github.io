@@ -25,7 +25,7 @@
   .arrival-replay, .project-index, .descent-threshold, .waypoint__landmark,
   .mineral__crystal, .project-open, .copy-email, .copy-status, dialog,
   .route-instrument, .summit-marker, .hero-side-note, .skill-cabinet__specimen,
-  .artifact__annotation, .skill-field__stone {
+  .artifact__annotation, .skill-field__stone, .project-image-button__hint {
     display: none !important;
   }
   .shell { width: 100%; }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type MouseEvent } from "react";
-import { ArrowDownRight, Compass, X } from "lucide-react";
+import { ArrowRight, Compass, X } from "lucide-react";
 
 const route = [
   { id: "entry", title: "The summit", note: "A first look", terrain: "Sunlit peaks" },
@@ -75,7 +75,7 @@ export function JourneyInstruments() {
               <p>{route[current].terrain}</p>
             </div>
             <div><h2 id="route-title">Choose your<br />own path.</h2><p className="route-map__intro">Follow the landscape, or go straight to what brought you here.</p>
-              <nav aria-label="Expedition chapters">{route.map((item, i) => <a key={item.id} href={`#${item.id}`} aria-current={current===i?"location":undefined} onClick={(event) => navigate(event, item.id)}><span className="route-map__dot" aria-hidden="true"/><span><strong>{item.title}</strong><small>{item.note}</small></span><ArrowDownRight size={21} aria-hidden="true"/></a>)}</nav>
+              <nav aria-label="Expedition chapters">{route.map((item, i) => <a key={item.id} href={`#${item.id}`} aria-current={current===i?"location":undefined} onClick={(event) => navigate(event, item.id)}><span className="route-map__dot" aria-hidden="true"/><span><strong>{item.title}</strong><small>{item.note}</small></span><ArrowRight size={21} aria-hidden="true"/></a>)}</nav>
             </div>
           </div>
           <footer><span>From the summit to the core.</span><span>Made with curiosity in Toronto.</span></footer>
