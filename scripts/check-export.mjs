@@ -172,9 +172,9 @@ const meta = (key) => nodes.find(({ tag, attrs }) => tag === "meta" && (attrs.ge
 for (const key of ["description", "og:title", "og:description", "og:type"]) if (!meta(key)?.trim()) fail(`Missing metadata: ${key}`);
 const cnamePath = resolve(root, "CNAME");
 if (existsSync(cnamePath)) {
-  const expected = `https://${readFileSync(cnamePath, "utf8").trim()}`;
+  const expected = (process.env.SITE_URL ?? `https://${readFileSync(cnamePath, "utf8").trim()}`).replace(/\/$/, "");
   const canonical = nodes.find(({ tag, attrs }) => tag === "link" && attrs.get("rel") === "canonical")?.attrs.get("href");
-  if (canonical?.replace(/\/$/, "") !== expected || meta("og:url")?.replace(/\/$/, "") !== expected) fail("Canonical and Open Graph URLs must match the configured CNAME");
+  if (canonical?.replace(/\/$/, "") !== expected || meta("og:url")?.replace(/\/$/, "") !== expected) fail("Canonical and Open Graph URLs must match SITE_URL or the configured CNAME");
 }
 if (!/width\s*=\s*device-width/i.test(meta("viewport") ?? "")) fail("Responsive viewport metadata is missing");
 if (!nodes.some(({ tag, attrs }) => tag === "meta" && attrs.get("charset")?.toLowerCase() === "utf-8")) fail("UTF-8 charset metadata is missing");

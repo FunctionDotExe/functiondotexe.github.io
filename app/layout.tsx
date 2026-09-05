@@ -7,8 +7,10 @@ import "./print.css";
 import { JourneyMotion } from "./JourneyMotion";
 import { ARRIVAL_BOOTSTRAP } from "@/lib/arrival";
 
+const siteUrl = new URL(process.env.SITE_URL ?? "https://rubenm.me");
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://rubenm.me"),
+  metadataBase: siteUrl,
   title: "Ruben Maxwell | Software Engineering, AI & Robotics",
   description:
     "I'm Ruben, a software engineer studying Mathematics & Computer Science at the University of Toronto. See my projects in backend engineering, machine learning, and robotics.",
@@ -17,7 +19,7 @@ export const metadata: Metadata = {
     description:
       "I'm Ruben, a software engineer studying Mathematics & Computer Science at the University of Toronto. See my projects in backend engineering, machine learning, and robotics.",
     type: "website",
-    url: "https://rubenm.me",
+    url: siteUrl,
     images: [{ url: "/media/summit-parallax-master-v2.webp", width: 1536, height: 1024, alt: "Ruben Maxwell — an illustrated journey from the summit to the core" }],
   },
   alternates: { canonical: "/" },
