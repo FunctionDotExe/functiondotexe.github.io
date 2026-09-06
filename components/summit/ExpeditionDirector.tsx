@@ -225,8 +225,10 @@ export function ExpeditionDirector() {
       if (Math.abs(gesture.velocity) > .15) input(Math.max(-innerHeight * .7, Math.min(innerHeight * .7, gesture.velocity * 140)));
     }) as EventListener, { passive: true });
     listen(window, "touchcancel", (() => { touch = null; release(); }) as EventListener, { passive: true });
-    listen(document, "keydown", ((event: KeyboardEvent) => {
-      if (event.key === "Escape") { setMode(false); return; }
+    // Bubble after document-level disclosure handlers so their consumed Escape
+    // closes local content without also changing the visitor's pacing mode.
+    listen(window, "keydown", ((event: KeyboardEvent) => {
+      if (event.key === "Escape") { if (!event.defaultPrevented && !blocked()) setMode(false); return; }
       if (modeFrame) { release(); return; }
       if (!guided || blocked() || event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) return;
       const element = event.target instanceof Element ? event.target : null;

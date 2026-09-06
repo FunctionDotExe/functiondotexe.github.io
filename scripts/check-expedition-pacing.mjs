@@ -153,9 +153,11 @@ function mount({ reduced = false, storedMode = null, projectMode = false, skillM
     window.fire("wheel", { target: content, deltaX: 0, deltaY: 800, deltaMode: 0, cancelable: true, preventDefault() { prevented = true; }, ...options });
     return prevented;
   };
-  const key = (key, target = content) => {
+  const key = (key, target = content, overrides = {}) => {
     let prevented = false;
-    document.fire("keydown", { key, target, preventDefault() { prevented = true; } });
+    const event = { type: "keydown", key, target, defaultPrevented: false, preventDefault() { prevented = true; this.defaultPrevented = true; }, ...overrides };
+    document.dispatchEvent(event);
+    window.dispatchEvent(event);
     return prevented;
   };
   return { context, root, body, document, window, preference, frames, views, calls, announcements, content, field, nested, crystal, anchor, markers,
@@ -193,7 +195,20 @@ assert.equal(director.wheel({ deltaX: 900, deltaY: 10 }), false, "Horizontal ges
 assert.equal(director.key("ArrowRight", director.crystal), false, "Crystal keyboard rotation must not be intercepted");
 director.modal(true);
 assert.equal(director.wheel(), false, "Dialogs own their scrolling");
+assert.equal(director.key("Escape"), false, "Modal Escape remains available for native dialog dismissal");
+assert.equal(director.root.getAttribute("data-expedition-mode"), "guided", "Closing a dialog must not turn off guided pacing");
 director.modal(false);
+director.body.style.overflow = "hidden";
+director.key("Escape");
+assert.equal(director.root.getAttribute("data-expedition-mode"), "guided", "A body-locked overlay owns Escape even without a native dialog");
+director.body.style.overflow = "";
+director.key("Escape", director.content, { defaultPrevented: true });
+assert.equal(director.root.getAttribute("data-expedition-mode"), "guided", "Previously handled Escape must preserve pacing mode");
+const disclosureEscape = (event) => { if (event.key === "Escape") event.preventDefault(); };
+director.document.addEventListener("keydown", disclosureEscape);
+assert.equal(director.key("Escape"), true);
+assert.equal(director.root.getAttribute("data-expedition-mode"), "guided", "A later-mounted document disclosure handler must get Escape before the global director");
+director.document.removeEventListener("keydown", disclosureEscape);
 director.wheel(); director.frame();
 director.nativeScroll(820);
 assert.equal(director.frames.size, 0, "Scrollbar/direct native navigation must not be pulled back to a gate");
