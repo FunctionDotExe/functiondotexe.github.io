@@ -21,13 +21,10 @@
 .disclosure-cue-label > span { grid-area: 1 / 1; }
 .disclosure-cue-label__closed { visibility: visible; }
 .disclosure-cue-label__open { visibility: hidden; }
-.disclosure-cue-label__preview { visibility: hidden; }
 details[data-expanded="true"] .disclosure-cue-label__closed,
 details:not([data-expanded])[open] .disclosure-cue-label__closed { visibility: hidden; }
 details[data-expanded="true"] .disclosure-cue-label__open,
 details:not([data-expanded])[open] .disclosure-cue-label__open { visibility: visible; }
-details[data-expanded="true"][data-pinned="false"] .disclosure-cue-label__open { visibility: hidden; }
-details[data-expanded="true"][data-pinned="false"] .disclosure-cue-label__preview { visibility: visible; }
 .credentials .certificate-action {
   display: block;
   margin-top: .45rem;

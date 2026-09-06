@@ -5,7 +5,6 @@ import { useEffect } from "react";
 /** Progressive enhancement: the underlying details/summary works without JS. */
 export function InteractiveDisclosures() {
   useEffect(() => {
-    const hover = matchMedia("(any-hover: hover) and (any-pointer: fine)");
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
     const dismissers: (() => boolean)[] = [];
     const settle: (() => void)[] = [];
@@ -16,27 +15,17 @@ export function InteractiveDisclosures() {
       const summary = details.querySelector("summary");
       const panel = details.querySelector<HTMLElement>(".disclosure__panel");
       if (!summary || !panel) return () => {};
-      let pinned = details.open;
-      let hovered = false;
-      let suppressed = false;
       let target = details.open;
       let printTarget: boolean | null = null;
       let animation: Animation | null = null;
-      let openTimer: ReturnType<typeof setTimeout> | undefined;
-      let closeTimer: ReturnType<typeof setTimeout> | undefined;
-      let toured = false;
-
-      const clearTimers = () => { clearTimeout(openTimer); clearTimeout(closeTimer); };
       const finish = () => {
         animation?.cancel();
         animation = null;
         details.open = target;
         panel.style.removeProperty("height");
         details.dataset.expanded = String(target);
-        details.dataset.pinned = String(pinned);
       };
       const expand = (next: boolean) => {
-        details.dataset.pinned = String(pinned);
         if (target === next && details.open === next && !animation) return;
         const from = details.open ? panel.getBoundingClientRect().height : 0;
         const opacity = details.open ? getComputedStyle(panel).opacity : "0";
@@ -56,64 +45,19 @@ export function InteractiveDisclosures() {
         animation = current;
         current.onfinish = () => { if (animation === current) finish(); };
       };
-      const closePreview = () => {
-        clearTimeout(closeTimer);
-        closeTimer = setTimeout(() => {
-          if (!pinned && !hovered && !details.contains(document.activeElement)) expand(false);
-        }, 220);
-      };
-      const enter = (event: PointerEvent) => {
-        if (!hover.matches || event.pointerType !== "mouse") return;
-        hovered = true;
-        clearTimers();
-        if (!suppressed && !target) openTimer = setTimeout(() => expand(true), 120);
-      };
-      const leave = (event: PointerEvent) => {
-        if (event.pointerType !== "mouse") return;
-        hovered = false;
-        suppressed = false;
-        clearTimeout(openTimer);
-        closePreview();
-      };
       const click = (event: MouseEvent) => {
+        if (event.defaultPrevented) return;
         event.preventDefault();
-        clearTimers();
-        // The first click on a hover preview keeps it open for reading.
-        // A second click closes it, even while the pointer remains over it.
-        pinned = !pinned;
-        if (!pinned) toured = true;
-        suppressed = !pinned;
-        expand(pinned);
+        // Native summary activation supplies clicks for pointer, Enter and Space.
+        expand(!target);
       };
-      const focus = () => { clearTimeout(closeTimer); };
-      const tour = (event: Event) => {
-        if (toured || !details.dataset.expeditionStop || (event as CustomEvent<{ id: string }>).detail?.id !== details.dataset.expeditionStop) return;
-        toured = true;
-        // A visitor's deliberate close takes precedence over the guided reveal.
-        if (suppressed) return;
-        clearTimers(); pinned = true; expand(true);
-        details.dataset.expeditionReading = "true";
-      };
-      const blur = () => { if (!pinned) closePreview(); };
       const dismiss = () => {
-        if (!target || (pinned && !details.contains(document.activeElement))) return false;
-        clearTimers();
-        pinned = false;
-        suppressed = hovered;
+        if (!target || !details.contains(document.activeElement)) return false;
         if (panel.contains(document.activeElement)) summary.focus({ preventScroll: true });
         expand(false);
         return true;
       };
-      const capabilityChanged = () => {
-        if (hover.matches) return;
-        hovered = false;
-        clearTimers();
-        closePreview();
-      };
       if (details.id) revealers.set(details.id, () => {
-        clearTimers();
-        pinned = true;
-        suppressed = false;
         target = true;
         finish();
         // Wait until native fragment navigation has finished assigning focus.
@@ -123,7 +67,6 @@ export function InteractiveDisclosures() {
       printHandlers.push({
         before: () => {
           if (printTarget !== null) return;
-          clearTimers();
           printTarget = target;
           target = true;
           finish();
@@ -133,35 +76,18 @@ export function InteractiveDisclosures() {
           target = printTarget;
           printTarget = null;
           finish();
-          if (target && !pinned && !hovered && !details.contains(document.activeElement)) closePreview();
         },
       });
       details.dataset.expanded = String(target);
-      details.dataset.pinned = String(pinned);
-      details.addEventListener("pointerenter", enter);
-      details.addEventListener("pointerleave", leave);
-      details.addEventListener("focusin", focus);
-      details.addEventListener("focusout", blur);
       summary.addEventListener("click", click);
-      window.addEventListener("expedition:stop", tour);
-      hover.addEventListener("change", capabilityChanged);
       dismissers.push(dismiss);
       settle.push(finish);
       return () => {
-        clearTimers();
         animation?.cancel();
-        details.open = pinned;
+        details.open = printTarget ?? target;
         panel.style.removeProperty("height");
         delete details.dataset.expanded;
-        delete details.dataset.pinned;
-        details.removeEventListener("pointerenter", enter);
-        details.removeEventListener("pointerleave", leave);
-        details.removeEventListener("focusin", focus);
-        details.removeEventListener("focusout", blur);
         summary.removeEventListener("click", click);
-        window.removeEventListener("expedition:stop", tour);
-        delete details.dataset.expeditionReading;
-        hover.removeEventListener("change", capabilityChanged);
       };
     });
     const onKeyDown = (event: KeyboardEvent) => {

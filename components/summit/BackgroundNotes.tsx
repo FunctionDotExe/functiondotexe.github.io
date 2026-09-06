@@ -12,11 +12,11 @@ export function BackgroundNotes() {
       </section>
       <div className="background-notes__details">
         <details className="disclosure background-note" data-hover-disclosure>
-          <summary><span>Awards & competitions<small>Physics, hackathons, and robotics</small><small className="disclosure-cue-label" aria-hidden="true"><span className="disclosure-cue-label__closed">Show achievements</span><span className="disclosure-cue-label__open">Hide achievements</span><span className="disclosure-cue-label__preview">Keep this open</span></small></span><ChevronDown size={19} aria-hidden="true" /></summary>
+          <summary><span>Awards & competitions<small>Physics, hackathons, and robotics</small><small className="disclosure-cue-label" aria-hidden="true"><span className="disclosure-cue-label__closed">Show achievements</span><span className="disclosure-cue-label__open">Hide achievements</span></small></span><ChevronDown size={19} aria-hidden="true" /></summary>
           <div className="disclosure__panel"><div className="disclosure__body"><ul className="background-list">{HONORS.map((honor) => <li key={honor.title}><strong>{honor.title}</strong><span>{honor.detail}</span></li>)}</ul></div></div>
         </details>
         <details className="disclosure background-note" data-hover-disclosure>
-          <summary><span>Volunteering & languages<small>Science centres, the observatory, and my community</small><small className="disclosure-cue-label" aria-hidden="true"><span className="disclosure-cue-label__closed">Show community roles</span><span className="disclosure-cue-label__open">Hide community roles</span><span className="disclosure-cue-label__preview">Keep this open</span></small></span><ChevronDown size={19} aria-hidden="true" /></summary>
+          <summary><span>Volunteering & languages<small>Science centres, the observatory, and my community</small><small className="disclosure-cue-label" aria-hidden="true"><span className="disclosure-cue-label__closed">Show community roles</span><span className="disclosure-cue-label__open">Hide community roles</span></small></span><ChevronDown size={19} aria-hidden="true" /></summary>
           <div className="disclosure__panel"><div className="disclosure__body"><ul className="background-list">{COMMUNITY.map((item) => <li key={item.organization}><strong>{item.organization}</strong><span>{item.role} · {item.dates}</span></li>)}</ul><p className="section-label">Languages</p><ul className="tag-list">{LANGUAGES.map((language) => <li key={language}>{language}</li>)}</ul></div></div>
         </details>
       </div>

@@ -8,8 +8,6 @@ import "./project-arrival.css";
 import "./discovery-cues.css";
 import "./project-theatre.css";
 import "./skill-theatre.css";
-import "./scene-choreography.css";
-import "./expedition-director.css";
 import "./print.css";
 import { JourneyMotion } from "./JourneyMotion";
 import { ARRIVAL_BOOTSTRAP } from "@/lib/arrival";

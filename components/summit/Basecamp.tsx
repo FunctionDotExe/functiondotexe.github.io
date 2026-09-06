@@ -5,7 +5,7 @@ import { RESEARCH_PROJECTS } from "@/lib/constants";
 export function Basecamp() {
   return (
     <section className="basecamp-scene" id="basecamp" tabIndex={-1} aria-labelledby="basecamp-title">
-      <div className="basecamp-scene__content shell" data-narrative-scene data-expedition-stop="basecamp" data-stop-label="A little context" data-stop-duration="1800">
+      <div className="basecamp-scene__content shell">
         <div>
           <p className="section-label">A little context</p>
           <h2 id="basecamp-title">Follow the<br />curiosity.</h2>

@@ -8,8 +8,6 @@ import { ArrivalIntro } from "@/components/summit/ArrivalIntro";
 import { JourneyInstruments } from "@/components/summit/JourneyInstruments";
 import { ProjectArrival } from "@/components/summit/ProjectArrival";
 import { DiscoveryCues } from "@/components/summit/DiscoveryCues";
-import { ExpeditionDirector } from "@/components/summit/ExpeditionDirector";
-import { SceneChoreography } from "@/components/summit/SceneChoreography";
 
 export default function Home() {
   return (
@@ -19,8 +17,6 @@ export default function Home() {
       <JourneyInstruments />
       <ProjectArrival />
       <DiscoveryCues />
-      <ExpeditionDirector />
-      <SceneChoreography />
       <main className="journey" id="main-content" tabIndex={-1}>
         <JourneyWorld />
         <div className="journey__story">

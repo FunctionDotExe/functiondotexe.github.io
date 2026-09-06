@@ -1,6 +1,6 @@
 # Ruben Maxwell — from the summit to the core
 
-An illustrated portfolio built with Next.js and exported to static HTML for GitHub Pages. The landscape moves from an alpine summit to a crystal cavern; the technical skills include a small interactive WebGL mineral sculpture with a static SVG fallback.
+An illustrated portfolio built with Next.js and exported to static HTML for GitHub Pages. Native scrolling carries the landscape from an alpine summit to a crystal cavern, with readable projects and skills and small quartz illustrations placed in the terrain.
 
 ```sh
 pnpm dev
@@ -18,6 +18,6 @@ Set `SITE_URL` during the build and export check to publish on another domain. T
 
 The artwork, fonts, résumé and project media are hosted locally. Font licenses are in `public/fonts`. Content lives in `lib/constants.ts`, `lib/summit-content.ts`, and the project storyboards in `lib/project-story.ts`.
 
-The default guided journey pauses at authored project and skill beats. Free scroll, Escape, direct links, and reduced motion provide immediate alternatives. See [motion language](docs/design/motion-language.md) and [mobile skills](docs/design/mobile-skills.md) for pacing, rendering, and fallback behavior.
+Scrolling is native throughout. Projects and skills have a stable server-rendered layout, and disclosures expand only on activation. See [motion language](docs/design/motion-language.md) and [mobile skills](docs/design/mobile-skills.md) for rendering and performance evidence.
 
 Design evidence and decisions: [award research](docs/design/award-research.md), [expedition design](docs/design/expedition-design.md). The automated checks cover TypeScript, opening/scroll behavior, disclosure navigation and printing, crystal geometry and rendering lifecycle, and static export references. They do not replace visual browser review.

@@ -8,6 +8,7 @@ const smooth = (start: number, end: number, value: number) => {
   return t * t * (3 - 2 * t);
 };
 const planes = ["back", "atmosphere", "mid", "near"] as const;
+const surfaceLayers = ["sky", "clouds", "valley", "trail", "foreground"] as const;
 
 // Original cave-entry profile: ease only at the ends and keep the middle
 // moving at a constant speed instead of accelerating through the whole plate.
@@ -44,6 +45,11 @@ export function JourneyMotion() {
     const plate = world.querySelector<HTMLImageElement>(".journey-world__continuum-plate");
     const depth = world.querySelector<HTMLElement>(".journey-world__realm--depth");
     const depthPlates = planes.map((plane) => world.querySelector<HTMLImageElement>(`.journey-world__depth-layer--${plane} img`));
+    const landscape = surfaceLayers.map((layer) => world.querySelector<HTMLElement>(`.journey-world__layer--${layer}`));
+    const duskLayer = world.querySelector<HTMLElement>(".journey-world__dusk");
+    const stars = world.querySelector<SVGSVGElement>(".journey-world__stars");
+    const continuumDusk = world.querySelector<HTMLElement>(".journey-world__continuum-dusk");
+    const coreLight = world.querySelector<HTMLElement>(".journey-world__core-light");
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
     const finePointer = matchMedia("(hover: hover) and (pointer: fine)");
     const depthSections = ["crust", "experience", "about", "contact"].map((id) => document.getElementById(id));
@@ -59,15 +65,11 @@ export function JourneyMotion() {
     let depthTravel = [0, 0, 0, 0];
     let compact = false;
     let depthStops: { at: number; progress: number; x: number }[] = [];
-    let cameraY = scrollY;
-    let lastFrameTime = performance.now();
-    let lookX = 0;
-    let lookY = 0;
     let targetX = 0;
     let targetY = 0;
-    const written = new Map<HTMLElement, Map<string, string>>();
+    const written = new Map<HTMLElement | SVGSVGElement, Map<string, string>>();
 
-    const write = (element: HTMLElement | null, name: string, value: string) => {
+    const write = (element: HTMLElement | SVGSVGElement | null, name: string, value: string) => {
       if (!element) return;
       let cache = written.get(element);
       if (!cache) { cache = new Map(); written.set(element, cache); }
@@ -76,8 +78,8 @@ export function JourneyMotion() {
         cache.set(name, value);
       }
     };
-    const opacity = (element: HTMLElement | null, name: string, value: number) => {
-      write(element, name, value.toFixed(4));
+    const opacity = (element: HTMLElement | null, value: number) => {
+      write(element, "opacity", value.toFixed(4));
       write(element, "visibility", value > .001 ? "visible" : "hidden");
     };
 
@@ -115,60 +117,52 @@ export function JourneyMotion() {
       dirty = false;
     };
 
-    const render = (time = performance.now()) => {
+    const render = () => {
       frame = 0;
+      if (document.hidden) return;
       if (dirty) measure();
-      const cameraTarget = Math.min(range, Math.max(0, scrollY));
-      const elapsed = Math.min(50, Math.max(1, time - lastFrameTime));
-      lastFrameTime = time;
-      // Touch already has native momentum. Follow it in the same frame instead
-      // of adding a second easing tail; retain the desktop wheel-camera feel.
-      const easeCamera = finePointer.matches && !reduced.matches && root.dataset.expeditionMode !== "guided";
-      cameraY = easeCamera ? cameraY + (cameraTarget - cameraY) * (1 - Math.exp(-elapsed / 72)) : cameraTarget;
-      if (Math.abs(cameraTarget - cameraY) <= .12) cameraY = cameraTarget;
-      const y = cameraY;
-      // This value has one consumer. Keep it off <html> so scroll does not
-      // invalidate an inherited custom property throughout the content tree.
-      write(progressBar, "--page-progress", clamp(cameraTarget / range).toFixed(4));
+      const y = Math.min(range, Math.max(0, scrollY));
+      // Follow native input exactly. Inherited custom properties previously
+      // invalidated whole scenery subtrees throughout an additional easing tail.
+      write(progressBar, "transform", `scaleX(${clamp(y / range).toFixed(4)})`);
       const motion = reduced.matches ? 0 : (width <= 720 ? .52 : width <= 980 ? .74 : 1) * (height <= 650 ? .72 : 1);
       const progress = clamp(y / Math.max(start, 1));
       // Carry blue-hour lighting across the stitched cave entrance, then let
       // it fall away underground instead of flashing back to daylight.
       const dusk = smooth(start * .1, start * .8, y);
-      write(surface, "--surface-dusk", (dusk * .76).toFixed(4));
-      write(surface, "--surface-stars", (dusk * .85).toFixed(4));
-      write(continuum, "--continuum-dusk", (dusk * .76 * (1 - smooth(start + (end - start) * .18, start + (end - start) * .7, y))).toFixed(4));
-      const lookBlend = 1 - Math.exp(-elapsed / 188);
+      write(duskLayer, "opacity", (dusk * .76).toFixed(4));
+      write(stars, "opacity", (dusk * .85).toFixed(4));
+      write(continuumDusk, "opacity", (dusk * .76 * (1 - smooth(start + (end - start) * .18, start + (end - start) * .7, y))).toFixed(4));
       const pointerLook = finePointer.matches && !reduced.matches;
-      lookX = pointerLook ? lookX + (targetX - lookX) * lookBlend : 0;
-      lookY = pointerLook ? lookY + (targetY - lookY) * lookBlend : 0;
       const lookStrength = motion * (1 - smooth(start - height, start, y));
-      write(world, "--look-x", `${(lookX * lookStrength).toFixed(2)}px`);
-      write(world, "--look-y", `${(lookY * lookStrength).toFixed(2)}px`);
-      const offsets = { sky: 14, clouds: 42, valley: 74, trail: 92, foreground: 120 };
-      Object.entries(offsets).forEach(([layer, distance]) => {
-        write(world, `--world-${layer}-y`, `${(-(progress - .5) * distance * motion).toFixed(2)}px`);
+      const lookX = pointerLook ? targetX * lookStrength : 0;
+      const lookY = pointerLook ? targetY * lookStrength : 0;
+      landscape.forEach((layer, index) => {
+        const offset = -(progress - .5) * [14, 42, 74, 92, 120][index] * motion;
+        const lookFactor = [.12, .3, .5, .7, 1][index];
+        write(layer, "transform", `translate3d(0, ${offset.toFixed(2)}px, 0)`);
+        write(layer, "translate", `${(lookX * lookFactor).toFixed(2)}px ${(lookY * lookFactor).toFixed(2)}px`);
       });
       const seam = Math.min(height * .14, (end - start) * .08);
       if (compact) {
         const belowSurface = y >= start;
-        opacity(surface, "--surface-realm-opacity", belowSurface ? 0 : 1);
-        opacity(continuum, "--continuum-realm-opacity", 0);
-        opacity(depth, "--depth-realm-opacity", belowSurface ? 1 : 0);
+        opacity(surface, belowSurface ? 0 : 1);
+        opacity(continuum, 0);
+        opacity(depth, belowSurface ? 1 : 0);
       } else {
         const entering = smooth(start - seam, start, y);
         const leaving = smooth(end, end + seam, y);
         // Keep an opaque scene under the fading plate. Fading both realms
         // together exposes the dark canvas and produces a visible seam flash.
-        opacity(surface, "--surface-realm-opacity", y < start ? 1 : 0);
-        opacity(continuum, "--continuum-realm-opacity", entering * (1 - leaving));
-        opacity(depth, "--depth-realm-opacity", y >= Math.max(start, end - height * 1.2) ? 1 : 0);
+        opacity(surface, y < start ? 1 : 0);
+        opacity(continuum, entering * (1 - leaving));
+        opacity(depth, y >= Math.max(start, end - height * 1.2) ? 1 : 0);
         // Prewarm the oversized entrance plate before it becomes visible.
         if (y >= start - height * .65 && y < start - seam) {
-          opacity(continuum, "--continuum-realm-opacity", .0011);
+          opacity(continuum, .0011);
         }
         const travel = continuumPosition(y, start, end, height, plateTravel);
-        write(continuum, "--continuum-y", `${(-plateStart - travel).toFixed(2)}px`);
+        write(plate, "transform", `translate3d(-50%, ${(-plateStart - travel).toFixed(2)}px, 0)`);
       }
       let depthProgress = 0;
       let depthX = 0;
@@ -183,15 +177,15 @@ export function JourneyMotion() {
       }
       if (reduced.matches) { depthProgress = .35; depthX = 0; }
       const depthPulse = Math.sin(depthProgress * Math.PI * 3.5) * Math.sin(depthProgress * Math.PI) ** 2 * height * .045 * motion;
-      planes.forEach((plane, index) => {
+      depthPlates.forEach((image, index) => {
         const factor = [.18, .34, .68, 1][index];
-        write(depth, `--depth-${plane}-x`, `${(-depthX * width * factor * motion).toFixed(2)}px`);
-        write(depth, `--depth-${plane}-y`, `${(-depthTravel[index] * depthProgress - depthPulse * factor).toFixed(2)}px`);
+        const x = (-depthX * width * factor * motion).toFixed(2);
+        const y = (-depthTravel[index] * depthProgress - depthPulse * factor).toFixed(2);
+        write(image, "transform", `translate3d(calc(-50% + ${x}px), ${y}px, 0)`);
       });
-      write(depth, "--core-heat", clamp((depthProgress - .5) * 2).toFixed(4));
-      if (Math.abs(cameraTarget - cameraY) > .12 || Math.abs(targetX - lookX) > .03 || Math.abs(targetY - lookY) > .03) schedule();
+      write(coreLight, "opacity", clamp((depthProgress - .5) * 2).toFixed(4));
     };
-    const schedule = () => { if (!frame) frame = requestAnimationFrame(render); };
+    const schedule = () => { if (!frame && !document.hidden) frame = requestAnimationFrame(render); };
     const invalidate = () => { dirty = true; schedule(); };
     const onResize = () => {
       if (finePointer.matches || innerWidth !== width || world.clientHeight !== height) {
@@ -211,6 +205,10 @@ export function JourneyMotion() {
     };
     const resetPointer = () => { targetX = 0; targetY = 0; schedule(); };
     const motionChanged = () => { resetPointer(); invalidate(); };
+    const visibilityChanged = () => {
+      cancelAnimationFrame(frame); frame = 0;
+      if (!document.hidden) invalidate();
+    };
     const observer = new ResizeObserver(invalidate);
     observer.observe(story);
     observer.observe(world);
@@ -221,6 +219,7 @@ export function JourneyMotion() {
     addEventListener("resize", onResize);
     addEventListener("pointermove", onPointer, { passive: true });
     document.addEventListener("pointerleave", resetPointer);
+    document.addEventListener("visibilitychange", visibilityChanged);
     reduced.addEventListener("change", motionChanged);
     finePointer.addEventListener("change", motionChanged);
     render();
@@ -232,6 +231,7 @@ export function JourneyMotion() {
       removeEventListener("resize", onResize);
       removeEventListener("pointermove", onPointer);
       document.removeEventListener("pointerleave", resetPointer);
+      document.removeEventListener("visibilitychange", visibilityChanged);
       reduced.removeEventListener("change", motionChanged);
       finePointer.removeEventListener("change", motionChanged);
       written.forEach((properties, element) => properties.forEach((_value, name) => element.style.removeProperty(name)));

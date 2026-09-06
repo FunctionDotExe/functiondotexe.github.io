@@ -38,9 +38,3 @@ export const PROJECT_STORIES: Record<Landmark["visual"], ProjectStory> = {
     ],
   },
 };
-
-export function projectBeatAt(y: number, stops: number[]) {
-  let active = 0;
-  for (let i = 1; i < stops.length; i++) if (y >= stops[i] - 2) active = i;
-  return Math.min(2, active);
-}
