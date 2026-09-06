@@ -1,17 +1,18 @@
 # Mobile scrolling and skill sequence
 
-The skill specimen stays above six skill articles using native CSS sticky positioning. Each field starts a new material/geometry transition and one complete turn while its description unfolds and its technology labels appear. Previously explored fields stay open. Reversing scroll reverses the specimen sequence; re-entering a manually closed field opens it again, including the first and last fields. Six named fragment links support direct keyboard/touch navigation; the target articles accept focus. No wheel or touch scrolling is intercepted, and every description and technology remains in the server HTML and printed output.
+The six skills form a full-viewport mineral theatre in guided mode. A live gemstone travels between authored left, right, and central compositions while its geometry, rotation, and material change. Each field holds readable text and grouped tools before transitioning into the next composition. Six named stone links support direct keyboard/touch navigation; all skill content remains in the server HTML.
 
-Panels preserve their full layout footprint during reveals, so opening one cannot shift the next gemstone's scroll boundary. Each heading is a real toggle with expanded/control state; hidden panels are also excluded from keyboard and accessibility navigation. The unenhanced server HTML exposes all panels. Reduced motion exposes all on entry and honors subsequent manual choices. Printing synchronously exposes visual and accessibility state, then restores it exactly.
+The outer ExpeditionDirector provides bounded wheel/touch pacing. A fast gesture cannot pass the next stop; each skill receives an 1800ms dwell after arrival. Reverse motion escapes immediately. Free scroll, Escape, direct links, galleries, nested scrollers, and reduced motion preserve control. See [motion language](motion-language.md) for the input contract.
 
-Compact portrait layouts keep a 165px specimen and the six navigation targets while omitting the extra caption rows. Viewports at most 500px tall and reduced-motion layouts use a static arrangement with naturally sized articles. The renderer reserves space for its manual controls even at compact heights. Native fragment offsets account for both the specimen and the document's scroll padding.
+The theatre is available at widths of at least 360px and heights of at least 740px. Shorter viewports, reduced motion, and free-scroll mode use a naturally sized, complete article layout. Guided visual copies are decorative; the six semantic articles remain accessible. Printing exposes the full articles and suspends motion. The navigation strip reserves space above the pacing dock.
 
-The reported choppiness could not be measured on a physical phone: the computer-use environment exposes no browser. Code and deterministic runtime checks did identify and remove unnecessary work:
+Performance decisions:
 
-- Touch scenery previously continued easing after native scrolling stopped. Touch now follows scroll directly while mouse-driven desktop easing remains.
-- Page progress was written to the document root even though only the thin progress bar consumes it. Updates now stay on that bar.
-- Mobile decorative plates used dynamic viewport heights, which change as browser toolbars retract. Those plates now use stable large viewport units, preserving every scenic layer. See the [browser viewport unit guidance](https://web.dev/blog/viewport-units).
-- The crystal previously measured its layout every animation frame. Sizing is now cached and invalidated by resize/visibility changes. Scroll rotation updates uniforms without React state changes or geometry uploads; geometry changes only when selecting a different mineral.
-- Skill chapter positions are cached. Passive scroll events coalesce into one animation frame, React state changes only at field boundaries, and offscreen/hidden work stops.
+- The guided controller owns scroll easing. Decorative scenery follows it directly, avoiding a second easing tail. Free touch scrolling also follows native movement directly.
+- Page progress is scoped to its consumer rather than inherited through the document.
+- Scenic plates use stable large viewport units to avoid rescaling when mobile toolbars retract.
+- Crystal sizes and chapter positions are cached. Rotation changes uniforms without uploading geometry or updating React every frame.
+- One finite light sweep introduces each mineral. Studio reflections, facet highlights, and rim lighting remain within the existing shader, with no new textures or dependencies.
+- Offscreen/hidden rendering stops; settled crystals have no perpetual animation loop. Mobile pixel ratio remains capped.
 
-Verification covers six forward/reverse chapter boundaries, direct-link targets and focusability, scrolling without repeated geometry reads, compact crystal projection through full turns, manual input offsets, reduced motion, content resizing, toolbar/orientation changes, hidden/offscreen suspension, printing, cleanup, TypeScript and the production export. Real-device frame timing and rendered mobile visual inspection remain unverified.
+Verification: deterministic geometry/lifecycle/input tests, TypeScript, production export checks, and actual headless Chrome desktop/mobile rendering. All six compositions were inspected; final 390×844 AI and Robotics frames have readable tool groups and clear controls. A 390×720 viewport uses the complete reading layout. Trusted mobile touch input, reverse escape, direct navigation, and reduced-motion fallback were exercised in Chrome. Physical-phone frame timing has not been measured.

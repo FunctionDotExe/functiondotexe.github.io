@@ -52,11 +52,16 @@ const VERTEX_SHADER = `
 `;
 
 const FRAGMENT_SHADER = `
-  precision mediump float;
+  #ifdef GL_FRAGMENT_PRECISION_HIGH
+    precision highp float;
+  #else
+    precision mediump float;
+  #endif
   ${CAMERA_GLSL}
   uniform vec3 uCool;
   uniform vec3 uWarm;
   uniform vec3 uShadow;
+  uniform float uLightReveal;
   varying vec3 vNormal;
   varying vec3 vPosition;
   varying vec3 vLocalPosition;
@@ -67,43 +72,53 @@ const FRAGMENT_SHADER = `
   void main() {
     vec3 n = normalize(vNormal);
     vec3 view = normalize(CAMERA - vPosition);
-    vec3 key = normalize(vec3(-0.85, 1.35, 1.1));
-    vec3 fill = normalize(vec3(1.2, 0.25, 0.4));
+    // Broad studio sources reveal a polished mineral, including faces that do
+    // not happen to reflect a point light directly into the camera.
+    vec3 key = normalize(vec3(-0.7 + uLightReveal * 0.5, 1.1, 1.6));
+    vec3 fill = normalize(vec3(1.2, 0.35, 0.6));
     vec3 rim = normalize(vec3(0.45, 0.9, -1.3));
     float diffuse = max(dot(n, key), 0.0);
     float side = max(dot(n, fill), 0.0);
     float back = max(dot(n, rim), 0.0);
-    float fresnel = pow(1.0 - max(dot(n, view), 0.0), 3.2);
+    float fresnel = pow(1.0 - max(dot(n, view), 0.0), 3.0);
     vec3 reflected = reflect(-view, n);
     float sky = smoothstep(-0.45, 0.8, reflected.y);
     float height = smoothstep(-1.2, 1.45, vLocalPosition.y);
-    float faceTint = 0.78 + vFacet * 0.30;
+    float faceTint = 0.82 + vFacet * 0.25;
 
-    vec3 body = mix(uShadow, uCool * faceTint, 0.16 + diffuse * 0.50 + height * 0.13);
-    body += uCool * side * 0.10;
-    body += uWarm * back * (0.15 + fresnel * 0.45);
-    body = mix(body, mix(uCool * 0.52, uWarm * 0.80, sky), fresnel * 0.53);
-    float glint = pow(max(dot(n, normalize(key + view)), 0.0), 100.0);
-    float sheen = pow(max(dot(n, normalize(fill + view)), 0.0), 30.0);
-    body += uWarm * glint * 0.85 + uCool * sheen * 0.23;
+    vec3 body = mix(uShadow * 0.23, uCool * faceTint, 0.07 + diffuse * 0.57 + height * 0.17);
+    body += uCool * side * 0.13;
+    body += uWarm * back * (0.13 + fresnel * 0.38);
+    vec3 environment = mix(uShadow * 0.12, uCool * 0.7 + vec3(0.09, 0.13, 0.2), sky);
+    body += environment * (0.12 + fresnel * 0.7);
+    float glint = pow(max(dot(n, normalize(key + view)), 0.0), 38.0);
+    float sheen = pow(max(dot(n, normalize(fill + view)), 0.0), 12.0);
+    float bandX = (reflected.x + 0.38 - uLightReveal * 0.42) / 0.29;
+    float bandY = (reflected.y - 0.35) / 0.85;
+    float softbox = exp(-bandX * bandX - bandY * bandY);
+    float strip = pow(max(1.0 - abs(reflected.x - 0.4) / 0.13, 0.0), 1.7) * smoothstep(-0.25, 0.3, reflected.y);
+    vec3 pearl = mix(vec3(0.83, 0.93, 1.0), uWarm, 0.2);
+    body += pearl * (glint * 1.45 + softbox * 0.75 + strip * 0.48);
+    body += mix(uCool, vec3(0.8, 0.91, 1.0), 0.38) * sheen * 0.24;
+    body += uCool * pow(max(dot(-n, key), 0.0), 2.0) * height * 0.32;
 
     // Very quiet growth lines live inside the material, not on the silhouette.
     float strata = sin(vLocalPosition.y * 44.0 + vLocalPosition.x * 11.0 + vLocalPosition.z * 7.0);
     body += uCool * pow(max(strata, 0.0), 18.0) * 0.015 * height;
     float foot = smoothstep(-1.19, -0.76, vLocalPosition.y);
-    body *= 0.53 + foot * 0.47;
+    body *= 0.4 + foot * 0.6;
 
     #ifdef HAS_DERIVATIVES
       vec3 width = max(fwidth(vBarycentric), vec3(0.0001));
       vec3 edge = smoothstep(vec3(0.0), width * 0.80, vBarycentric);
       edge = mix(vec3(1.0), edge, vEdgeMask);
       float outline = 1.0 - min(edge.x, min(edge.y, edge.z));
-      body += mix(uCool, uWarm, diffuse) * outline * (0.08 + fresnel * 0.16);
+      body += mix(uCool, pearl, diffuse) * outline * (0.1 + fresnel * 0.32);
     #endif
 
     // A restrained filmic curve keeps facets luminous without clipping to white.
-    body = body / (body + vec3(0.65));
-    gl_FragColor = vec4(pow(body, vec3(0.87)), 1.0);
+    body = body / (body + vec3(0.56));
+    gl_FragColor = vec4(pow(body, vec3(0.78)), 1.0);
   }
 `;
 
@@ -219,6 +234,7 @@ export function CrystalScene({ active = 0, className = "", motionRef }: {
     let scrollProgress: number | null = null;
     let baseYaw = REST_Y;
     let manualYaw = 0;
+    let lightReveal = reduced.matches ? 0 : 1;
     let raf = 0;
     let lastTime = 0;
     let visible = typeof IntersectionObserver === "undefined";
@@ -305,7 +321,7 @@ export function CrystalScene({ active = 0, className = "", motionRef }: {
       attribute("aBarycentric", meshes[0].barycentrics, 3);
       attribute("aEdgeMask", meshes[0].edgeMasks, 3);
       attribute("aFacet", meshes[0].facets, 1);
-      uniforms = Object.fromEntries(["uRotation", "uProjection", "uCool", "uWarm", "uShadow"].map((name) => [name, context.getUniformLocation(program!, name)]));
+      uniforms = Object.fromEntries(["uRotation", "uProjection", "uCool", "uWarm", "uShadow", "uLightReveal"].map((name) => [name, context.getUniformLocation(program!, name)]));
       context.enable(context.DEPTH_TEST);
       context.enable(context.CULL_FACE);
       context.cullFace(context.BACK);
@@ -363,6 +379,11 @@ export function CrystalScene({ active = 0, className = "", motionRef }: {
       yaw += (targetYaw - yaw) * rotationEase;
       pitch += (targetPitch - pitch) * rotationEase;
       let remaining = Math.max(Math.abs(targetYaw - yaw), Math.abs(targetPitch - pitch));
+      // One two-second studio-light settle per mineral. Scroll and deliberate
+      // controls remain responsive, then this uniform also goes completely idle.
+      lightReveal = reduced.matches ? 0 : Math.max(0, lightReveal - dt / 2);
+      if (lightReveal < .00008) lightReveal = 0;
+      remaining = Math.max(remaining, lightReveal);
       if (geometryDirty) {
         const geometryRemaining = approachCrystalValues(positions, meshes[selected].positions, ease);
         updateCrystalNormals(positions, normals);
@@ -382,6 +403,7 @@ export function CrystalScene({ active = 0, className = "", motionRef }: {
       context.uniform3fv(uniforms.uCool, cool);
       context.uniform3fv(uniforms.uWarm, warm);
       context.uniform3fv(uniforms.uShadow, shadow);
+      context.uniform1f(uniforms.uLightReveal, lightReveal * lightReveal * (3 - 2 * lightReveal));
       context.clear(context.COLOR_BUFFER_BIT | context.DEPTH_BUFFER_BIT);
       context.drawArrays(context.TRIANGLES, 0, meshes[0].vertexCount);
       if (!hasRendered) {
@@ -521,6 +543,7 @@ export function CrystalScene({ active = 0, className = "", motionRef }: {
         if (next === selected) return;
         selected = next;
         geometryDirty = true;
+        lightReveal = reduced.matches ? 0 : 1;
         schedule();
       },
       reset,

@@ -96,6 +96,7 @@ function mount({ reducedMotion = false, mobile = false, available = true, shader
   let resizeObserver;
   let rotation;
   let projection;
+  let lightReveal;
   const frames = new Map();
   const refs = [];
   const cleanups = [];
@@ -129,6 +130,7 @@ function mount({ reducedMotion = false, mobile = false, available = true, shader
     uniformMatrix4fv: (_, transpose, values) => { projection = new Float32Array(values); assert(values.every(Number.isFinite)); },
     uniform2f: (_, x, y) => { assert(Number.isFinite(x) && Number.isFinite(y)); rotation = [x, y]; },
     uniform3fv: (_, values) => assert(values.every(Number.isFinite)),
+    uniform1f: (name, value) => { assert.equal(name, "uLightReveal"); assert(Number.isFinite(value) && value >= 0 && value <= 1); lightReveal = value; },
     drawArrays: (_, start, count) => { assert.equal(count, meshes[0].vertexCount); drawCount++; },
   };
   const fallback = { style: {} };
@@ -177,6 +179,7 @@ function mount({ reducedMotion = false, mobile = false, available = true, shader
     root, canvas, fallback, markup, motion, motionRef, resources, document, window, captures,
     frame, pending: () => frames.size, ready: () => ready, draws: () => drawCount, rotation: () => rotation,
     projection: () => projection,
+    lightReveal: () => lightReveal,
     layoutReads: () => layoutReads, stateUpdates: () => stateUpdates, geometryUploads: () => geometryUploads,
     reveal: () => observer?.callback([{ isIntersecting: true }]),
     hide: () => observer?.callback([{ isIntersecting: false }]),
@@ -263,10 +266,32 @@ assert(scene.ready(), "A restored context must recover without a page reload");
 assert.equal(scene.resources.size, 8, "Context restore must allocate exactly one program, two shaders and five buffers");
 scene.unmount();
 
+const light = mount();
+light.reveal(); light.frame();
+assert(light.lightReveal() > .99, "The first specimen starts a finite studio-light settle");
+const lightReads = light.layoutReads();
+for (let index = 0; index < 60; index++) light.frame();
+assert(light.lightReveal() > 0 && light.lightReveal() < .5, "The catchlight crosses the facets over two seconds");
+assert.equal(light.layoutReads(), lightReads, "Studio-light motion cannot measure layout each frame");
+light.settle();
+assert.equal(light.lightReveal(), 0);
+light.select(3); light.frame();
+assert(light.lightReveal() > .99, "A different mineral gets one new light settle");
+light.hide();
+assert.equal(light.pending(), 0, "Hidden specimens stop the light animation");
+light.reveal(); light.frame();
+light.motion.matches = true; light.motion.fire("change"); light.frame();
+assert.equal(light.lightReveal(), 0, "Runtime reduced motion stops the light settle immediately");
+assert.equal(light.pending(), 0);
+light.motion.matches = false; light.motion.fire("change"); light.frame();
+assert.equal(light.lightReveal(), 0, "Returning to motion does not replay an old light arrival");
+light.unmount();
+
 const reduced = mount({ reducedMotion: true, mobile: true });
 reduced.reveal();
 reduced.frame();
 assert.equal(reduced.pending(), 0, "Reduced motion must render the entrance in one frame");
+assert.equal(reduced.lightReveal(), 0);
 assert.equal(reduced.canvas.width, 450, "Phone pixel ratio must be capped at 1.25");
 reduced.select(3);
 reduced.frame();

@@ -1,196 +1,201 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { ArrowDown, ChevronDown } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 import { SKILLS } from "@/lib/constants";
 import { skillScrollProgress } from "@/lib/skill-scroll";
 import { CrystalScene, type CrystalScrollController } from "./CrystalScene";
 
+const FIELDS = [
+  { mineral: "Blue quartz", note: "From an idea to an interface", groups: [["Core languages", 9], ["Interfaces", 5]], x: 23, y: 0, mobileX: 8, mobileY: 0 },
+  { mineral: "Amethyst", note: "The systems underneath", groups: [["Services & delivery", 7], ["Data stores", 4]], x: -23, y: 1, mobileX: -8, mobileY: 0 },
+  { mineral: "Fluorite", note: "Learning from the evidence", groups: [["Training", 4], ["Evaluation & analysis", 6]], x: 22, y: -3, mobileX: 8, mobileY: -1 },
+  { mineral: "Sunstone", note: "Connecting knowledge to action", groups: [["Applications", 5], ["Retrieval", 3], ["Workflow", 3]], x: 0, y: 4, mobileX: 0, mobileY: 1 },
+  { mineral: "Celestite", note: "Testing a different kind of compute", groups: [["Frameworks", 3], ["Methods", 2]], x: -22, y: -2, mobileX: -8, mobileY: 0 },
+  { mineral: "Lepidolite", note: "Code that moves in the real world", groups: [["In the machine", 6], ["Form & simulation", 2]], x: 23, y: 1, mobileX: 8, mobileY: 0 },
+] as const;
+
+const clamp = (value: number) => Math.max(0, Math.min(1, value));
+const smooth = (value: number) => { const t = clamp(value); return t * t * (3 - 2 * t); };
+
+/** Hold a readable composition, then carry the specimen into the next field. */
+export function mineralTheatreFrame(progress: number, compact: boolean) {
+  const value = Number.isFinite(progress) ? Math.max(0, Math.min(FIELDS.length, progress)) : 0;
+  const current = Math.min(FIELDS.length - 1, Math.floor(value));
+  const next = Math.min(FIELDS.length - 1, current + 1);
+  const transition = smooth((value - current - .76) / .24);
+  const position = (index: number) => compact ? [FIELDS[index].mobileX, FIELDS[index].mobileY] : [FIELDS[index].x, FIELDS[index].y];
+  const start = position(current);
+  const end = position(next);
+  return {
+    active: Math.min(FIELDS.length - 1, Math.floor(value + .12)),
+    x: start[0] + (end[0] - start[0]) * transition,
+    y: start[1] + (end[1] - start[1]) * transition,
+    scenes: FIELDS.map((_, index) => {
+      const entering = index === 0 ? 1 : smooth((value - index + .24) / .24);
+      const leaving = index === FIELDS.length - 1 ? 1 : smooth((index + 1 - value) / .24);
+      const opacity = Math.min(entering, leaving);
+      return { opacity, x: (leaving - entering) * (index % 2 ? -1 : 1) * (compact ? 22 : 64) };
+    }),
+  };
+}
+
+function ToolGroups({ index }: { index: number }) {
+  let start = 0;
+  return FIELDS[index].groups.map(([label, count]) => {
+    const tools = SKILLS[index].tools.slice(start, start + count);
+    start += count;
+    return <div className="mineral-tools__group" key={label}><p>{label}</p><ul>{tools.map((tool) => <li key={tool}>{tool}</li>)}</ul></div>;
+  });
+}
+
 export function SkillCabinet() {
   const [active, setActive] = useState(0);
-  // Server HTML stays complete. Scroll enhancement reveals each panel on arrival.
-  const allFields = (1 << SKILLS.length) - 1;
-  const [opened, setOpened] = useState(allFields);
   const cabinetRef = useRef<HTMLDivElement>(null);
   const motionRef = useRef<CrystalScrollController | null>(null);
   const activeRef = useRef(0);
-  const openedRef = useRef(allFields);
-  const toggleRef = useRef<((index: number) => void) | null>(null);
 
   useEffect(() => {
     const cabinet = cabinetRef.current;
-    const specimen = cabinet?.querySelector<HTMLElement>(".skill-cabinet__specimen");
-    const fields = Array.from(cabinet?.querySelectorAll<HTMLElement>(".skill-field") ?? []);
-    if (!cabinet || !specimen || !fields.length) return;
+    const fields = Array.from(cabinet?.querySelectorAll<HTMLElement>(".mineral-chapter") ?? []);
+    const scenes = Array.from(cabinet?.querySelectorAll<HTMLElement>(".mineral-composition") ?? []);
+    if (!cabinet || fields.length !== FIELDS.length || scenes.length !== FIELDS.length) return;
+    const root = document.documentElement;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const progress = cabinet.querySelector<HTMLElement>(".skill-cabinet__progress");
+    const roomy = window.matchMedia("(min-height: 740px) and (min-width: 360px)");
+    const compact = window.matchMedia("(max-width: 760px)");
     let frame = 0;
     let dirty = true;
     let visible = true;
     let disposed = false;
     let printing = false;
-    let initialized = false;
-    let visited = 0;
-    let phase = -1;
-    let wasReduced = reduced.matches;
-    let printFields: { panel: HTMLElement; toggle: HTMLElement; hidden: string | null; inert: boolean; open: string | undefined; expanded: string | null }[] | null = null;
+    let guided = false;
     let stops: number[] = [];
     let end = 0;
 
-    const openFields = (mask: number) => {
-      if (openedRef.current === mask) return;
-      openedRef.current = mask;
-      setOpened(mask);
-    };
-    toggleRef.current = (index) => {
-      if (printing) return;
-      openFields(openedRef.current ^ (1 << index));
+    const select = (index: number) => {
+      if (activeRef.current === index) return;
       activeRef.current = index;
       setActive(index);
     };
-
     const render = () => {
       frame = 0;
       if (disposed || printing || document.hidden) return;
+      const nextGuided = root.dataset.expeditionMode === "guided" && roomy.matches && !reduced.matches;
+      const modeChanged = cabinet.dataset.theatreMode !== (nextGuided ? "guided" : "free");
+      if (modeChanged) {
+        guided = nextGuided;
+        cabinet.dataset.theatreMode = guided ? "guided" : "free";
+        dirty = true;
+      }
       if (dirty) {
-        // Scroll frames read cached stops; CSS keeps the specimen sticky.
-        const specimenHeight = specimen.offsetHeight;
-        const style = getComputedStyle(specimen);
-        const top = Number.parseFloat(style.top) || 0;
-        const readingLine = style.position === "sticky" ? top + specimenHeight + 24 : 100;
-        cabinet.style.setProperty("--specimen-height", `${specimenHeight}px`);
-        cabinet.style.setProperty("--skill-scroll-padding", getComputedStyle(document.documentElement).scrollPaddingTop);
-        stops = fields.map((field) => field.getBoundingClientRect().top + window.scrollY - readingLine);
+        // These are stable native-scroll stops, not measurements in each frame.
+        const padding = Number.parseFloat(getComputedStyle(root).scrollPaddingTop) || 0;
+        cabinet.style.setProperty("--mineral-scroll-padding", `${padding}px`);
+        fields.forEach((field) => { field.dataset.stopOffset = guided ? "0" : String(padding); });
+        stops = fields.map((field) => field.getBoundingClientRect().top + window.scrollY - (guided ? 0 : padding));
         end = stops[stops.length - 1] + fields[fields.length - 1].offsetHeight;
         dirty = false;
+        window.dispatchEvent(new Event("expedition:refresh"));
       }
-      const value = skillScrollProgress(window.scrollY, stops, end);
-      const index = Math.min(SKILLS.length - 1, Math.floor(value));
-      const changed = activeRef.current !== index;
-      const nextPhase = window.scrollY < stops[0] ? -1 : window.scrollY >= end ? SKILLS.length : index;
-      const entering = phase !== nextPhase && nextPhase >= 0 && nextPhase < SKILLS.length;
-      const reached = window.scrollY >= stops[0] ? (1 << (index + 1)) - 1 : 0;
-      if (!initialized) {
-        openFields(reduced.matches ? allFields : reached);
-        initialized = true;
-      } else if (reduced.matches && !wasReduced) {
-        openFields(allFields);
-      } else if (!reduced.matches) {
-        // Keep previously visited fields open. A manual close lasts until the
-        // reader leaves and returns; ordinary scroll frames never override it.
-        openFields(openedRef.current | (reached & ~visited) | (entering ? 1 << index : 0));
+      if (!visible) { motionRef.current?.setProgress(null); return; }
+      const progress = skillScrollProgress(window.scrollY, stops, end);
+      if (!guided) {
+        motionRef.current?.setProgress(null);
+        if (window.scrollY >= stops[0] && window.scrollY < end) select(Math.min(FIELDS.length - 1, Math.floor(progress)));
+        return;
       }
-      visited |= reached;
-      phase = nextPhase;
-      wasReduced = reduced.matches;
-      if (changed) {
-        activeRef.current = index;
-        setActive(index);
-      }
-      progress?.style.setProperty("--skill-progress", String(value / SKILLS.length));
-      motionRef.current?.setProgress(visible && !reduced.matches ? value : null);
+      const view = mineralTheatreFrame(progress, compact.matches);
+      select(view.active);
+      cabinet.style.setProperty("--mineral-x", `${view.x}vw`);
+      cabinet.style.setProperty("--mineral-y", `${view.y}svh`);
+      cabinet.style.setProperty("--mineral-progress", String(progress / FIELDS.length));
+      scenes.forEach((scene, index) => {
+        scene.style.setProperty("--scene-opacity", String(view.scenes[index].opacity));
+        scene.style.setProperty("--scene-shift", `${view.scenes[index].x}px`);
+        scene.dataset.visible = view.scenes[index].opacity > .001 ? "true" : "false";
+      });
+      motionRef.current?.setProgress(progress);
     };
     const schedule = () => {
       if (!frame && !disposed && !printing && !document.hidden) frame = requestAnimationFrame(render);
     };
-    const onScroll = () => { if (visible) schedule(); };
     const invalidate = () => { dirty = true; schedule(); };
-    const onVisibility = () => {
-      if (document.hidden) { cancelAnimationFrame(frame); frame = 0; }
+    const scroll = () => { if (visible) schedule(); };
+    const visibility = () => {
+      if (document.hidden) { cancelAnimationFrame(frame); frame = 0; motionRef.current?.setProgress(null); }
       else invalidate();
     };
-    const restorePrintFields = () => {
-      printFields?.forEach(({ panel, toggle, hidden, inert, open, expanded }) => {
-        if (hidden === null) panel.removeAttribute("aria-hidden"); else panel.setAttribute("aria-hidden", hidden);
-        panel.inert = inert;
-        if (open === undefined) delete panel.dataset.open; else panel.dataset.open = open;
-        if (expanded === null) toggle.removeAttribute("aria-expanded"); else toggle.setAttribute("aria-expanded", expanded);
-      });
-      printFields = null;
-    };
-    const beforePrint = () => {
-      if (printing) return;
-      printing = true;
-      cancelAnimationFrame(frame);
-      frame = 0;
-      motionRef.current?.setProgress(null);
-      // Print events need synchronous DOM exposure, including accessible PDFs.
-      // React's mask stays intact while scroll/toggle work is suspended.
-      printFields = fields.flatMap((field) => {
-        const panel = field.querySelector<HTMLElement>(".skill-field__panel");
-        const toggle = field.querySelector<HTMLElement>(".skill-field__toggle");
-        if (!panel || !toggle) return [];
-        const snapshot = { panel, toggle, hidden: panel.getAttribute("aria-hidden"), inert: panel.inert, open: panel.dataset.open, expanded: toggle.getAttribute("aria-expanded") };
-        panel.setAttribute("aria-hidden", "false");
-        panel.inert = false;
-        panel.dataset.open = "true";
-        toggle.setAttribute("aria-expanded", "true");
-        return [snapshot];
-      });
-    };
-    const afterPrint = () => { restorePrintFields(); printing = false; invalidate(); };
+    const beforePrint = () => { printing = true; cancelAnimationFrame(frame); frame = 0; motionRef.current?.setProgress(null); };
+    const afterPrint = () => { printing = false; invalidate(); };
     const resize = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(invalidate);
-    resize?.observe(specimen);
     resize?.observe(cabinet);
     const story = cabinet.closest(".journey__story");
     if (story) resize?.observe(story);
     const intersection = typeof IntersectionObserver === "undefined" ? null : new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
-      schedule();
-    }, { rootMargin: "15% 0px" });
+      if (visible) schedule();
+      else { cancelAnimationFrame(frame); frame = 0; motionRef.current?.setProgress(null); }
+    }, { rootMargin: "10% 0px" });
     intersection?.observe(cabinet);
-    window.addEventListener("scroll", onScroll, { passive: true });
+    const mode = typeof MutationObserver === "undefined" ? null : new MutationObserver(invalidate);
+    mode?.observe(root, { attributes: true, attributeFilter: ["data-expedition-mode"] });
+    window.addEventListener("scroll", scroll, { passive: true });
     window.addEventListener("resize", invalidate);
     window.addEventListener("beforeprint", beforePrint);
     window.addEventListener("afterprint", afterPrint);
-    document.addEventListener("visibilitychange", onVisibility);
+    document.addEventListener("visibilitychange", visibility);
     reduced.addEventListener("change", invalidate);
+    roomy.addEventListener("change", invalidate);
+    compact.addEventListener("change", invalidate);
     schedule();
     return () => {
       disposed = true;
-      restorePrintFields();
       cancelAnimationFrame(frame);
-      resize?.disconnect();
-      intersection?.disconnect();
-      window.removeEventListener("scroll", onScroll);
+      resize?.disconnect(); intersection?.disconnect(); mode?.disconnect();
+      window.removeEventListener("scroll", scroll);
       window.removeEventListener("resize", invalidate);
       window.removeEventListener("beforeprint", beforePrint);
       window.removeEventListener("afterprint", afterPrint);
-      document.removeEventListener("visibilitychange", onVisibility);
+      document.removeEventListener("visibilitychange", visibility);
       reduced.removeEventListener("change", invalidate);
+      roomy.removeEventListener("change", invalidate);
+      compact.removeEventListener("change", invalidate);
       motionRef.current?.setProgress(null);
-      toggleRef.current = null;
-      cabinet.style.removeProperty("--specimen-height");
-      cabinet.style.removeProperty("--skill-scroll-padding");
-      progress?.style.removeProperty("--skill-progress");
+      delete cabinet.dataset.theatreMode;
+      ["--mineral-x", "--mineral-y", "--mineral-progress", "--mineral-scroll-padding"].forEach((property) => cabinet.style.removeProperty(property));
+      fields.forEach((field) => { field.dataset.stopOffset = "0"; });
+      scenes.forEach((scene) => {
+        scene.style.removeProperty("--scene-opacity"); scene.style.removeProperty("--scene-shift"); delete scene.dataset.visible;
+      });
     };
   }, []);
 
   return (
-    <div className="skill-cabinet" ref={cabinetRef}>
-      <div className="skill-cabinet__specimen">
-        <div className="specimen-caption"><span>Inside the foundations</span><span>{String(active + 1).padStart(2, "0")} / 06</span></div>
-        <CrystalScene active={active} motionRef={motionRef} />
-        <div className="skill-cabinet__navigation">
-          <nav aria-label="Explore skill fields">
-            {SKILLS.map((skill, index) => (
-              <a key={skill.category} href={`#skill-field-${index}`} aria-label={skill.category} aria-current={active === index ? "step" : undefined}>
-                <span className={`skill-field__stone skill-field__stone--${index}`} aria-hidden="true" />
-              </a>
-            ))}
-          </nav>
-          <div className="skill-cabinet__progress" aria-hidden="true"><span /></div>
-        </div>
-        <div className="specimen-caption specimen-caption--bottom"><span>Scroll to unfold each field <ArrowDown size={14} aria-hidden="true" /></span><a href="#experience">Skip to experience</a></div>
-      </div>
-      <div className="skill-cabinet__fields">
-        {SKILLS.map((skill, index) => (
-          <article className={`skill-field${active === index ? " skill-field--active" : ""}`} key={skill.category} id={`skill-field-${index}`} tabIndex={-1} aria-labelledby={`skill-title-${index}`}>
-            <p className="skill-field__number">{String(index + 1).padStart(2, "0")} / 06</p>
-            <h3 id={`skill-title-${index}`}><button type="button" className="skill-field__toggle" aria-expanded={Boolean(opened & (1 << index))} aria-controls={`skill-body-${index}`} onClick={() => toggleRef.current?.(index)}><span>{skill.category}</span><ChevronDown size={21} aria-hidden="true" /></button></h3>
-            <div id={`skill-body-${index}`} className="skill-field__panel" data-open={Boolean(opened & (1 << index))} aria-hidden={!(opened & (1 << index))} inert={!(opened & (1 << index))}>
-              <div className="skill-field__body"><p>{skill.description}</p><ul className="tag-list">{skill.tools.map((tool, toolIndex) => <li key={tool} style={{ "--skill-tool-index": Math.min(toolIndex, 8) } as CSSProperties}>{tool}</li>)}</ul></div>
+    <div className="skill-cabinet skill-theatre" ref={cabinetRef}>
+      <div className="mineral-theatre__stage">
+        <div className="mineral-theatre__edition" aria-hidden="true"><span>A study in six disciplines</span><span>Specimen {String(active + 1).padStart(2, "0")} / 06</span></div>
+        <div className="mineral-theatre__specimen"><CrystalScene active={active} motionRef={motionRef} /><p className="mineral-theatre__mineral" aria-hidden="true">{FIELDS[active].mineral}<span>Digital mineral study</span></p></div>
+        <div className="mineral-theatre__compositions" aria-hidden="true">
+          {SKILLS.map((skill, index) => (
+            <div className={`mineral-composition mineral-composition--${index}`} key={skill.category} style={{ "--scene-opacity": index === 0 ? 1 : 0 } as CSSProperties}>
+              <span className="mineral-composition__number">{String(index + 1).padStart(2, "0")}</span>
+              <div className="mineral-composition__copy"><p className="mineral-composition__note">{FIELDS[index].note}</p><p className="mineral-composition__title">{skill.category}</p><p className="mineral-composition__description">{skill.description}</p></div>
+              <div className="mineral-tools"><ToolGroups index={index} /></div>
             </div>
+          ))}
+        </div>
+        <div className="mineral-theatre__navigation">
+          <span className="mineral-theatre__scroll" aria-hidden="true">Scroll to explore <ArrowDown size={14} /></span>
+          <nav aria-label="Explore skill fields">{SKILLS.map((skill, index) => <a key={skill.category} href={`#skill-field-${index}`} aria-label={skill.category} aria-current={active === index ? "step" : undefined} onClick={(event) => { if (!event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) { activeRef.current = index; setActive(index); } }}><span className={`skill-field__stone skill-field__stone--${index}`} aria-hidden="true" /><span className="mineral-theatre__nav-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span></a>)}</nav>
+          <a className="mineral-theatre__skip" href="#experience">Skip to experience</a>
+          <span className="mineral-theatre__progress" aria-hidden="true"><span /></span>
+        </div>
+      </div>
+      <div className="mineral-theatre__runway">
+        {SKILLS.map((skill, index) => (
+          <article className="mineral-chapter" id={`skill-field-${index}`} key={skill.category} tabIndex={-1} aria-labelledby={`skill-title-${index}`} data-expedition-stop={`skill-${index}`} data-stop-label={skill.category} data-stop-duration="1800" data-stop-offset="0" data-stop-scene={`skill-${index}`}>
+            <div className="mineral-chapter__content"><p className="mineral-chapter__index"><span className={`skill-field__stone skill-field__stone--${index}`} aria-hidden="true" />{String(index + 1).padStart(2, "0")} / 06</p><h3 id={`skill-title-${index}`}>{skill.category}</h3><p className="mineral-chapter__description">{skill.description}</p><div className="mineral-tools"><ToolGroups index={index} /></div></div>
           </article>
         ))}
       </div>

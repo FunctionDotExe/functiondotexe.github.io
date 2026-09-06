@@ -1,14 +1,20 @@
 # Motion follows discovery
 
-The landscape already carries the journey from summit to core. New motion explains the content and actions within that landscape:
+The portfolio now uses a paced expedition with distinct arrival, inspection, and departure beats. The existing alpine-to-core paintings remain the world; project artifacts and mineral specimens carry the live interaction.
 
-- **Projects:** an artifact settles into its existing position once, then its persistent gallery label receives a brief warm border emphasis. The inner pointer tilt stays independent. Images, text, and buttons are never hidden, and galleries still require activation.
-- **Skills:** the corresponding field automatically unfolds as its gemstone changes and turns. Technology labels follow in a short stagger. Full panel space remains reserved to prevent scroll-boundary changes. Visited panels stay open and real heading buttons allow manual control.
-- **Research and background:** a closed summary's edge draws once and its chevron moves downward once. Visible labels state the available action; hover previews distinguish keeping content open from closing pinned content.
-- **Experience:** the existing timeline rail fills as each role reaches the reader, linking the cue to chronology.
-- **About:** the photograph settles six pixels into its existing frame, retaining the frame's rotation and avoiding any suggestion that the portrait is a button.
-- **Certificates and contact:** one underline introduction identifies actual destinations. Certificates now explicitly say “View certificate.” No email, certificate, modal, or external link opens automatically.
+- **Projects:** each of four native sticky stages contains three authored beats: spark, system, proof. Phones separate, the dashboard changes its viewing angle, a vision frame receives a finite scan, and the robot photograph settles as a physical print. Process labels explain the actual implementation; result claims retain their original qualifications. Gallery triggers work throughout.
+- **Skills:** a travelling WebGL mineral visits six spatial compositions. Text is still during reading, then slides toward the next destination. Each new mineral receives one finite lighting sweep. Complete semantic skill articles remain available in free, short-screen, reduced-motion, and print layouts.
+- **Experience:** reaching a guided role opens its details without moving focus. A deliberate close overrides future automatic opening. Existing hover and pin controls remain intact.
+- **Quieter chapters:** titles reveal in the direction of travel; background notes and project-index links follow. Research disclosures, the portrait, certificates, and contact retain their finite discovery cues. No external destination opens automatically.
 
-Project and discovery cues use IntersectionObserver and finite animations, with no new scroll handler or continuous animation loop. They settle or pause on interaction, hidden pages, printing, and reduced-motion changes. Short viewports omit project travel. Skill reveals share the existing cached scroll sequence; React updates occur at chapter or open-state changes, not for every gemstone rotation frame.
+## Pacing contract
 
-Verification includes the nine interaction suites, TypeScript, production export references and metadata, native disclosure state preservation, preference changes, print accessibility/restoration, first/last re-entry, and manual closure. Browser rendering and physical-device frame timing remain unmeasured because the computer-use environment exposes no browser.
+ExpeditionDirector reads unique `data-expedition-stop` markers. Each has a human `data-stop-label`, optional shared `data-stop-scene`, dwell duration, and optional alignment offset. A time-based controller caps input at the next physical stop. Dwell starts only after arrival, usually lasts 1.6–2.2 seconds, and discards old input. Recent continued input may request only the next bounded move. Reverse scrolling releases a hold immediately.
+
+Free scroll and Escape remove interception. A mode switch preserves the current semantic paragraph or skill. Native fragment navigation, keyboard focus, dialogs, form controls, nested scroll areas, horizontal gestures, and pinch zoom retain their expected behavior. Reduced motion defaults to free scrolling. Hidden pages and printing stop the controller. `expedition:stop`, `expedition:modechange`, and `expedition:refresh` connect the scene controllers without a shared per-frame React state.
+
+Project stages require at least 800px height on mobile and 740px on desktop. Shorter screens display full-sized artifacts and complete narratives in normal flow; their guided stops align with actual paragraphs. Skill stages use a 740px minimum. This prevents long titles from consuming the image's entire available space.
+
+## Verification
+
+Eleven interaction suites, TypeScript, and production export validation pass. Actual Chrome checks cover large wheel gestures, full arrival dwell, stale-input rejection, trusted mobile swipes, direct beat links and labels, mode preservation, nested scrolling, Escape, reduced motion, galleries, focus return, and control hit testing. Desktop and mobile screenshots were inspected and iterated: oversized overlays, colliding project media, tiny short-screen imagery, skill tool/control overlap, and flat crystal lighting were corrected. Physical-phone frame timing remains unmeasured.

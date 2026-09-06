@@ -123,7 +123,7 @@ export function JourneyMotion() {
       lastFrameTime = time;
       // Touch already has native momentum. Follow it in the same frame instead
       // of adding a second easing tail; retain the desktop wheel-camera feel.
-      const easeCamera = finePointer.matches && !reduced.matches;
+      const easeCamera = finePointer.matches && !reduced.matches && root.dataset.expeditionMode !== "guided";
       cameraY = easeCamera ? cameraY + (cameraTarget - cameraY) * (1 - Math.exp(-elapsed / 72)) : cameraTarget;
       if (Math.abs(cameraTarget - cameraY) <= .12) cameraY = cameraTarget;
       const y = cameraY;
@@ -139,8 +139,9 @@ export function JourneyMotion() {
       write(surface, "--surface-stars", (dusk * .85).toFixed(4));
       write(continuum, "--continuum-dusk", (dusk * .76 * (1 - smooth(start + (end - start) * .18, start + (end - start) * .7, y))).toFixed(4));
       const lookBlend = 1 - Math.exp(-elapsed / 188);
-      lookX = easeCamera ? lookX + (targetX - lookX) * lookBlend : 0;
-      lookY = easeCamera ? lookY + (targetY - lookY) * lookBlend : 0;
+      const pointerLook = finePointer.matches && !reduced.matches;
+      lookX = pointerLook ? lookX + (targetX - lookX) * lookBlend : 0;
+      lookY = pointerLook ? lookY + (targetY - lookY) * lookBlend : 0;
       const lookStrength = motion * (1 - smooth(start - height, start, y));
       write(world, "--look-x", `${(lookX * lookStrength).toFixed(2)}px`);
       write(world, "--look-y", `${(lookY * lookStrength).toFixed(2)}px`);

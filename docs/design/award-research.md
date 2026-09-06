@@ -77,3 +77,11 @@ This comparison uses `docs/design/mountain-to-core-refinement.md` and `component
 6. Verify complete desktop and mobile journeys. A build passing proves compilation, while screenshots, keyboard operation, and observed scroll behavior establish whether the actual experience is finished.
 
 No research source establishes that any specific number of effects, particular framework, or amount of 3D is sufficient to win an award. The resulting site should be judged on its original identity, visual execution, functionality, and observed usability.
+
+## Follow-up: cinematic pacing
+
+The subsequent scene redesign uses arrival, inspection, and departure rather than an uninterrupted stack of content. Igloo's creators describe prototyping the camera journey before detailed art and rejecting repeated ice-block silhouettes; those observations informed distinct phone, dashboard, vision, and workshop compositions. Its content-related particle transformations also support making our scans, process lines, and facet changes explain the selected content. [Igloo creator case study](https://www.awwwards.com/igloo-inc-case-study.html)
+
+Immersive Garden's detailed section numerals and backstage material informed persistent numbered scene navigation and a second layer of inspectable project evidence. David Whyte's material-specific watercolor reveals informed the shared directional reveal vocabulary. These are design interpretations, not copied implementations. [Immersive Garden creator case study](https://www.awwwards.com/case-study-immersive-gardens-new-website.html), [David Whyte creator case study](https://www.awwwards.com/case-study-david-whyte-experience-by-immersive-garden.html)
+
+The approximately two-second holds are our authored timing choice, not a duration established by these references. Final review used real Chrome screenshots and input tests, including mobile emulation. That establishes the inspected layouts and behavior; it does not establish an award score or physical-device frame rate.

@@ -24,6 +24,7 @@ export function InteractiveDisclosures() {
       let animation: Animation | null = null;
       let openTimer: ReturnType<typeof setTimeout> | undefined;
       let closeTimer: ReturnType<typeof setTimeout> | undefined;
+      let toured = false;
 
       const clearTimers = () => { clearTimeout(openTimer); clearTimeout(closeTimer); };
       const finish = () => {
@@ -80,10 +81,19 @@ export function InteractiveDisclosures() {
         // The first click on a hover preview keeps it open for reading.
         // A second click closes it, even while the pointer remains over it.
         pinned = !pinned;
+        if (!pinned) toured = true;
         suppressed = !pinned;
         expand(pinned);
       };
       const focus = () => { clearTimeout(closeTimer); };
+      const tour = (event: Event) => {
+        if (toured || !details.dataset.expeditionStop || (event as CustomEvent<{ id: string }>).detail?.id !== details.dataset.expeditionStop) return;
+        toured = true;
+        // A visitor's deliberate close takes precedence over the guided reveal.
+        if (suppressed) return;
+        clearTimers(); pinned = true; expand(true);
+        details.dataset.expeditionReading = "true";
+      };
       const blur = () => { if (!pinned) closePreview(); };
       const dismiss = () => {
         if (!target || (pinned && !details.contains(document.activeElement))) return false;
@@ -133,6 +143,7 @@ export function InteractiveDisclosures() {
       details.addEventListener("focusin", focus);
       details.addEventListener("focusout", blur);
       summary.addEventListener("click", click);
+      window.addEventListener("expedition:stop", tour);
       hover.addEventListener("change", capabilityChanged);
       dismissers.push(dismiss);
       settle.push(finish);
@@ -148,6 +159,8 @@ export function InteractiveDisclosures() {
         details.removeEventListener("focusin", focus);
         details.removeEventListener("focusout", blur);
         summary.removeEventListener("click", click);
+        window.removeEventListener("expedition:stop", tour);
+        delete details.dataset.expeditionReading;
         hover.removeEventListener("change", capabilityChanged);
       };
     });

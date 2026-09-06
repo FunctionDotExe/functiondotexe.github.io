@@ -7,7 +7,7 @@ const source = ts.transpileModule(readFileSync(new URL("../components/summit/Int
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 },
 }).outputText;
 
-function harness({ open = false, hoverable = true, reduced = false, hash = "" } = {}) {
+function harness({ open = false, hoverable = true, reduced = false, hash = "", expeditionStop = "" } = {}) {
   let time = 0;
   let serial = 0;
   let cleanup;
@@ -58,7 +58,7 @@ function harness({ open = false, hoverable = true, reduced = false, hash = "" } 
     },
   };
   const details = {
-    ...makeEvents(), id: "project-research", open, dataset: {},
+    ...makeEvents(), id: "project-research", open, dataset: { expeditionStop },
     querySelector: (selector) => selector === "summary" ? summary : panel,
     contains: (target) => target === summary || target === contentLink,
   };
@@ -94,6 +94,7 @@ function harness({ open = false, hoverable = true, reduced = false, hash = "" } 
     }),
     print: () => window.fire("beforeprint"),
     afterPrint: () => window.fire("afterprint"),
+    tour: (id) => window.fire("expedition:stop", { detail: { id, label: "Research" } }),
     frame: () => { const pending = [...frames.values()]; frames.clear(); pending.forEach((callback) => callback()); },
     advance: (elapsed) => {
       const until = time + elapsed;
@@ -269,4 +270,26 @@ printOpen.advance(200);
 assert.equal(printOpen.details.open, false, "Printing must preserve pin state for the next explicit toggle");
 printOpen.unmount();
 
-console.log("PASS: hover, pinning, keyboard, modal Escape, touch, animation reversal, reduced motion, deep links, repeat links, print restoration, and cleanup.");
+const tour = harness({ expeditionStop: "research" });
+tour.tour("unrelated");
+assert.equal(tour.details.open, false, "A guided stop may reveal only its matching disclosure");
+tour.tour("research"); tour.advance(260);
+assert.equal(tour.details.open, true);
+assert.equal(tour.details.dataset.pinned, "true", "Guided reading remains open after the arrival animation");
+assert.equal(tour.document.activeElement, null, "Guided arrival must not steal keyboard focus");
+tour.leave(); tour.advance(1000);
+assert.equal(tour.details.open, true);
+tour.click(); tour.advance(200);
+tour.tour("research"); tour.advance(1000);
+assert.equal(tour.details.open, false, "Returning to a visited stop must respect a later manual close");
+tour.unmount();
+
+const manualBeforeTour = harness({ expeditionStop: "research" });
+manualBeforeTour.click(); manualBeforeTour.advance(260);
+manualBeforeTour.click(); manualBeforeTour.advance(200);
+manualBeforeTour.leave();
+manualBeforeTour.tour("research"); manualBeforeTour.advance(1000);
+assert.equal(manualBeforeTour.details.open, false, "A manual close before arrival must survive pointer departure and suppress the guided reveal");
+manualBeforeTour.unmount();
+
+console.log("PASS: hover, pinning, keyboard, modal Escape, touch, animation reversal, reduced motion, deep links, repeat links, guided matching/once/manual-close/focus behavior, print restoration, and cleanup.");

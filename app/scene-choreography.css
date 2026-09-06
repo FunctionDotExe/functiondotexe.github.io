@@ -1,0 +1,13 @@
+/* The same directional reveal leads from the trail into its field notes. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-scene-arrival="arriving"] :is(h2, .section-label) { animation: expedition-type-reveal 1100ms cubic-bezier(.16,.7,.22,1) both; }
+  [data-scene-arrival="arriving"] :is(.basecamp-scene__note, .project-index, .about-lead) { animation: expedition-note-reveal 1000ms cubic-bezier(.16,.7,.22,1) 180ms both; }
+  [data-scene-arrival="arriving"] .project-index a { animation: expedition-note-reveal 900ms ease both; }
+  [data-scene-arrival="arriving"] .project-index a:nth-child(2n) { animation-delay: 150ms; }
+  [data-scene-arrival="arriving"] .project-index a:nth-child(3n) { animation-delay: 300ms; }
+  .experience-entry[data-expedition-reading="true"] summary::before { animation: expedition-timeline-read 1700ms ease both; }
+}
+@keyframes expedition-type-reveal { from { clip-path: inset(0 0 100% 0); transform: translateY(18px); } to { clip-path: inset(0); transform: none; } }
+@keyframes expedition-note-reveal { from { opacity: .2; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes expedition-timeline-read { 0% { box-shadow: 0 0 0 0 #ffc49b60; } 50% { box-shadow: 0 0 0 10px #ffc49b10, 0 0 24px #ffc49b; } 100% { box-shadow: 0 0 18px #ffba77; } }
+@media print { [data-narrative-scene] * { animation: none !important; clip-path: none !important; } }

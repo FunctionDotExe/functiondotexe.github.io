@@ -59,6 +59,7 @@ function mount(initialY = 9000, reduceMotion = false, options = {}) {
     return node;
   }
   const root = element("root");
+  root.dataset = { expeditionMode: options.guided ? "guided" : "free" };
   root.scrollHeight = 15500;
   const world = element("world");
   const progressBar = element("progress");
@@ -120,6 +121,7 @@ function mount(initialY = 9000, reduceMotion = false, options = {}) {
     },
     finePointer: (matches) => media.get("(hover: hover) and (pointer: fine)").change(matches),
     mediaListeners: () => [...media.values()].reduce((count, value) => count + value.listeners.size, 0),
+    guided: (value) => { root.dataset.expeditionMode = value ? "guided" : "free"; },
     unmount: () => cleanup(),
   };
 }
@@ -231,5 +233,18 @@ hybrid.frame();
 assert.equal(hybrid.value("world", "--look-x"), 0, "Losing mouse capability must clear its parallax");
 assert.equal(hybrid.pending(), 0, "Switching to touch must not retain mouse or scroll easing work");
 hybrid.unmount();
+
+const directed = mount(9000, false, { guided: true });
+const directedDestination = mount(9300, false, { guided: true });
+directed.scroll(9300);
+directed.frame();
+assert.equal(directed.value("continuum", "--continuum-y"), directedDestination.value("continuum", "--continuum-y"), "The painted camera must not add another easing layer over director scroll");
+assert.equal(directed.pending(), 0, "Guided camera tracking must have no independent settling tail");
+directed.guided(false);
+directed.scroll(9000);
+directed.frame();
+assert(directed.pending() > 0, "Free desktop scrolling must retain its original camera follow");
+directed.unmount();
+directedDestination.unmount();
 
 console.log("PASS: desktop easing, native touch sync, scoped progress, stable mobile toolbar geometry, orientation/capability changes, 60/120 Hz consistency, opaque handoff, reduced motion, and cleanup.");
