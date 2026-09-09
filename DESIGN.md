@@ -14,4 +14,6 @@ Project copy states purpose and personal contribution concisely. Preserve actual
 
 Reduced motion, keyboard focus, native dialogs, gallery error states, and deep links are part of the work. Verify the complete journey on desktop and mobile, including the cave handoff and expanded disclosures, before publishing to `https://aurel.rubenm.me/`.
 
+The user wants the underground to feel less static and the entire journey to feel fluid and glossy. The decorative camera now glides briefly behind native scroll, with a bounded velocity blur on the painting alone. Text remains crisp. Vertical cave travel stays continuous through section boundaries; nearby strata travel farther, especially on phones. The camera snaps on large jumps and layout changes, settles completely at rest, and disables spatial smoothing and blur for reduced motion. Do not reintroduce the old stop at every underground section.
+
 The temporary editorial version in commit `35eb71a` is a rejected direction. Its design instructions must not guide future refinement. The original `docs/design/mountain-to-core-refinement.md` explains the world’s development; this file records the user’s current visual preference.

@@ -9,10 +9,10 @@
   }
 
   .journey-world__continuum-plate { height: max(336.1112lvh, 189.0625vw); }
-  .journey-world__depth-layer--back .journey-world__depth-plate { height: max(164vw, 145lvh); }
-  .journey-world__depth-layer--atmosphere .journey-world__depth-plate { height: max(174vw, 153lvh); }
-  .journey-world__depth-layer--mid .journey-world__depth-plate { height: max(190vw, 166lvh); }
-  .journey-world__depth-layer--near .journey-world__depth-plate { height: max(214vw, 184lvh); }
+  .journey-world__depth-layer--back .journey-world__depth-plate { height: max(164vw, 155lvh); }
+  .journey-world__depth-layer--atmosphere .journey-world__depth-plate { height: max(174vw, 170lvh); }
+  .journey-world__depth-layer--mid .journey-world__depth-plate { height: max(190vw, 195lvh); }
+  .journey-world__depth-layer--near .journey-world__depth-plate { height: max(214vw, 225lvh); }
 
   @media (max-width: 820px) and (orientation: portrait) {
     .journey-world__continuum-plate { height: max(263.637lvh, 362.5vw); }

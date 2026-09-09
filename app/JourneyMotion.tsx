@@ -64,7 +64,11 @@ export function JourneyMotion() {
     let plateTravel = 0;
     let depthTravel = [0, 0, 0, 0];
     let compact = false;
-    let depthStops: { at: number; progress: number; x: number }[] = [];
+    let depthStops: { at: number; progress: number; x: number; slope: number }[] = [];
+    let cameraY = scrollY;
+    let previousScroll = scrollY;
+    let previousFrame = performance.now();
+    let speed = 0;
     let targetX = 0;
     let targetY = 0;
     const written = new Map<HTMLElement | SVGSVGElement, Map<string, string>>();
@@ -101,30 +105,62 @@ export function JourneyMotion() {
       plateTravel = Math.max((plate?.clientHeight ?? height) - anchorHeight - plateStart, 0);
       depthTravel = depthPlates.map((image) => Math.max((image?.clientHeight ?? height) - height, 0));
       const transitionEnd = end + Math.min(height * .14, (end - start) * .08);
-      depthStops = [{ at: transitionEnd, progress: 0, x: 0 }, ...depthSections.map((section, index) => {
+      depthStops = [{ at: transitionEnd, progress: 0, x: 0, slope: 0 }, ...depthSections.map((section, index) => {
         const bounds = section?.getBoundingClientRect();
         const dwell = Math.max((bounds?.height ?? height) - height, height * .35);
         const anchor = (bounds?.top ?? 0) + scrollY + dwell * (index === 3 ? .72 : .5);
         return {
-          at: Math.min(sceneRange, index === 0 ? Math.max(anchor, transitionEnd + height * .9) : anchor),
+          at: Math.min(sceneRange, index === 0 ? Math.max(anchor, transitionEnd + height * .55) : anchor),
           progress: [.22, .48, .74, 1][index],
           x: [.058, -.064, .072, 0][index],
+          slope: 0,
         };
       })];
       for (let index = 1; index < depthStops.length; index += 1) {
         depthStops[index].at = Math.max(depthStops[index].at, depthStops[index - 1].at + 1);
       }
+      // Monotone Hermite slopes carry the descent through section boundaries.
+      // Easing each section separately made the camera stop at every heading.
+      for (let index = 1; index < depthStops.length - 1; index += 1) {
+        const before = depthStops[index - 1], point = depthStops[index], after = depthStops[index + 1];
+        const left = point.at - before.at, right = after.at - point.at;
+        const a = (point.progress - before.progress) / left;
+        const b = (after.progress - point.progress) / right;
+        const w1 = 2 * right + left, w2 = right + 2 * left;
+        point.slope = (w1 + w2) / (w1 / a + w2 / b);
+      }
       dirty = false;
     };
 
-    const render = () => {
+    const render = (now = performance.now()) => {
       frame = 0;
       if (document.hidden) return;
+      const geometryChanged = dirty;
       if (dirty) measure();
-      const y = Math.min(range, Math.max(0, scrollY));
-      // Follow native input exactly. Inherited custom properties previously
-      // invalidated whole scenery subtrees throughout an additional easing tail.
-      write(progressBar, "transform", `scaleX(${clamp(y / range).toFixed(4)})`);
+      const actualY = Math.min(range, Math.max(0, scrollY));
+      const elapsed = Math.min(64, Math.max(1, now - previousFrame));
+      previousFrame = now;
+      const jump = Math.abs(actualY - previousScroll) > height * .85;
+      if (geometryChanged || jump || compact) {
+        cameraY = actualY;
+        speed = 0;
+      } else {
+        // Only the painting glides. Native scroll, focus and navigation never wait.
+        const lag = finePointer.matches ? 64 : 32;
+        cameraY = Math.max(actualY - lag, Math.min(actualY + lag, cameraY));
+        cameraY += (actualY - cameraY) * (1 - Math.exp(-elapsed / (finePointer.matches ? 55 : 32)));
+        if (Math.abs(actualY - cameraY) < .08) cameraY = actualY;
+        const inputSpeed = Math.min(5, Math.abs(actualY - previousScroll) / elapsed);
+        speed += (inputSpeed - speed) * (1 - Math.exp(-elapsed / 65));
+        if (speed < .035) speed = 0;
+      }
+      previousScroll = actualY;
+      const blur = Math.min(finePointer.matches ? 1.2 : .7, speed * .34);
+      // Filter one clipped viewport, never the oversized source plates or text.
+      // Drop the filter completely at rest so it costs no idle compositing work.
+      write(world, "filter", blur > .015 ? `blur(${blur.toFixed(2)}px)` : "none");
+      const y = cameraY;
+      write(progressBar, "transform", `scaleX(${clamp(actualY / range).toFixed(4)})`);
       const motion = reduced.matches ? 0 : (width <= 720 ? .52 : width <= 980 ? .74 : 1) * (height <= 650 ? .72 : 1);
       const progress = clamp(y / Math.max(start, 1));
       // Carry blue-hour lighting across the stitched cave entrance, then let
@@ -170,9 +206,14 @@ export function JourneyMotion() {
         const previous = depthStops[index - 1];
         const next = depthStops[index];
         if (y >= previous.at) {
-          const amount = smooth(previous.at, next.at, y);
-          depthProgress = previous.progress + (next.progress - previous.progress) * amount;
-          depthX = previous.x + (next.x - previous.x) * amount;
+          const distance = next.at - previous.at;
+          const t = clamp((y - previous.at) / distance);
+          const t2 = t * t, t3 = t2 * t;
+          depthProgress = (2 * t3 - 3 * t2 + 1) * previous.progress
+            + (t3 - 2 * t2 + t) * distance * previous.slope
+            + (-2 * t3 + 3 * t2) * next.progress
+            + (t3 - t2) * distance * next.slope;
+          depthX = previous.x + (next.x - previous.x) * (t2 * (3 - 2 * t));
         }
       }
       if (reduced.matches) { depthProgress = .35; depthX = 0; }
@@ -184,6 +225,7 @@ export function JourneyMotion() {
         write(image, "transform", `translate3d(calc(-50% + ${x}px), ${y}px, 0)`);
       });
       write(coreLight, "opacity", clamp((depthProgress - .5) * 2).toFixed(4));
+      if (cameraY !== actualY || speed > 0) frame = requestAnimationFrame(render);
     };
     const schedule = () => { if (!frame && !document.hidden) frame = requestAnimationFrame(render); };
     const invalidate = () => { dirty = true; schedule(); };

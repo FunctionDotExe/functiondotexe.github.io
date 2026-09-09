@@ -281,7 +281,7 @@ dialog::backdrop { background: #0c0824cc; backdrop-filter: blur(8px); }
 }
 
 .journey-world__depth-layer--back .journey-world__depth-plate {
-  height: max(164vw, 145dvh);
+  height: max(164vw, 155dvh);
   transform: translate3d(
     calc(-50% + var(--depth-back-x)),
     var(--depth-back-y),
@@ -290,7 +290,7 @@ dialog::backdrop { background: #0c0824cc; backdrop-filter: blur(8px); }
 }
 
 .journey-world__depth-layer--atmosphere .journey-world__depth-plate {
-  height: max(174vw, 153dvh);
+  height: max(174vw, 170dvh);
   transform: translate3d(
     calc(-50% + var(--depth-atmosphere-x)),
     var(--depth-atmosphere-y),
@@ -299,7 +299,7 @@ dialog::backdrop { background: #0c0824cc; backdrop-filter: blur(8px); }
 }
 
 .journey-world__depth-layer--mid .journey-world__depth-plate {
-  height: max(190vw, 166dvh);
+  height: max(190vw, 195dvh);
   transform: translate3d(
     calc(-50% + var(--depth-mid-x)),
     var(--depth-mid-y),
@@ -308,7 +308,7 @@ dialog::backdrop { background: #0c0824cc; backdrop-filter: blur(8px); }
 }
 
 .journey-world__depth-layer--near .journey-world__depth-plate {
-  height: max(214vw, 184dvh);
+  height: max(214vw, 225dvh);
   transform: translate3d(
     calc(-50% + var(--depth-near-x)),
     var(--depth-near-y),

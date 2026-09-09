@@ -5,6 +5,11 @@ section[id], article[id], details[id] { scroll-margin-top: 0; }
 .journey-nav--scrolled { background: #171139; border-color: #fff4db26; }
 .journey-nav__brand { font-family: var(--font-body); }
 .journey-nav__links a { font-size: .9rem; }
+/* A tiny crop keeps the bounded scroll blur clear of the viewport edges. */
+.journey-world { clip-path: inset(0); transform: scale(1.008); }
+@media (prefers-reduced-motion: reduce) {
+  .journey-world { transform: none; filter: none !important; }
+}
 
 /* The painting opens in depth; the visitor can read and act immediately. */
 .arrival__veil { display: none !important; }
