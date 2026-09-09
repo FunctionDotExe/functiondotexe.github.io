@@ -158,10 +158,12 @@ for (const { path, url } of cssQueue) {
 }
 
 const destinations = ["project-phones", "project-console", "project-signal", "project-workshop", "project-skin-cancer", "project-embedded-robotics"];
-for (const id of [...destinations, "main-content", "entry", "work", "crust", "experience", "about", "contact"]) {
+const sectionDestinations = ["main-content", "entry", "work", "crust", "experience", "about", "contact"];
+for (const id of [...destinations, ...sectionDestinations]) {
   if (!ids.has(id)) fail(`Required destination is missing: #${id}`);
 }
-for (const id of destinations) if (!fragments.has(id)) fail(`Project has no direct navigation link: #${id}`);
+// Projects retain stable deep links; the condensed navigation targets sections.
+for (const id of sectionDestinations) if (!fragments.has(id)) fail(`Section has no navigation link: #${id}`);
 
 const title = nodes.filter(({ tag }) => tag === "title");
 if (title.length !== 1 || !/Ruben Maxwell/i.test(title[0].text)) fail("The page must have one meaningful Ruben Maxwell title");

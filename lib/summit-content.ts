@@ -110,7 +110,7 @@ export const SUMMIT_CONTENT = {
           src: "/media/work/decyphergame1.webp",
           width: 460,
           height: 640,
-          alt: "Decyp3r word game screen.",
+          alt: "Decyp3r sigil game screen.",
         },
         {
           src: "/media/work/decyphergame2.webp",
