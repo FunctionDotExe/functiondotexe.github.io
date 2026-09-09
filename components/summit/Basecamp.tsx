@@ -12,8 +12,8 @@ export function Basecamp() {
         </div>
         <div className="basecamp-scene__note">
           <p className="basecamp-lead">I study Mathematics & Computer Science at the University of Toronto. Most of my learning starts with a question I can’t leave alone.</p>
-          <p>Why is this request slow? Where does a model get things wrong? What makes a game worth coming back to? From backend services at 4D to MRI research and dancing robots, I build my way toward an answer.</p>
-          <a className="text-link" href="#experience">See my experience <ArrowDown size={18} aria-hidden="true" /></a>
+          <p>Right now, I’m building backend services at Fourth Dimension. In my research, I look at how models work—and where they get things wrong.</p>
+          <p className="basecamp-scene__links"><a className="text-link" href="#experience">My work at 4D <ArrowDown size={18} aria-hidden="true" /></a><a className="text-link" href="#project-skin-cancer">The skin-image study <ArrowDown size={18} aria-hidden="true" /></a></p>
         </div>
         <nav className="project-index" aria-label="Jump to a project">
           {SUMMIT_CONTENT.landmarks.map((project, i) => (

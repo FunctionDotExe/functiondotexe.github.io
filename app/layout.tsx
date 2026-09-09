@@ -8,11 +8,12 @@ import "./project-arrival.css";
 import "./discovery-cues.css";
 import "./project-theatre.css";
 import "./skill-theatre.css";
+import "./refinements.css";
 import "./print.css";
 import { JourneyMotion } from "./JourneyMotion";
 import { ARRIVAL_BOOTSTRAP } from "@/lib/arrival";
 
-const siteUrl = new URL(process.env.SITE_URL ?? "https://rubenm.me");
+const siteUrl = new URL(process.env.SITE_URL ?? "https://aurel.rubenm.me");
 
 export const metadata: Metadata = {
   metadataBase: siteUrl,

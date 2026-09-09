@@ -5,7 +5,6 @@ import { ContactActions } from "./ContactActions";
 import { InteractiveDisclosures } from "./InteractiveDisclosures";
 import { BackgroundNotes } from "./BackgroundNotes";
 import { SkillCabinet } from "./SkillCabinet";
-import { TerrainGem } from "./TerrainGem";
 
 export function EarthJourney() {
   const { about, identity } = SUMMIT_CONTENT;
@@ -13,7 +12,6 @@ export function EarthJourney() {
     <div className="earth-journey" data-journey-chapter="depth">
       <InteractiveDisclosures />
       <section className="descent-threshold" id="descent" aria-labelledby="descent-title">
-        <TerrainGem className="terrain-gem--threshold" />
         <div className="threshold-stage">
           <div className="threshold-copy">
             <p className="section-label">Beneath the surface</p>
@@ -36,7 +34,7 @@ export function EarthJourney() {
           <div className="depth-intro"><p className="section-label">Experience</p><h2 id="experience-title">Where I’ve<br />worked.</h2><p>I’ve shipped backend services, tested quantum methods for medical imaging, and taught students to code. Here’s what I contributed in each role.</p><a className="text-link" href={identity.resume} target="_blank" rel="noreferrer">View résumé <FileText size={17} aria-hidden="true" /><span className="sr-only"> (PDF, opens in a new tab)</span></a><span className="terrain-note">Engineering · Research · Teaching</span></div>
           <div className="experience-list">
             {EXPERIENCE.map((item, index) => (
-              <details className="disclosure experience-entry" key={item.company} open={index === 0} data-hover-disclosure>
+              <details className="disclosure experience-entry" id={`experience-role-${index}`} key={item.company} open={index === 0} data-hover-disclosure>
                 <summary><span><small>{item.dates}</small><strong>{item.company}</strong><span className="experience-role">{item.role}</span><small className="disclosure-cue-label" aria-hidden="true"><span className="disclosure-cue-label__closed">Open role details</span><span className="disclosure-cue-label__open">Close role details</span></small></span><ChevronDown size={19} aria-hidden="true" /></summary>
                 <div className="disclosure__panel"><div className="disclosure__body"><p className="experience-meta">{item.type} · {item.location}</p><ul>{item.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}</ul></div></div>
               </details>
@@ -55,7 +53,6 @@ export function EarthJourney() {
       </section>
 
       <section className="contact-scene" id="contact" tabIndex={-1} aria-labelledby="contact-title">
-        <TerrainGem variant="pair" className="terrain-gem--contact" />
         <div className="shell">
           <div className="contact-scene__content"><p className="section-label">Every ending is a trailhead</p><h2 id="contact-title">What’s our<br />next adventure?</h2><p>A team to join. An idea to build. A question worth following.<br />I’d love to hear what you’re thinking.</p><ContactActions /></div>
           <footer className="contact-scene__footer"><p>© {new Date().getFullYear()} Ruben Maxwell</p><div>{identity.social.map((link) => <a href={link.href} target="_blank" rel="noreferrer" key={link.label}>{link.label}<ArrowUpRight size={15} aria-hidden="true" /><span className="sr-only"> (opens in a new tab)</span></a>)}</div><a href="#entry">Back to top <ArrowUp size={16} aria-hidden="true" /></a></footer>

@@ -4,3 +4,4 @@ out
 .pnpm-store
 tsconfig.tsbuildinfo
 .tmp/
+.impeccable/review/

@@ -95,9 +95,9 @@ export const SUMMIT_CONTENT = {
       kicker: "Six games. A fresh challenge every day.",
       description:
         PROJECTS[0].description,
-      detail: "I built the daily challenges, streak tracking, and live Firestore rankings, with transactional score submissions to prevent spam. The app achieved 95%+ crash-free sessions.",
+      detail: "I built the daily challenges, streak tracking, and live Firestore rankings. Transactional score submissions keep repeated entries from spamming the leaderboard.",
       tags: ["React Native", "Expo", "TypeScript", "Firebase"],
-      status: "95%+ crash-free sessions",
+      status: "Six daily games · iOS, Android & web",
       visual: "phones",
       image: {
         src: "/media/work/decyphergamehomepage.webp",
@@ -110,7 +110,7 @@ export const SUMMIT_CONTENT = {
           src: "/media/work/decyphergame1.webp",
           width: 460,
           height: 640,
-          alt: "Decyp3r word game screen.",
+          alt: "Decyp3r sigil puzzle screen.",
         },
         {
           src: "/media/work/decyphergame2.webp",
@@ -128,8 +128,8 @@ export const SUMMIT_CONTENT = {
       kicker: "Less price-checking. Better-informed trades.",
       description:
         PROJECTS[1].description,
-      detail: "I added caching, fallbacks, and retries to handle API rate limits. Internal testing cut decision time by over 70%, with up to 60% higher per-trade margins in favorable market windows.",
-      tags: ["React", "APIs", "Data modeling", "Caching"],
+      detail: "I brought live Bazaar prices and recipe costs into one interface, with a Node.js and Express API service. Cached recipe data, fallbacks, and retries help handle unreliable upstream requests.",
+      tags: ["JavaScript", "Node.js", "Express", "APIs"],
       status: "Live prices & recipe analysis",
       visual: "console",
       image: {
@@ -151,9 +151,9 @@ export const SUMMIT_CONTENT = {
       kicker: "Recognizing objects as they move",
       description:
         PROJECTS[2].description,
-      detail: "I worked in a team of five to build and test the CNN model, which reached 97% accuracy. We used real-time data collection and visualization to check its detections.",
+      detail: "I worked in a team of five to build and test a CNN-based object-detection model. We used real-time data collection and visualization to inspect its predictions.",
       tags: ["Python", "TensorFlow", "Computer vision", "CNNs"],
-      status: "97% model accuracy",
+      status: "Real-time detection · team of five",
       visual: "signal",
       image: {
         src: "/media/work/video-thumb.webp",

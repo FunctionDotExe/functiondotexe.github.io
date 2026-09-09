@@ -1,0 +1,153 @@
+/* Preserve the illustrated expedition. These corrections belong to its reading
+   pockets and controls; the layered world and scroll camera stay untouched. */
+html { scroll-padding-top: 92px; }
+section[id], article[id], details[id] { scroll-margin-top: 0; }
+.journey-nav--scrolled { background: #171139; border-color: #fff4db26; }
+.journey-nav__brand { font-family: var(--font-body); }
+.journey-nav__links a { font-size: .9rem; }
+
+/* The painting opens in depth; the visitor can read and act immediately. */
+.arrival__veil { display: none !important; }
+html[data-arrival] :is(.journey-hero__eyebrow, .journey-hero h1, .journey-hero__intro, .hero-actions, .journey-nav, .journey-hero__footer) {
+  opacity: 1 !important;
+  animation: none !important;
+}
+.journey-hero { min-height: 118svh; }
+.journey-hero__stage { min-height: max(720px, 100svh); padding-block: 7rem 8rem; }
+.journey-hero__intro { font-size: 1.0625rem; max-width: 31rem; }
+.journey-hero__footer { font-size: .8rem; }
+
+/* A shorter trailhead leaves room for discovery without repeating the bio. */
+.basecamp-scene { min-height: 0; }
+.basecamp-scene__content { min-height: 0; padding-block: 5rem 3rem; gap: 3rem 5rem; }
+.basecamp-scene__note { max-width: 34rem; font-size: 1.0625rem; color: var(--cream); }
+.basecamp-scene__links { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; }
+.basecamp-scene__content > div::before { background: radial-gradient(ellipse, #17102ade 20%, #17102ab3 50%, transparent 78%); inset: -4rem -5rem; }
+.project-index { position: relative; isolation: isolate; padding-bottom: 1rem; }
+.project-index::before { content: ""; position: absolute; z-index: -1; inset: -3rem -5rem; background: radial-gradient(ellipse, #17102adb 25%, #17102a9c 55%, transparent 80%); pointer-events: none; }
+.project-index__type { font-size: .8rem; color: #e7ddef; }
+.project-index a > span:last-child { font-size: 1rem; }
+.climb .section-heading { min-height: 0; padding-block: 6rem 3.5rem; }
+.climb .section-heading h2 { font-size: clamp(4rem, 7.8vw, 7.5rem); }
+.climb .section-heading > p { font-size: 1.0625rem; max-width: 40ch; line-height: 1.75; }
+.climb .section-heading::before { inset: -2rem -5%; background: radial-gradient(ellipse, #171139bd 15%, #1711398c 48%, transparent 76%); }
+
+/* Project objects stay suspended in the composition, but never stick over
+   their own captions or footer. The grid reserves their complete height. */
+.project-chapter.waypoint, .project-chapter.waypoint:nth-child(even) { margin-block: 2rem 5rem; }
+.project-chapter__stage { padding-block: 3rem; row-gap: 2rem; }
+.project-chapter__stage::before {
+  inset: -3rem -6vw;
+  background: radial-gradient(ellipse at 25% 45%, #18122df0 15%, #171139b8 50%, transparent 82%);
+}
+.project-chapter__object { position: relative; top: auto; align-self: center; }
+.project-chapter__index { font-size: .8125rem; }
+.project-chapter__altitude { font-size: .8125rem; }
+.project-chapter .phone-composition { padding-block: 1.5rem 2rem; }
+.phone-composition img:first-child { transform: translate(3%, 3%) rotate(-6deg); }
+.phone-composition img:nth-child(2) { transform: translateY(-3%) rotate(2deg); }
+.phone-composition img:last-child { transform: translate(-3%, 4%) rotate(7deg); }
+.project-media--console { transform: perspective(1300px) rotateY(5deg) rotateZ(-1.5deg); }
+.project-chapter .project-media figcaption { justify-content: center; font-size: .8125rem; color: var(--cream); }
+.project-chapter__pipeline > span { font-size: .8125rem; }
+.project-shot h4 { font-size: clamp(1.65rem, 2.5vw, 2.4rem); }
+.project-shot__body { font-size: 1.0625rem; line-height: 1.8; color: #f4eaf7; max-width: 44ch; }
+.project-shot__body + .project-shot__body { margin-top: 1rem; }
+.project-shot__evidence > span { font-size: .8125rem; }
+.project-chapter__footer { position: relative; isolation: isolate; gap: 1rem 2rem; }
+.project-chapter__footer::before { content: ""; position: absolute; z-index: -1; inset: -2rem -5rem; background: radial-gradient(ellipse, #130d2ed9 15%, #130d2e80 50%, transparent 76%); pointer-events: none; }
+.project-chapter__inspect { flex-wrap: wrap; gap: .5rem 1.5rem; }
+.project-chapter__inspect .text-link { font-size: .875rem; }
+.project-chapter__tools { font-size: .8125rem; color: #eee1f4; }
+.project-image-button:focus-visible .project-image-button__hint { outline: 2px solid var(--sun); outline-offset: 4px; }
+
+/* The descent is an authored scenic passage. Retain enough distance for the
+   original camera to cross the full cave plate without accelerating abruptly. */
+.descent-threshold { min-height: 195svh; }
+.threshold-copy > p:not(.section-label) { font-size: 1.0625rem; }
+.depth-section { min-height: 0; padding-block: 6rem; }
+.depth-intro { top: 7rem; }
+.depth-intro > p:not(.section-label), .about-scene__content > p:not(.section-label) { font-size: 1.0625rem; line-height: 1.8; }
+.depth-intro::before, .experience-list::before, .about-scene__content::before {
+  inset: -4rem -5rem;
+  background: radial-gradient(ellipse, #130b2be6 20%, #130b2bb8 52%, transparent 80%);
+}
+.descent-crust .depth-intro { padding-bottom: 2.5rem; }
+.skill-entry { position: relative; isolation: isolate; padding-block: 1.75rem 2rem; }
+.skill-entry::before { content: ""; position: absolute; z-index: -1; inset: -3rem -4rem; background: radial-gradient(ellipse, #130b2be6 20%, #130b2bb8 52%, transparent 80%); pointer-events: none; }
+.skill-entry h3 { font-size: clamp(1.8rem, 2.7vw, 2.75rem); }
+.skill-entry__description { font-size: 1.0625rem; line-height: 1.8; color: #f4eaf7; }
+.skill-entry__tools li { font-size: .875rem; color: #ddd0e8; }
+.skill-entry__evidence { margin: .75rem 0 0 2.5rem; font-size: .875rem; color: var(--sun); }
+.terrain-note { border-left-width: 1px; font-size: .8125rem; }
+.experience-entry summary strong { font-size: clamp(1.5rem, 2.5vw, 2.25rem); }
+.experience-entry summary small, .experience-meta { font-size: .8125rem; }
+.experience-role { font-size: .9375rem; }
+.experience-entry .disclosure__body { font-size: 1rem; line-height: 1.8; }
+.research-notes { padding-block: 3rem 5rem; }
+.research-notes::before, .background-notes::before { background: radial-gradient(ellipse, #170d30e6 25%, #170d30ad 55%, transparent 82%); inset: -4rem -5rem; }
+.research-note .disclosure__body, .background-note .disclosure__body { font-size: 1rem; line-height: 1.8; }
+.research-note summary small, .background-note summary small, .research-metrics dt { font-size: .8125rem; }
+.research-metrics { gap: 1rem; }
+.research-metrics dd { font-size: clamp(1.2rem, 2vw, 1.65rem); overflow-wrap: anywhere; }
+.about-scene { padding-top: 7rem; }
+.credentials { margin-top: 2rem; }
+.credentials a { background: #170d30cc; border-radius: 3px; }
+.credentials small { font-size: .8125rem; }
+.contact-scene { min-height: calc(100svh - 92px); padding-top: 6rem; padding-bottom: 1rem; }
+.contact-scene__content::before { inset: -3rem 0; background: radial-gradient(ellipse, #27102cbf 20%, #27102c7a 50%, transparent 80%); }
+.contact-scene__content > p:not(.section-label) { font-size: 1.0625rem; }
+.contact-scene__footer { margin-top: 3rem; font-size: .8125rem; }
+
+@media (hover: none), (pointer: coarse) {
+  .descent-threshold { min-height: max(195svh, 185lvh); }
+}
+@media (max-width: 760px) {
+  .journey-hero { min-height: 106svh; }
+  .journey-hero__stage { min-height: max(740px, 100svh); padding-block: 8rem; }
+  .journey-hero__intro { font-size: 1rem; max-width: 31ch; }
+  .journey-hero__eyebrow { font-size: .8125rem; }
+  .journey-hero__footer, .journey-hero__footer a, .journey-hero__footer .arrival-replay { font-size: .75rem; }
+  .summit-marker { display: none; }
+  .basecamp-scene__content { gap: 2rem; padding-block: 3.5rem 2rem; }
+  .basecamp-scene__links { gap: .25rem 1rem; }
+  .project-index { gap: 1.5rem 1rem; }
+  .project-index__type { font-size: .75rem; }
+  .project-index a > span:last-child { font-size: .9375rem; }
+  .climb .section-heading { padding-block: 4rem 2rem; gap: 1.5rem; }
+  .climb .section-heading h2 { font-size: clamp(3.5rem, 13vw, 5.75rem); }
+  .climb .section-heading > p { font-size: 1rem; }
+  .project-chapter.waypoint, .project-chapter.waypoint:nth-child(even) { margin-block: 1rem 3rem; }
+  .project-chapter__stage { padding-block: 2rem; gap: 1.75rem; }
+  .project-chapter__stage::before { background: radial-gradient(ellipse, #130d2edb 20%, #130d2eb8 57%, transparent 84%); inset: -3rem -4rem; }
+  .project-chapter__object { padding-block: .5rem; }
+  .project-chapter .phone-composition { padding-block: 1rem 1.5rem; }
+  .project-chapter__pipeline { gap: .75rem; margin-top: 1.25rem; }
+  .project-chapter__pipeline > span { font-size: .8125rem; }
+  .project-chapter__tools { font-size: .8125rem; }
+  .project-shot__body { font-size: 1rem; line-height: 1.8; }
+  .project-chapter__inspect { gap: .5rem 1.25rem; }
+  .project-chapter__footer::before { inset-inline: -3rem; }
+  .depth-section { padding-block: 4rem; }
+  .depth-intro { position: relative; top: auto; }
+  .depth-intro > p:not(.section-label), .about-scene__content > p:not(.section-label) { font-size: 1rem; }
+  .skill-entry__description { font-size: 1rem; }
+  .skill-entry__heading { gap: .75rem; }
+  .skill-entry__description, .skill-entry__tools, .skill-entry__evidence { margin-left: 0; }
+  .skill-entry__number { display: none; }
+  .experience-entry { padding-left: 1.35rem; }
+  .experience-entry summary::before { left: -1.65rem; }
+  .experience-entry .disclosure__body { font-size: 1rem; }
+  .research-notes { padding-block: 2rem 4rem; }
+  .research-metrics { grid-template-columns: 1fr; gap: 1.25rem; }
+  .research-metrics > div { flex-direction: column; gap: .25rem; }
+  .research-metrics dd { font-size: 1.35rem; }
+  .contact-scene { padding-block: 4rem 1rem; }
+  .contact-scene__content::before { inset-inline: -.75rem; }
+  .contact-scene__content > p:not(.section-label) { font-size: 1rem; }
+  .contact-scene__footer { margin-top: 2rem; font-size: .75rem; }
+}
+@media (prefers-reduced-motion: reduce), (max-height: 600px) and (orientation: landscape) {
+  .descent-threshold { min-height: 0; }
+  .threshold-stage { position: relative; min-height: 80svh; }
+}

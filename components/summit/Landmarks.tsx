@@ -8,7 +8,7 @@ export function Landmarks() {
       <div className="shell">
         <header className="section-heading">
           <div><p className="section-label">Selected explorations</p><h2 id="climb-title">Ideas, out<br />in the world.</h2></div>
-          <p>Four projects. Four different kinds of challenge.<br />Follow the spark, the system, and the proof.</p>
+          <p>Games, models, and a robot that dances. A few things I’ve built along the way.</p>
         </header>
         <div className="climb__waypoints">{SUMMIT_CONTENT.landmarks.map((project, index) => <ProjectTheatre project={project} index={index} key={project.title}/>)}</div>
         <ResearchNotes />

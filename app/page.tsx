@@ -5,7 +5,6 @@ import { Landmarks } from "@/components/summit/Landmarks";
 import { SummitHero } from "@/components/summit/SummitHero";
 import { SummitNav } from "@/components/summit/SummitNav";
 import { ArrivalIntro } from "@/components/summit/ArrivalIntro";
-import { JourneyInstruments } from "@/components/summit/JourneyInstruments";
 import { ProjectArrival } from "@/components/summit/ProjectArrival";
 import { DiscoveryCues } from "@/components/summit/DiscoveryCues";
 
@@ -14,7 +13,6 @@ export default function Home() {
     <>
       <ArrivalIntro />
       <SummitNav />
-      <JourneyInstruments />
       <ProjectArrival />
       <DiscoveryCues />
       <main className="journey" id="main-content" tabIndex={-1}>

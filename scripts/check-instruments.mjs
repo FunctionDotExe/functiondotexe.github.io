@@ -20,7 +20,9 @@ function harness(name) {
   const preference = { ...events(), matches: false };
   const pointer = { ...events(), matches: true };
   const properties = new Map();
-  const document = { body: { style: { overflow: "auto" } }, activeElement: null };
+  const document = { documentElement: {}, body: { style: { overflow: "auto" } }, activeElement: null };
+  const scrolls = [];
+  const historyEntries = [];
   let serial = 0, hookIndex = 0, dirty = false;
   let tree, queuedEffects, resizeObserver;
   const trigger = { focus: () => { document.activeElement = trigger; } };
@@ -37,7 +39,7 @@ function harness(name) {
   const sections = new Map(["entry", "work", "crust", "experience", "about", "contact"].map((id, index) => [id, {
     top: index * 1000,
     getBoundingClientRect() { return { top: this.top - context.scrollY }; },
-    focus() { document.activeElement = this; },
+    focus(options) { this.focusOptions = options; document.activeElement = this; },
   }]));
   document.getElementById = (id) => sections.get(id);
   document.querySelector = (selector) => selector.startsWith("#") ? sections.get(selector.slice(1)) : {};
@@ -63,6 +65,13 @@ function harness(name) {
   };
   const context = {
     exports: {}, document, scrollY: 0, innerHeight: 900, innerWidth: 640, ...browser,
+    location: { hash: "" },
+    history: { state: { app: true }, pushState: (state, _title, hash) => { historyEntries.push({ state, hash }); context.location.hash = hash; } },
+    getComputedStyle: () => {
+      assert.notEqual(document.body.style.overflow, "hidden", "Anchor positions must only be measured after releasing the modal scroll lock");
+      return { scrollPaddingTop: "92px" };
+    },
+    scrollTo: (options) => { scrolls.push(options); context.scrollY = options.top; browser.fire("scroll"); },
     requestAnimationFrame: (callback) => { frames.set(++serial, callback); return serial; },
     cancelAnimationFrame: (id) => frames.delete(id),
     matchMedia: (query) => query.includes("reduced-motion") ? preference : pointer,
@@ -100,13 +109,15 @@ function harness(name) {
   const find = (predicate) => walk(tree, predicate);
   render();
   return {
-    document, artifact, dialog, properties,
+    document, artifact, dialog, properties, scrolls, historyEntries,
     frame: () => { const pending = [...frames.values()]; frames.clear(); pending.forEach((callback) => callback()); if (dirty) render(); },
     pending: () => frames.size,
     open: () => { find((node) => node.props.className === "route-instrument" || node.props.className?.includes("journey-nav__menu-button")).props.onClick(); render(); },
     navigate: (id, event = {}) => {
-      find((node) => node.props.href === `#${id}` && typeof node.props.onClick === "function").props.onClick({ button: 0, ...event });
+      let prevented = false;
+      find((node) => node.props.href === `#${id}` && typeof node.props.onClick === "function").props.onClick({ button: 0, preventDefault: () => { prevented = true; }, ...event });
       if (dirty) render();
+      return prevented;
     },
     current: () => find((node) => node.props.className === "route-instrument").props["aria-label"],
     active: (id) => find((node) => node.props.href === `#${id}`)?.props["aria-current"],
@@ -154,14 +165,38 @@ assert.equal(route.document.body.style.overflow, "auto");
 
 const navigation = harness("SummitNav");
 navigation.open();
-navigation.navigate("crust", { metaKey: true });
+assert.equal(navigation.navigate("crust", { metaKey: true }), false, "Modified links must retain their native behavior");
 assert.equal(navigation.dialog.open, true);
-navigation.navigate("crust");
+assert.equal(navigation.navigate("crust"), true, "Navigation must prevent a fragment jump before the modal unlocks");
+assert.equal(navigation.document.body.style.overflow, "auto", "Mobile navigation must release the body lock immediately");
+navigation.frame();
+assert.equal(navigation.scrolls.length, 0, "Wait for layout and native dialog focus restoration before scrolling");
+navigation.section("crust").top = 2150;
 navigation.frame();
 assert.equal(navigation.document.activeElement, navigation.section("crust"), "Mobile Skills navigation must focus the skills section");
+assert.equal(navigation.section("crust").focusOptions.preventScroll, true);
+assert.equal(navigation.scrolls[0].top, 2058, "Use the settled destination position and the one root scroll-padding offset");
+assert.equal(navigation.scrolls[0].behavior, "smooth");
+assert.equal(navigation.historyEntries[0].hash, "#crust");
+assert.equal(navigation.historyEntries[0].state.app, true, "Anchor history must preserve the application's existing history state");
 navigation.scroll(1700);
 navigation.frame();
+assert.equal(navigation.active("work"), "location", "Active navigation must reflect the sections' current positions");
+navigation.scroll(2000);
+navigation.frame();
 assert.equal(navigation.active("crust"), "location", "Skills must be represented in the active main navigation");
+navigation.reduce();
+navigation.navigate("crust");
+navigation.frame();
+navigation.frame();
+assert.equal(navigation.scrolls.at(-1).behavior, "instant", "Reduced motion must apply to section jumps too");
+assert.equal(navigation.historyEntries.length, 1, "Returning to the current fragment must not duplicate the history entry");
+navigation.navigate("contact");
+navigation.frame();
+navigation.open();
+navigation.frame();
+assert.equal(navigation.document.activeElement, navigation.dialog, "Reopening the menu must cancel pending destination focus");
+assert.equal(navigation.historyEntries.length, 1, "A cancelled section jump must not change the URL");
 navigation.open();
 navigation.backdrop();
 assert.equal(navigation.dialog.open, false, "The mobile menu must dismiss on a backdrop click like the other dialogs");
@@ -169,6 +204,7 @@ navigation.open();
 navigation.viewport(1100);
 assert.equal(navigation.dialog.open, false, "Desktop resizing must close the mobile menu and release scroll lock");
 navigation.frame();
+navigation.navigate("contact");
 navigation.unmount();
 assert.equal(navigation.document.body.style.overflow, "auto");
 

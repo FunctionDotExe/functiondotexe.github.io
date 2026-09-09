@@ -18,6 +18,7 @@ export function SummitNav() {
   const [open, setOpen] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
   const navigationFrame = useRef(0);
+  const previousOverflow = useRef<string | null>(null);
   const { identity } = SUMMIT_CONTENT;
 
   useEffect(() => {
@@ -46,33 +47,58 @@ export function SummitNav() {
 
   useEffect(() => {
     if (!open) return;
-    const previous = document.body.style.overflow;
+    previousOverflow.current ??= document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const onResize = () => { if (window.innerWidth > 760) dialog.current?.close(); };
     window.addEventListener("resize", onResize);
     return () => {
-      document.body.style.overflow = previous;
+      if (previousOverflow.current !== null) {
+        document.body.style.overflow = previousOverflow.current;
+        previousOverflow.current = null;
+      }
       window.removeEventListener("resize", onResize);
     };
   }, [open]);
 
   const followLink = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    if (!document.querySelector(href)) return;
+    event.preventDefault();
     dialog.current?.close();
+    setOpen(false);
+    // Release the modal lock before measuring. A native fragment jump while the
+    // body is still locked can leave mobile browsers at the old layout position.
+    if (previousOverflow.current !== null) {
+      document.body.style.overflow = previousOverflow.current;
+      previousOverflow.current = null;
+    }
     cancelAnimationFrame(navigationFrame.current);
-    navigationFrame.current = requestAnimationFrame(() => document.querySelector<HTMLElement>(href)?.focus({ preventScroll: true }));
+    navigationFrame.current = requestAnimationFrame(() => {
+      navigationFrame.current = requestAnimationFrame(() => {
+        navigationFrame.current = 0;
+        const destination = document.querySelector<HTMLElement>(href);
+        if (!destination) return;
+        const padding = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+        const top = Math.max(0, destination.getBoundingClientRect().top + window.scrollY - padding);
+        // pushState retains Back/Forward navigation without an earlier native
+        // fragment scroll racing the dialog's focus restoration.
+        if (location.hash !== href) history.pushState(history.state, "", href);
+        destination.focus({ preventScroll: true });
+        window.scrollTo({ top, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+      });
+    });
   };
 
   return (
     <>
       <a className="skip-link" href="#main-content">Skip to content</a>
       <header className={`journey-nav${scrolled ? " journey-nav--scrolled" : ""}`}>
-        <a className="journey-nav__brand" href="#entry" aria-label="Ruben Maxwell, back to top"><Mountain size={24} strokeWidth={1.5} aria-hidden="true" /><span>Ruben Maxwell</span></a>
+        <a className="journey-nav__brand" href="#entry" aria-label="Ruben Maxwell, back to top" onClick={(event) => followLink(event, "#entry")}><Mountain size={24} strokeWidth={1.5} aria-hidden="true" /><span>Ruben Maxwell</span></a>
         <nav className="journey-nav__links" aria-label="Primary navigation">
-          {navigation.map(({ label, href }) => <a key={href} href={href} aria-current={active === href ? "location" : undefined}>{label}</a>)}
+          {navigation.map(({ label, href }) => <a key={href} href={href} aria-current={active === href ? "location" : undefined} onClick={(event) => followLink(event, href)}>{label}</a>)}
         </nav>
         <a className="journey-nav__hello" href={`mailto:${identity.email}`}>Email me <Mail size={16} aria-hidden="true" /></a>
-        <button className="journey-nav__menu-button icon-button" type="button" aria-label="Open navigation" aria-haspopup="dialog" aria-expanded={open} aria-controls="journey-menu" onClick={() => { dialog.current?.showModal(); if (dialog.current) dialog.current.scrollTop = 0; setOpen(true); }}><Menu size={22} aria-hidden="true" /></button>
+        <button className="journey-nav__menu-button icon-button" type="button" aria-label="Open navigation" aria-haspopup="dialog" aria-expanded={open} aria-controls="journey-menu" onClick={() => { cancelAnimationFrame(navigationFrame.current); dialog.current?.showModal(); if (dialog.current) dialog.current.scrollTop = 0; setOpen(true); }}><Menu size={22} aria-hidden="true" /></button>
       </header>
       <dialog ref={dialog} className="journey-menu" id="journey-menu" aria-labelledby="menu-title" onClose={() => setOpen(false)} onClick={(event) => { if (event.target === event.currentTarget) dialog.current?.close(); }}>
         <div className="journey-menu__heading"><p id="menu-title">Take a look around.</p><button className="icon-button" type="button" aria-label="Close navigation" onClick={() => dialog.current?.close()}><X size={22} aria-hidden="true" /></button></div>

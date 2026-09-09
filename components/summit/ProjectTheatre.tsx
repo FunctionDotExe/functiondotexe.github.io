@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { ArrowRight, Play } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Play } from "lucide-react";
 import type { Landmark } from "@/lib/summit-content";
 import { PROJECT_STORIES } from "@/lib/project-story";
 import { RESUME } from "@/lib/constants";
@@ -34,12 +34,12 @@ export function ProjectTheatre({ project, index }: { project: Landmark; index: n
             </ArtifactMotion>
             <div className="project-chapter__pipeline" aria-label="How the project works">{story.route.map((node, i) => <span key={node}>{node}{i < 2 && <ArrowRight size={15} aria-hidden="true"/>}</span>)}</div>
           </div>
-          <div className="project-chapter__narrative">{story.beats.map((beat, i) => <section className="project-shot" id={`${id}-beat-${i}`} key={beat.label}>
-            <p className="project-shot__eyebrow">{beat.label}</p><h4>{beat.title}</h4><p className="project-shot__body">{beat.body}</p>
-            {i === 2 && <div className="project-shot__evidence"><strong>{beat.value}</strong><span>{beat.caption}</span></div>}
-          </section>)}</div>
+          <div className="project-chapter__narrative"><div className="project-shot">
+            <h4>{story.title}</h4><p className="project-shot__body">{story.description}</p><p className="project-shot__body">{story.contribution}</p>
+            {story.evidence && <div className="project-shot__evidence"><strong>{story.evidence.value}</strong><span>{story.evidence.caption}</span></div>}
+          </div></div>
           <footer className="project-chapter__footer">
-            <div className="project-chapter__inspect"><ProjectInspectButton />{project.visual === "signal" && <a className="text-link" href={RESUME.youtubeUrl} target="_blank" rel="noreferrer"><Play size={16} aria-hidden="true"/>Watch demo<span className="sr-only"> on YouTube (opens in a new tab)</span></a>}</div>
+            <div className="project-chapter__inspect"><ProjectInspectButton />{project.visual === "console" && <><a className="text-link" href="https://github.com/FunctionDotExe/ForgeFountain" target="_blank" rel="noreferrer">View source <ArrowUpRight size={16} aria-hidden="true" /><span className="sr-only"> on GitHub (opens in a new tab)</span></a><a className="text-link" href="https://github.com/FunctionDotExe/ForgeFountain/blob/main/server.js" target="_blank" rel="noreferrer">API implementation <ArrowUpRight size={16} aria-hidden="true" /><span className="sr-only"> on GitHub (opens in a new tab)</span></a></>}{project.visual === "signal" && <a className="text-link" href={RESUME.youtubeUrl} target="_blank" rel="noreferrer"><Play size={16} aria-hidden="true"/>Watch demo<span className="sr-only"> on YouTube (opens in a new tab)</span></a>}</div>
             <ul className="project-chapter__tools" aria-label="Tools and disciplines">{project.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul>
           </footer>
         </div>

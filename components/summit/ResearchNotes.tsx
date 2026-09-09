@@ -1,12 +1,10 @@
 import { ChevronDown } from "lucide-react";
 import { RESEARCH_PROJECTS } from "@/lib/constants";
-import { TerrainGem } from "./TerrainGem";
 
 export function ResearchNotes() {
   return (
     <section className="research-notes" aria-labelledby="research-title">
-      <TerrainGem variant="shard" className="terrain-gem--research" />
-      <header><p className="section-label">Research & robotics</p><h3 id="research-title">More than<br />a working demo.</h3><p>Testing how a model performs across patient groups, and getting a robot to respond to the world around it.</p></header>
+      <header><p className="section-label">Research & robotics</p><h3 id="research-title">Look a little<br />closer.</h3><p>How a model performs across patient groups. How a robot responds to the world around it.</p></header>
       <div className="research-notes__list">
         {RESEARCH_PROJECTS.map((project, index) => (
           <details className="disclosure research-note" id={`project-${project.id}`} key={project.id} data-hover-disclosure open={index === 0}>
