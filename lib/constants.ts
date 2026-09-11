@@ -143,6 +143,7 @@ export type ProjectImage = {
   src: string;
   width: number;
   height: number;
+  alt?: string;
 };
 
 export type Project = {
@@ -151,16 +152,46 @@ export type Project = {
   stack: string[];
   image?: ProjectImage;
   video?: string;
+  youtubeId?: string;
   gallery?: ProjectImage[];
   mediaFit?: "cover" | "contain";
   metric?: string;
   link: string;
   visual: ProjectVisual;
+  category?: string;
+  linkLabel?: string;
 };
 
 export const PROJECTS: Project[] = [
   {
+    title: "Descent into Madness",
+    description: "My browser card roguelike. Explore the dungeon, build a deck, and keep your sanity through each fight.",
+    stack: ["Game development", "Deckbuilding", "Pixel art"],
+    category: "Browser game",
+    image: { src: "/media/work/descent-battle-supplied.webp", width: 1039, height: 686, alt: "Moss Ninja facing the Drowned Choir, with attack and defence cards in hand" },
+    gallery: [
+      { src: "/media/work/descent-deck.webp", width: 1280, height: 720, alt: "Choosing the opening deck in Descent into Madness" },
+      { src: "/media/work/descent-title.webp", width: 504, height: 504, alt: "Descent into Madness title screen" },
+    ],
+    mediaFit: "contain",
+    link: "https://rubenm.me/descent/",
+    linkLabel: "Play Descent",
+    visual: "gradient",
+  },
+  {
+    title: "Read the Room",
+    description: "A browser party game I made for friends. Grab the room password and join in.",
+    stack: ["Party game", "Web"],
+    category: "Browser game",
+    image: { src: "/media/work/read-the-room.webp", width: 1280, height: 720, alt: "Read the Room party pack landing page" },
+    mediaFit: "contain",
+    link: "https://rubenm.me/ReadTheRoom/",
+    linkLabel: "Open Read the Room",
+    visual: "gradient",
+  },
+  {
     title: "Decyp3r: Microgame App",
+    category: "Mobile app",
     description:
       "React Native microgame with Firebase auth, score submissions, daily limits, streaks, and live rankings.",
     stack: ["React Native", "Expo", "TypeScript", "Firebase"],
@@ -177,6 +208,7 @@ export const PROJECTS: Project[] = [
   },
   {
     title: "ForgeFountain",
+    category: "Market tools",
     description:
       "Market intelligence app that ranks live game-economy opportunities by return, liquidity, and execution time.",
     stack: ["React", "APIs", "Data Modeling", "Caching"],
@@ -192,6 +224,7 @@ export const PROJECTS: Project[] = [
   },
   {
     title: "AI Object Detection",
+    category: "Computer vision",
     description:
       "CNN-based computer vision project with real-time detection, data collection, and visualization.",
     stack: ["Python", "TensorFlow", "Computer Vision", "CNNs"],
@@ -201,11 +234,14 @@ export const PROJECTS: Project[] = [
   },
   {
     title: "Arduino Dancing Robot",
+    category: "Robotics",
     description:
       "3D-printed motor-controlled robot designed in Fusion 360 and programmed with Arduino.",
     stack: ["Arduino", "Fusion 360", "Robotics", "Prototyping"],
     image: { src: "/media/work/arduinorrobot.webp", width: 1168, height: 879 },
-    link: "",
+    youtubeId: "M2nENtAZZjE",
+    link: "https://www.youtube.com/watch?v=M2nENtAZZjE",
+    linkLabel: "Watch on YouTube",
     visual: "voronoi",
   },
 ];

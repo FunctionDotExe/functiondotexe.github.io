@@ -1,149 +1,94 @@
 import { PROJECTS } from "@/lib/constants";
+import { NOTEBOOKS } from "@/lib/notebooks";
 import { ArrowUpRight } from "lucide-react";
+import { ProjectGallery } from "./ProjectGallery";
+import { ProjectVideo } from "./ProjectVideo";
 
 export function Projects() {
   return (
-    <section id="projects" className="py-32 px-4 bg-[#161410]">
-      <div className="max-w-7xl mx-auto">
-        <p className="text-xs tracking-[0.3em] text-[#C9A84C] uppercase mb-8" data-reveal>
-          Projects
-        </p>
-        <h2
-          className="font-display text-5xl md:text-6xl text-[#F2EBD9] mb-20 leading-tight max-w-none"
-          data-reveal
-        >
-          Selected Work
-        </h2>
-
-        {/* Projects Grid */}
-        <div className="grid md:grid-cols-2 gap-12">
-          {PROJECTS.map((project, i) => (
-            <div
-              key={i}
-              className="group relative bg-[#0E0D0B] border border-[#2A2520] p-8 hover:border-[#C9A84C] transition-all duration-500 overflow-hidden"
-              data-reveal
-              style={{ "--reveal-delay": i % 2 } as React.CSSProperties}
-            >
-              {/* Background gradient on hover */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#C9A84C]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-              <div className="relative z-10">
-                {(project.image || project.video) && (
-                  <div className="mb-7 overflow-hidden border border-[#2A2520] bg-[#161410] aspect-[16/10]">
-                    {project.video ? (
-                      <video
-                        src={project.video}
-                        className="h-full w-full object-cover opacity-85 transition duration-700 group-hover:opacity-100"
-                        muted
-                        playsInline
-                        controls
-                        preload="none"
-                      />
-                    ) : (
-                      project.image && (
-                        <img
-                          src={project.image.src}
-                          width={project.image.width}
-                          height={project.image.height}
-                          loading="lazy"
-                          decoding="async"
-                          alt={`${project.title} preview`}
-                          className={`h-full w-full opacity-85 transition duration-700 group-hover:scale-[1.03] group-hover:opacity-100 ${
-                            project.mediaFit === "contain" ? "object-contain p-3" : "object-cover"
-                          }`}
-                        />
-                      )
-                    )}
-                  </div>
-                )}
-
-                {project.gallery && (
-                  <div className="mb-7 grid grid-cols-3 gap-2">
-                    {project.gallery.map((image, imageIndex) => (
-                      <div
-                        key={image.src}
-                        className="aspect-[4/3] overflow-hidden border border-[#2A2520] bg-[#161410]"
-                      >
-                        <img
-                          src={image.src}
-                          width={image.width}
-                          height={image.height}
-                          loading="lazy"
-                          decoding="async"
-                          alt={`${project.title} screenshot ${imageIndex + 1}`}
-                          className={`h-full w-full opacity-75 transition duration-700 group-hover:opacity-100 ${
-                            project.mediaFit === "contain" ? "object-contain p-2" : "object-cover"
-                          }`}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Header */}
-                <div className="flex items-start justify-between mb-6">
-                  <div>
-                    <p className="text-xs text-[#7A7060] tracking-widest uppercase mb-3">
-                      {project.visual === "voronoi"
-                        ? "Generative"
-                        : project.visual === "wireframe"
-                          ? "3D Visualization"
-                          : "Interactive"}
-                    </p>
-                    <h3 className="font-display text-3xl text-[#F2EBD9] group-hover:text-[#C9A84C] transition-colors">
-                      {project.title}
-                    </h3>
-                  </div>
-                  {project.link && (
-                    <a
-                      href={project.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[#C9A84C] transition-transform duration-300 hover:scale-110 hover:rotate-45"
-                    >
-                      <ArrowUpRight size={24} />
-                    </a>
-                  )}
+    <section id="projects" className="portfolio-work">
+      <div className="work-container">
+        <div className="work-heading" data-reveal>
+          <h2>Selected Work</h2>
+          <p>Games, experiments, and things I&apos;ve built.</p>
+        </div>
+        <div className="projects-grid">
+          {PROJECTS.map((project) => (
+            <article key={project.title} className="project-card" data-reveal>
+              {project.image && (project.youtubeId
+                ? <ProjectVideo title={project.title} youtubeId={project.youtubeId} poster={project.image} />
+                : <ProjectGallery title={project.title} images={[project.image, ...(project.gallery || [])]} fit={project.mediaFit} />)}
+              <div className="project-copy">
+                <div className="project-title-row">
+                  <h3>{project.title}</h3>
+                  {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer"
+                    aria-label={`Open ${project.title}`} className="project-arrow"><ArrowUpRight size={24} /></a>}
                 </div>
-
-                {/* Description */}
-                <p className="text-base text-[#F2EBD9] mb-6 opacity-90 leading-relaxed">
-                  {project.description}
-                </p>
-
-                {project.metric && (
-                  <p className="mb-6 border-l border-[#C9A84C] pl-4 text-sm font-semibold text-[#C9A84C]">
-                    {project.metric}
-                  </p>
-                )}
-
-                {/* Tech stack */}
-                <div className="flex flex-wrap gap-2">
-                  {project.stack.map((tech, j) => (
-                    <span
-                      key={j}
-                      className="text-xs px-3 py-1 bg-[#2A2520] text-[#C9A84C] rounded-full border border-[#8A6E2F]/30"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-
-                {/* View Project Button */}
-                {project.link && (
-                  <a
-                    href={project.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-6 inline-block text-sm text-[#C9A84C] underline hover:no-underline transition-transform duration-300 hover:translate-x-1"
-                  >
-                    View project
-                  </a>
-                )}
+                <p className="project-category">{project.category}</p>
+                <p className="project-description">{project.description}</p>
+                {project.metric && <p className="project-metric">{project.metric}</p>}
+                <ul className="project-stack" aria-label="Technologies and topics">
+                  {project.stack.map((tech) => <li key={tech}>{tech}</li>)}
+                </ul>
+                {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="work-link">
+                  {project.linkLabel || "View project"}<ArrowUpRight size={16} aria-hidden="true" />
+                </a>}
               </div>
-            </div>
+            </article>
           ))}
         </div>
+
+        <div className="work-subheading" data-reveal>
+          <h3>Notebooks</h3>
+          <p>Code and experiments, open in Colab.</p>
+        </div>
+        <div className="notebook-grid">
+          {NOTEBOOKS.map((notebook) => (
+            <article key={notebook.link} className="notebook" data-reveal>
+              <ProjectGallery title={notebook.title} images={[notebook.image]} fit="contain" />
+              <h4>{notebook.title}</h4>
+              <p>{notebook.description}</p>
+              <span className="notebook-tools">{notebook.tools}</span>
+              <a href={notebook.link} target="_blank" rel="noopener noreferrer" className="work-link"
+                aria-label={`Open ${notebook.title} in Colab`}>Open notebook<ArrowUpRight size={16} aria-hidden="true" /></a>
+            </article>
+          ))}
+        </div>
+
+        <div className="work-subheading" data-reveal>
+          <h3>On the workbench</h3>
+          <p>A VEX build and a couple of 3D prints.</p>
+        </div>
+        <article className="robot-build" data-reveal>
+          <ProjectGallery title="VEX robot" images={[
+            { src: "/media/work/vex-robot.webp", width: 1600, height: 1204, alt: "VEX robot on the workbench, showing the drive wheels, gears, and pneumatics" },
+            { src: "/media/work/vex-detail.webp", width: 1014, height: 1347, alt: "Close-up of the VEX robot frame, air tank, and intake" },
+          ]} />
+          <div className="robot-details">
+            <h4>VEX robot</h4>
+            <p>The build on the bench, a closer look at the mechanism, and a short test clip.</p>
+            <video controls playsInline preload="none" poster="/media/work/vex-video-poster.webp" aria-label="VEX robot test clip">
+              <source src="/media/work/vex-demo.mp4" type="video/mp4" />
+              <a href="/media/work/vex-demo.mp4">Watch the robot test clip</a>
+            </video>
+            <a className="work-link" href="/media/work/vex-demo.mp4" target="_blank" rel="noopener noreferrer">Open video<ArrowUpRight size={16} aria-hidden="true" /></a>
+          </div>
+        </article>
+        <figure className="prints-showcase" data-reveal>
+          <div className="prints-grid">
+          <div>
+            <ProjectGallery title="3D print" portrait images={[
+              { src: "/media/work/hollow-knight-print.webp", width: 1100, height: 1461, alt: "My white and grey 3D print of the Knight from Hollow Knight" },
+            ]} />
+          </div>
+          <div>
+            <ProjectGallery title="3D print" portrait images={[
+              { src: "/media/work/warrior-print.webp", width: 1100, height: 1461, alt: "My bronze-coloured 3D print of an armoured warrior with a sword and shield" },
+            ]} />
+          </div>
+          </div>
+          <figcaption className="prints-caption">some things i like printing on my free time :)</figcaption>
+        </figure>
       </div>
     </section>
   );
