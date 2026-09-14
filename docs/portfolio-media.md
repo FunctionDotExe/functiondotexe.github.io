@@ -9,7 +9,7 @@ The Next.js app is the production source (see `.github/workflows/pages.yml`). Th
 - `vex-robot.webp`, `vex-detail.webp`: supplied VEX workbench photos.
 - `hollow-knight-print.webp`, `warrior-print.webp`: supplied photographs of prints. These are prints of third-party models, not original model designs by Ruben.
 - `descent-battle-supplied.webp`: supplied screenshot from Ruben's Descent game.
-- `vex-demo.mp4`: the supplied `PXL_20250410_185646744.mp4`, copied unchanged (4-second robot test).
+- `vex-demo.mp4`: the supplied `PXL_20250410_185646744.mp4` (4-second robot test). On September 13, 2026, its audio track was removed at the user's request. The video stream was copied without re-encoding and its SHA-256 matched the original. The published MP4 contains only a video track; versioned player/direct links refresh cached copies. The original download remains unchanged.
 - `vex-video-poster.webp`: frame at roughly one second from the supplied video, captured in the browser and cropped to remove playback controls.
 
 Photos were resized without enlargement and converted to WebP. No generative edits.

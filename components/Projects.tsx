@@ -67,11 +67,11 @@ export function Projects() {
           <div className="robot-details">
             <h4>VEX robot</h4>
             <p>The build on the bench, a closer look at the mechanism, and a short test clip.</p>
-            <video controls playsInline preload="none" poster="/media/work/vex-video-poster.webp" aria-label="VEX robot test clip">
-              <source src="/media/work/vex-demo.mp4" type="video/mp4" />
-              <a href="/media/work/vex-demo.mp4">Watch the robot test clip</a>
+            <video controls muted playsInline preload="none" poster="/media/work/vex-video-poster.webp" aria-label="VEX robot test clip">
+              <source src="/media/work/vex-demo.mp4?v=silent-1" type="video/mp4" />
+              <a href="/media/work/vex-demo.mp4?v=silent-1">Watch the robot test clip</a>
             </video>
-            <a className="work-link" href="/media/work/vex-demo.mp4" target="_blank" rel="noopener noreferrer">Open video<ArrowUpRight size={16} aria-hidden="true" /></a>
+            <a className="work-link" href="/media/work/vex-demo.mp4?v=silent-1" target="_blank" rel="noopener noreferrer">Open video<ArrowUpRight size={16} aria-hidden="true" /></a>
           </div>
         </article>
         <figure className="prints-showcase" data-reveal>
