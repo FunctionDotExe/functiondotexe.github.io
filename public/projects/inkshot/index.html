@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0e0d0b">
+  <title>Inkshot — A Unity / C# survival shooter | Ruben Maxwell</title>
+  <meta name="description" content="A look inside Inkshot, Ruben Maxwell’s solo Unity and C# survival shooter: gameplay, weapon progression, buildable cover and multiplayer engineering.">
+  <link rel="canonical" href="https://rubenm.me/projects/inkshot/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Inkshot — A solo Unity / C# survival shooter">
+  <meta property="og:description" content="Explore the game, its illustrated world and the engineering behind its combat, progression and private multiplayer rooms.">
+  <meta property="og:url" content="https://rubenm.me/projects/inkshot/">
+  <meta property="og:image" content="https://rubenm.me/projects/inkshot/images/courtyard.png">
+  <meta property="og:image:width" content="1600">
+  <meta property="og:image:height" content="900">
+  <meta property="og:image:alt" content="Inkshot’s theater courtyard, viewed from behind a first-person shotgun.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="gallery.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header wrap">
+    <a class="author" href="/">Ruben Maxwell<span>Selected projects</span></a>
+    <nav aria-label="Page navigation">
+      <a href="#gallery">Gallery</a>
+      <a href="#engineering">Engineering</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero wrap" aria-labelledby="project-title">
+      <div class="hero-heading">
+        <h1 id="project-title">Inkshot</h1>
+        <div class="hero-intro">
+          <p class="project-type">A solo Unity / C# survival shooter.</p>
+          <p>An illustrated first-person game about surviving the next wave, building your weapon and choosing when to take a bigger risk.</p>
+        </div>
+      </div>
+      <div class="hero-detail">
+        <p>Game design, gameplay systems &amp; multiplayer</p>
+        <a class="text-link" href="#engineering">Explore the engineering</a>
+      </div>
+      <figure class="hero-figure">
+        <a class="image-link" href="images/courtyard.png" target="_blank" rel="noopener" aria-label="Open the courtyard image at full size in a new tab">
+          <img src="images/courtyard.png" width="1600" height="900" fetchpriority="high" alt="First-person view of a lit theater courtyard with a double-barrel shotgun and wave, health and ammunition indicators.">
+          <span class="image-action" aria-hidden="true">Open full size <span>↗</span></span>
+        </a>
+        <figcaption>
+          <span>Orpheum Courtyard</span>
+          <span>Local development capture · September 2026</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <section class="overview wrap section-space" aria-labelledby="overview-title">
+      <div>
+        <h2 id="overview-title">A survival game<br>with a sense of theater.</h2>
+        <p class="lead">I built Inkshot’s combat, progression and multiplayer systems as a solo project. Each wave asks the player to balance immediate survival with the weapon they want to build next.</p>
+        <p>The local development version combines a twelve-wave campaign with personal upgrades, resource gathering and buildable cover. Its illustrated characters and theater venues give those systems a world of their own.</p>
+      </div>
+      <dl class="project-facts">
+        <div><dt>Built with</dt><dd>Unity &amp; C#</dd></div>
+        <div><dt>Multiplayer</dt><dd>Co-op and versus<br><span>Private rooms designed for up to four players</span></dd></div>
+        <div><dt>Transport</dt><dd>Unity Relay<br><span>Secure WebSockets</span></dd></div>
+        <div><dt>This page</dt><dd>A public visual showcase<br><span>The playable game and source remain private</span></dd></div>
+      </dl>
+    </section>
+
+    <section class="gallery wrap section-space" id="gallery" aria-labelledby="gallery-title">
+      <div class="section-heading">
+        <h2 id="gallery-title">Inside the game</h2>
+        <p>One browser-demo capture and selected local development images. Newer local features may differ from the private browser build. Open any image to see the details.</p>
+      </div>
+
+      <div class="gallery-grid">
+        <figure class="shot">
+          <a class="image-link" href="images/browser-title.png" target="_blank" rel="noopener" aria-label="Open the browser demo title screen at full size in a new tab">
+            <img src="images/browser-title.png" width="960" height="600" loading="lazy" decoding="async" alt="The Last Show title screen in the private browser demo, with controls and options for co-op and versus rooms.">
+            <span class="image-action" aria-hidden="true">Open full size <span>↗</span></span>
+          </a>
+          <figcaption>
+            <p class="capture-context">Private browser demo · September 2026</p>
+            <h3>Raise the curtain.</h3>
+            <p>The Last Show introduces the survival campaign, with co-op and versus modes accessible from the opening menu.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="shot">
+          <a class="image-link" href="images/intermission.png" target="_blank" rel="noopener" aria-label="Open the intermission interface at full size in a new tab">
+            <img src="images/intermission.png" width="1600" height="900" loading="lazy" decoding="async" alt="Intermission interface with movement, reload-speed and challenge cards above a step-by-step weapon project.">
+            <span class="image-action" aria-hidden="true">Open full size <span>↗</span></span>
+          </a>
+          <figcaption>
+            <p class="capture-context">Local development capture · September 2026</p>
+            <h3>The choices between waves.</h3>
+            <p>Choose a personal upgrade or a harder next wave, then work toward a weapon project. In co-op, each player owns their choices and purchases.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="shot">
+          <a class="image-link" href="images/weapon-progression.png" target="_blank" rel="noopener" aria-label="Open the weapon progression interface at full size in a new tab">
+            <img src="images/weapon-progression.png" width="1600" height="900" loading="lazy" decoding="async" alt="Completed triple-barrel shotgun project showing the weapon model, player cards, owned gathering tools and upgrade price.">
+            <span class="image-action" aria-hidden="true">Open full size <span>↗</span></span>
+          </a>
+          <figcaption>
+            <p class="capture-context">Local development capture · September 2026</p>
+            <h3>A weapon you work toward.</h3>
+            <p>Completing parts and salvage requirements reveals the next weapon and its purchase cost. This controlled development state demonstrates the upgrade interface.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="shot">
+          <a class="image-link" href="images/buildable-cover.png" target="_blank" rel="noopener" aria-label="Open the buildable cover image at full size in a new tab">
+            <img src="images/buildable-cover.png" width="1600" height="900" loading="lazy" decoding="async" alt="A low wooden defensive wall placed in the theater courtyard, viewed behind a first-person shotgun.">
+            <span class="image-action" aria-hidden="true">Open full size <span>↗</span></span>
+          </a>
+          <figcaption>
+            <p class="capture-context">Local development capture · September 2026</p>
+            <h3>Change the space around you.</h3>
+            <p>Gathered wood becomes physical cover in the arena. The wall belongs to a shared world; its cost and placement limit belong to the player who builds it.</p>
+          </figcaption>
+        </figure>
+      </div>
+
+      <figure class="cast">
+        <div class="cast-heading">
+          <h3>Meet the headliners.</h3>
+          <p>Four bosses from the survival campaign.</p>
+        </div>
+        <a class="image-link" href="images/boss-cast.png" target="_blank" rel="noopener" aria-label="Open the boss character lineup at full size in a new tab">
+          <img src="images/boss-cast.png" width="2000" height="1100" loading="lazy" decoding="async" alt="Character lineup of the Last Ringmaster, Old Bellwether, Maestro Mortis and the Boiler Baron.">
+          <span class="image-action" aria-hidden="true">Open full size <span>↗</span></span>
+        </a>
+        <figcaption>Character render · September 2026</figcaption>
+      </figure>
+    </section>
+
+    <section class="engineering section-space" id="engineering" aria-labelledby="engineering-title">
+      <div class="wrap">
+        <div class="section-heading">
+          <h2 id="engineering-title">Behind the curtain</h2>
+          <p>The engineering work connects moment-to-moment combat, each player’s progression and a shared multiplayer world.</p>
+        </div>
+
+        <div class="engineering-story">
+          <article>
+            <h3>One authority for the shared world.</h3>
+            <p>The host runs combat, wave progression and venue transitions. Guests send movement and action requests over Unity Relay’s secure WebSocket transport; the host validates actions before updating the shared state.</p>
+            <ol class="network-flow" aria-label="Multiplayer action flow">
+              <li><span>Guest</span>Requests an action</li>
+              <li><span>Host</span>Validates the request</li>
+              <li><span>Players</span>Receive world updates</li>
+            </ol>
+            <p class="engineering-detail">Rooms support co-op or versus and are designed for up to four players. The room closes when its host leaves.</p>
+          </article>
+          <article>
+            <h3>Personal progression, shared consequences.</h3>
+            <p>Players keep separate weapon classes, inventories, coins and purchases while sharing combat and wave outcomes. Gathering, crafting and cover placement connect those personal decisions to the physical arena.</p>
+            <p>The host checks guest gathering and building requests. This keeps inventory spending and world changes under the same authority as the rest of the match.</p>
+          </article>
+        </div>
+
+        <aside class="validation-note" aria-labelledby="validation-title">
+          <h3 id="validation-title">Development &amp; validation</h3>
+          <p>Saved September 2026 reports cover gameplay rules, inventory isolation, host validation and communication between separate host and guest processes. These development checks are separate from browser-release and load validation.</p>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer wrap">
+    <div><a class="author" href="/">Ruben Maxwell</a><p>Inkshot is a solo software project built with Unity, third-party tools and assets.</p></div>
+    <a class="text-link" href="/#projects">Back to selected work</a>
+  </footer>
+</body>
+</html>
