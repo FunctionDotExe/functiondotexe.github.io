@@ -30,17 +30,17 @@ export function Hero() {
 
       <div className="relative z-10 text-center max-w-4xl px-4">
         <p
-          className="hero-fade text-sm tracking-[0.3em] text-[#C9A84C] uppercase mb-12"
+          className="hero-fade text-sm tracking-[0.3em] text-gold uppercase mb-12"
           style={{ "--d": "0.1s" } as React.CSSProperties}
         >
           Est. {PERSONAL.year} / {PERSONAL.city}
         </p>
 
         <div className="mb-6 overflow-hidden">
-          <h1 className="font-display text-[5rem] md:text-[7rem] lg:text-[8rem] leading-tight text-[#F2EBD9] tracking-tight">
+          <h1 className="font-display text-[5rem] md:text-[7rem] lg:text-[8rem] leading-tight text-cream tracking-tight">
             <AnimatedName text={PERSONAL.firstName} offset={0} />
           </h1>
-          <h1 className="font-display text-[5rem] md:text-[7rem] lg:text-[8rem] leading-tight text-[#C9A84C] tracking-tight">
+          <h1 className="font-display text-[5rem] md:text-[7rem] lg:text-[8rem] leading-tight text-gold tracking-tight">
             <AnimatedName
               text={PERSONAL.lastName}
               offset={PERSONAL.firstName.length}
@@ -51,8 +51,8 @@ export function Hero() {
         {/* No entrance fade: this is the LCP element on mobile, and delaying
             its paint directly delays LCP */}
         <blockquote className="mb-12">
-          <p className="text-lg md:text-xl text-[#F2EBD9]">{PERSONAL.role}</p>
-          <footer className="mt-3 text-xs tracking-[0.24em] uppercase text-[#7A7060]">
+          <p className="text-lg md:text-xl text-cream">{PERSONAL.role}</p>
+          <footer className="mt-3 text-xs tracking-[0.24em] uppercase text-muted">
             {PERSONAL.roleAttribution}
           </footer>
         </blockquote>
@@ -61,8 +61,8 @@ export function Hero() {
           className="hero-fade flex flex-col items-center gap-3"
           style={{ "--d": `${fadeDelay + 0.4}s` } as React.CSSProperties}
         >
-          <div className="hero-scroll-hint text-[#C9A84C]">&darr;</div>
-          <p className="text-sm text-[#7A7060]">Scroll to explore</p>
+          <div className="hero-scroll-hint text-gold">&darr;</div>
+          <p className="text-sm text-muted">Scroll to explore</p>
         </div>
       </div>
     </section>

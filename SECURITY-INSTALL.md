@@ -1,14 +1,13 @@
 # Secure Install Notes
 
-This project uses pnpm and disables dependency lifecycle scripts by default.
+This project uses Node.js 24 LTS (24.22.1 or newer) and pnpm 12.15.0. Dependency lifecycle scripts remain disabled by default.
 
 Recommended flow:
 
 ```powershell
-corepack enable
-corepack prepare pnpm@11.1.3 --activate
+npm install --global pnpm@12.15.0
 pnpm install --ignore-scripts
-pnpm audit --prod
+pnpm audit
 pnpm approve-builds
 pnpm build
 ```

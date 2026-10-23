@@ -4,10 +4,10 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="py-8 px-4 bg-[#0E0D0B] border-t border-[#2A2520]">
+    <footer className="py-8 px-4 bg-bg border-t border-rule">
       <div className="max-w-7xl mx-auto">
         <div
-          className="flex flex-col md:flex-row items-center justify-between text-sm text-[#7A7060]"
+          className="flex flex-col md:flex-row items-center justify-between text-sm text-muted"
           data-reveal
         >
           <p>
