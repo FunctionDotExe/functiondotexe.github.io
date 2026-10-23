@@ -1,5 +1,5 @@
 {
-  "packageManager": "pnpm@11.9.0",
+  "packageManager": "pnpm@12.15.0",
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build",
@@ -13,19 +13,23 @@
     "deps:approve-builds": "pnpm approve-builds"
   },
   "dependencies": {
-    "lenis": "^1.3.4",
-    "lucide-react": "^0.516.0",
-    "next": "^16.2.6",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "lenis": "^1.3.27",
+    "lucide-react": "^1.61.0",
+    "next": "^16.4.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   },
   "devDependencies": {
-    "@types/node": "^22.10.0",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
-    "autoprefixer": "^10.4.20",
-    "postcss": "^8.5.14",
-    "tailwindcss": "^3.4.17",
-    "typescript": "^5.7.2"
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^24.19.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@typescript/typescript6": "^6.0.2",
+    "postcss": "^8.5.31",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2"
+  },
+  "engines": {
+    "node": ">=24.22.1 <25"
   }
 }

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
-import ts from "typescript";
+import ts from "@typescript/typescript6";
 
 // Exercise the real components and effects. Native focus trapping, image
 // decoding and visual transitions still require browser verification.

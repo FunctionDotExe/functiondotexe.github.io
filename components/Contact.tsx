@@ -1,4 +1,5 @@
-import { ArrowUpRight, Github, Linkedin, Mail } from "lucide-react";
+import { ArrowUpRight, Mail } from "lucide-react";
+import { Github, Linkedin } from "./BrandIcons";
 import { PERSONAL } from "@/lib/constants";
 
 export function Contact() {
