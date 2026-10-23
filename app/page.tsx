@@ -12,7 +12,7 @@ import { Footer } from "@/components/Footer";
 
 export default function Home() {
   return (
-    <main className="bg-[#0E0D0B]">
+    <main className="bg-bg">
       <Nav />
       <Hero />
       <About />

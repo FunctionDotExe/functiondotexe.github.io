@@ -9,3 +9,8 @@ onlyBuiltDependencies:
 
 allowBuilds:
   sharp: true
+
+minimumReleaseAgeExclude:
+  - framer-motion@14.6.0
+  - motion-dom@14.6.0
+  - motion-utils@14.6.0

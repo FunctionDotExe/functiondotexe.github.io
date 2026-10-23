@@ -1,6 +1,49 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss' source(none);
+@source './';
+@source '../components';
+@source '../lib';
+
+@theme {
+  --color-bg: #0e0d0b;
+  --color-surface: #161410;
+  --color-gold: #c9a84c;
+  --color-gold-dim: #8a6e2f;
+  --color-cream: #f2ebd9;
+  --color-muted: #7a7060;
+  --color-rule: #2a2520;
+
+  --font-display: var(--font-cormorant), Cormorant Garamond, Georgia, serif;
+  --font-body:
+    ui-sans-serif, system-ui, Segoe UI, Roboto, Helvetica Neue, Arial,
+    sans-serif;
+
+  --spacing-gutter: clamp(1.25rem, 4vw, 4.5rem);
+  --spacing-rail: clamp(1.5rem, 7vw, 8rem);
+  --spacing-section: clamp(6rem, 13vw, 14rem);
+
+  --ease-ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-ease-in-out: cubic-bezier(0.87, 0, 0.13, 1);
+
+  --shadow-hairline: inset 0 0 0 1px rgba(21, 20, 18, 0.1);
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
 
 :root {
   /* Colors - Museum Aesthetic */
